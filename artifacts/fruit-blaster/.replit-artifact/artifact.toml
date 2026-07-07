@@ -1,0 +1,27 @@
+kind = "web"
+previewPath = "/"
+title = "Fruit Blaster AI"
+version = "1.0.0"
+id = "artifacts/fruit-blaster"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 25257
+
+[services.development]
+run = "pnpm --filter @workspace/fruit-blaster run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/fruit-blaster", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/fruit-blaster/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "25257"
+BASE_PATH = "/"

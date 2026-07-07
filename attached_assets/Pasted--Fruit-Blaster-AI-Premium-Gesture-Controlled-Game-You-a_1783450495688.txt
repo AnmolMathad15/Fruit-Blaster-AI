@@ -1,0 +1,573 @@
+🍎 Fruit Blaster AI — Premium Gesture Controlled Game
+
+You are a senior software engineer, game developer, UI/UX designer, and computer vision engineer.
+
+Build a production-quality gesture-controlled browser game called Fruit Blaster AI.
+
+The final product should feel like a polished indie game, not a tutorial or college project.
+
+The entire application must be deployable on Vercel.
+
+Tech Stack
+
+Use ONLY these technologies:
+
+Next.js 15 (App Router)
+React 19
+TypeScript
+Tailwind CSS
+shadcn/ui
+Framer Motion
+HTML5 Canvas
+TensorFlow.js
+MediaPipe Hand Landmarker
+Howler.js
+Zustand
+LocalStorage
+Vercel deployment
+
+Do NOT use Python.
+
+Do NOT use OpenCV.
+
+Everything must run inside the browser.
+
+Gameplay
+
+The user controls a glowing sword using ONLY their index finger.
+
+The webcam appears behind the game.
+
+The sword follows the user's fingertip in real time.
+
+Fruits fly from the bottom with realistic physics.
+
+If the sword intersects a fruit:
+
+fruit splits into two halves
+juice particles explode
+score increases
+combo increases
+sound plays
+screen slightly shakes
+
+Bombs must reduce lives or end the game.
+
+Game runs at 60 FPS.
+
+Game Modes
+Classic
+
+3 lives
+
+Bombs
+
+Increasing difficulty
+
+Arcade
+
+Endless
+
+Fast spawning
+
+Highest score wins
+
+Zen
+
+No bombs
+
+Relaxing music
+
+Unlimited lives
+
+Challenge
+
+60 seconds
+
+Highest score wins
+
+Levels
+
+Each level has
+
+Goal Score
+
+Fruit Speed
+
+Bomb Count
+
+Special Fruit
+
+Example
+
+Level 1
+
+Goal
+
+100
+
+Level 2
+
+250
+
+Level 3
+
+450
+
+Continue until Level 20
+
+After every 5 levels create a boss level.
+
+Boss fruits require multiple slices.
+
+Fruits
+
+Create adorable cartoon fruits.
+
+Apple
+
+Orange
+
+Banana
+
+Watermelon
+
+Kiwi
+
+Pineapple
+
+Pear
+
+Dragon Fruit
+
+Strawberry
+
+Blueberry
+
+Golden Apple
+
+Rainbow Mango
+
+Each fruit has
+
+idle animation
+
+rotation
+
+shadow
+
+juice splash color
+
+different score value
+
+Bombs
+
+Normal bomb
+
+Golden bomb
+
+Frozen bomb
+
+Explosive bomb
+
+Bombs have glowing animations.
+
+Sword
+
+The player's finger becomes a magical blade.
+
+Unlockable sword skins
+
+Fire Blade
+
+Ice Blade
+
+Galaxy Blade
+
+Rainbow Blade
+
+Lightning Blade
+
+Shadow Blade
+
+Each sword has
+
+unique particles
+
+unique sounds
+
+unique glow
+
+Combo System
+
+Show large animated text
+
+GOOD
+
+AWESOME
+
+INCREDIBLE
+
+UNSTOPPABLE
+
+LEGENDARY
+
+FRUIT GOD
+
+Each combo triggers
+
+slow motion
+
+camera shake
+
+extra particles
+
+Premium UI
+
+The UI should feel like a premium Steam game.
+
+Use glassmorphism.
+
+Rounded cards.
+
+Blur effects.
+
+Animated gradients.
+
+Floating fruits.
+
+Soft shadows.
+
+Modern typography.
+
+Beautiful transitions.
+
+Dark mode.
+
+Screens
+
+Splash Screen
+
+Animated logo
+
+Loading animation
+
+Cute cat sleeping
+
+Main Menu
+
+Play
+
+Game Modes
+
+Leaderboard
+
+Achievements
+
+Settings
+
+Credits
+
+Animated background
+
+Pause Menu
+
+Resume
+
+Restart
+
+Settings
+
+Quit
+
+Game Over
+
+Large score animation
+
+Statistics
+
+Cat ranking
+
+Replay
+
+Home
+
+Settings
+
+Music Volume
+
+Sound Volume
+
+Sensitivity
+
+Difficulty
+
+Webcam Mirror
+
+Graphics Quality
+
+Dark Mode
+
+Statistics
+
+Games Played
+
+Total Fruits
+
+Bombs Hit
+
+Accuracy
+
+Best Combo
+
+Best Score
+
+Hours Played
+
+Leaderboard
+
+Store locally.
+
+Top 20 scores.
+
+Achievements
+
+100 achievements.
+
+Examples
+
+Slice 100 fruits
+
+Slice 1000 fruits
+
+No bombs
+
+Perfect accuracy
+
+Combo 20
+
+Combo 50
+
+Combo 100
+
+Fruit God
+
+Cat Ranking System
+
+This is the signature feature.
+
+The cat changes based on performance.
+
+Score 0-20
+
+😭 Crying Cat
+
+Title
+
+Fruit Disaster
+
+21-60
+
+😾 Angry Cat
+
+Beginner Slicer
+
+61-120
+
+😐 Serious Cat
+
+Rookie Ninja
+
+121-200
+
+🙂 Happy Cat
+
+Fruit Hunter
+
+201-350
+
+😸 Excited Cat
+
+Slice Master
+
+351-500
+
+😻 Heart Eyes Cat
+
+Fruit Legend
+
+501-700
+
+😎 Cool Cat
+
+Ninja Champion
+
+700+
+
+👑 Royal Cat
+
+FRUIT GOD
+
+Each ending should include
+
+animated cat
+
+confetti
+
+background music
+
+unlock animation
+
+Unlockables
+
+Backgrounds
+
+Sakura Garden
+
+Galaxy
+
+Japanese Temple
+
+Cyberpunk
+
+Rainy Night
+
+Christmas
+
+Halloween
+
+Beach
+
+Candy Land
+
+Music changes with every theme.
+
+Particle Engine
+
+Create a professional particle engine.
+
+Juice splashes
+
+Sparkles
+
+Smoke
+
+Fire
+
+Ice
+
+Lightning
+
+Stars
+
+Confetti
+
+Floating leaves
+
+Physics
+
+Realistic gravity.
+
+Rotation.
+
+Bounce.
+
+Momentum.
+
+Fruit halves continue flying after slicing.
+
+Audio
+
+Background music.
+
+Slice sounds.
+
+Explosion.
+
+Combo sounds.
+
+Achievement sounds.
+
+Menu clicks.
+
+Victory music.
+
+Game over music.
+
+Performance
+
+Stable 60 FPS.
+
+Optimized rendering.
+
+Lazy loading.
+
+Efficient collision detection.
+
+No memory leaks.
+
+Responsive
+
+Desktop
+
+Tablet
+
+Mobile
+
+Folder Structure
+
+Organize everything professionally.
+
+components/
+
+game/
+
+engine/
+
+physics/
+
+hooks/
+
+utils/
+
+assets/
+
+public/
+
+types/
+
+store/
+
+Code Quality
+
+Strict TypeScript.
+
+Reusable components.
+
+No duplicated code.
+
+Clean architecture.
+
+Comments only where necessary.
+
+ESLint clean.
+
+Production ready.
+
+Deployment
+
+The project must build successfully using
+
+npm run build
+
+Deploy directly to Vercel without modifications.
+
+No server required.
+
+No backend required.
+
+Everything runs client-side.
+
+Final Goal
+
+The final experience should feel like a polished indie game that users enjoy playing for hours. Prioritize fluid animations, delightful visual feedback, responsive gesture controls, and an interface that looks worthy of a commercial release rather than a student project. It should be visually impressive enough to showcase in a portfolio, on LinkedIn, and at hackathons.
