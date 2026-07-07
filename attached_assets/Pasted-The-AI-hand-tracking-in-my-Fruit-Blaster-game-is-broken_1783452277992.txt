@@ -1,0 +1,68 @@
+The AI hand tracking in my Fruit Blaster game is broken.
+
+Current behavior:
+- The webcam permission is granted.
+- The game starts normally.
+- Fruits spawn correctly.
+- The UI says "Waiting for hand..."
+- My webcam video is not visible.
+- Hand gestures are never detected.
+- Fruits cannot be sliced.
+
+I DO NOT want to train a custom ML model.
+
+I want to use Google's pre-trained MediaPipe Hands (or MediaPipe Tasks Vision Hand Landmarker).
+
+Please inspect the ENTIRE hand tracking pipeline and fix every issue.
+
+Check all of the following:
+
+1. Camera initialization
+- Ensure navigator.mediaDevices.getUserMedia() works.
+- Wait until the video metadata is loaded.
+- Wait for video.play() before starting hand detection.
+- Verify videoWidth and videoHeight are non-zero.
+
+2. Video element
+- Ensure the <video> element receives the webcam stream.
+- If hidden, use opacity:0 instead of display:none.
+- Ensure MediaPipe can still read video frames.
+
+3. Hand detector
+- Verify the MediaPipe model loads successfully.
+- Check for failed CDN/model downloads.
+- Ensure estimateHands() / detectForVideo() runs every animation frame.
+- Log detection results.
+
+4. Animation loop
+- Ensure requestAnimationFrame() continuously:
+    - updates the webcam frame
+    - runs hand detection
+    - updates the fingertip position
+
+5. Finger tracking
+- Track the index fingertip (landmark 8).
+- Convert normalized coordinates correctly to canvas coordinates.
+- Mirror coordinates if webcam is mirrored.
+
+6. Fruit collision
+- Replace mouse slicing with fingertip slicing.
+- Detect intersections between the fingertip trail and fruit hitboxes.
+- Slice fruit immediately on collision.
+
+7. Debug overlay
+Add temporary debugging:
+- Draw webcam feed.
+- Draw all detected hand landmarks.
+- Draw fingertip.
+- Display:
+  "Camera Ready"
+  "Model Loaded"
+  "Hand Detected"
+  Current FPS
+
+8. Error logging
+If any step fails, print detailed console errors instead of silently showing:
+"Waiting for hand..."
+
+Finally, explain exactly what was broken and what files were modified.

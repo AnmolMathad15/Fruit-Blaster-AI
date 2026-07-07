@@ -258,7 +258,8 @@ export class GameEngine {
   
   draw(skinColors: {base: string, tip: string, particleType: string}) {
     const { ctx, width, height } = this;
-    ctx.clearRect(0, 0, width, height);
+    // NOTE: caller (GameCanvas) owns the clear + video draw.
+    // Do NOT clearRect here — it would wipe the webcam background.
     
     // Draw halves
     this.halves.forEach(h => {
