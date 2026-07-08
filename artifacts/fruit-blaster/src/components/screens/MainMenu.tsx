@@ -193,7 +193,7 @@ export default function MainMenu() {
 
   const handlePlay = () => {
     playClick();
-    setScreen('welcome');
+    setScreen('modes');
   };
 
   return (
