@@ -16,10 +16,10 @@ import { useSoundManager } from '../../hooks/useSoundManager';
 /* ─── Destination tap zones (x/y are normalised 0–1 of screen size) ── */
 const DESTINATIONS: { name: string; x: number; y: number; mode: GameMode }[] = [
   { name: 'Dojo Gate',       x: 0.365, y: 0.398, mode: 'classic'   },
-  { name: 'Moon Shrine',     x: 0.714, y: 0.380, mode: 'zen'        },
-  { name: 'Bamboo Grove',    x: 0.557, y: 0.602, mode: 'arcade'     },
-  { name: 'Crimson Temple',  x: 0.339, y: 0.759, mode: 'challenge'  },
-  { name: 'Imperial Palace', x: 0.771, y: 0.769, mode: 'classic'    },
+  { name: 'Moon Shrine',     x: 0.714, y: 0.380, mode: 'survival'  },
+  { name: 'Bamboo Grove',    x: 0.557, y: 0.602, mode: 'zen'       },
+  { name: 'Crimson Temple',  x: 0.339, y: 0.759, mode: 'arcade'    },
+  { name: 'Imperial Palace', x: 0.771, y: 0.769, mode: 'challenge' },
 ];
 
 /** Radius of each tap zone in % of viewport width */
