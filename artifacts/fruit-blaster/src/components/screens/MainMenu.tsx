@@ -21,24 +21,6 @@ interface Petal {
    CSS keyframes
 ───────────────────────────────────────────── */
 const STYLES = `
-@keyframes btn-float {
-  0%,100% { transform: translate(-50%,-50%) translateY(0px);  }
-  50%     { transform: translate(-50%,-50%) translateY(-8px); }
-}
-@keyframes btn-glow-pulse {
-  0%,100% { box-shadow: 0 0 20px 6px rgba(255,190,40,.55), 0 0 60px 14px rgba(220,130,10,.28), inset 0 0 12px rgba(255,210,80,.15); }
-  50%     { box-shadow: 0 0 38px 12px rgba(255,220,60,.80), 0 0 90px 26px rgba(240,160,20,.45), inset 0 0 22px rgba(255,230,100,.28); }
-}
-@keyframes btn-shine {
-  0%   { transform: translateX(-140%) skewX(-18deg); opacity: 0; }
-  10%  { opacity: 1; }
-  90%  { opacity: 1; }
-  100% { transform: translateX(340%)  skewX(-18deg); opacity: 0; }
-}
-@keyframes sword-idle {
-  0%,100% { transform: rotate(-8deg) scale(1);    }
-  50%     { transform: rotate(-5deg) scale(1.04); }
-}
 @keyframes vignette-breathe {
   0%,100% { opacity: .80; }
   50%     { opacity: .65; }
@@ -216,8 +198,9 @@ export default function MainMenu() {
 
   return (
     <div
-      className="w-full h-full relative overflow-hidden select-none"
+      className="w-full h-full relative overflow-hidden select-none cursor-pointer"
       style={{ background: '#060208' }}
+      onClick={handlePlay}
     >
       <style>{STYLES}</style>
 
@@ -248,79 +231,7 @@ export default function MainMenu() {
         style={{ mixBlendMode: 'screen' }}
       />
 
-      {/* ── 4. PLAY NOW button – fully visible & functional ── */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.82 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.8, duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-        className="absolute"
-        style={{ left: '50%', top: '72%', zIndex: 30 }}
-      >
-      <button
-        onClick={handlePlay}
-        aria-label="Play Now"
-        style={{
-          transform: 'translate(-50%, -50%)',
-          animation: 'btn-float 3.8s ease-in-out infinite, btn-glow-pulse 2.4s ease-in-out infinite',
-          cursor: 'pointer',
-          /* Gold scroll-parchment style */
-          background: 'linear-gradient(180deg, #f5d97a 0%, #d4a520 35%, #b8840e 65%, #e8c54a 100%)',
-          border: '3px solid rgba(255,220,80,0.70)',
-          borderRadius: 6,
-          padding: '0 48px',
-          height: 62,
-          minWidth: 260,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: 14,
-          outline: 'none',
-          overflow: 'hidden',
-          position: 'relative',
-        }}
-      >
-        {/* Shimmer sweep */}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{ overflow: 'hidden', borderRadius: 6 }}
-        >
-          <div style={{
-            position: 'absolute', top: 0, left: 0,
-            width: '32%', height: '100%',
-            background: 'linear-gradient(90deg, transparent, rgba(255,245,180,0.55), transparent)',
-            animation: 'btn-shine 2.8s ease-in-out 1.2s infinite',
-          }}/>
-        </div>
-
-        {/* Sword icon */}
-        <span
-          style={{
-            fontSize: 26,
-            lineHeight: 1,
-            animation: 'sword-idle 3s ease-in-out infinite',
-            display: 'inline-block',
-            filter: 'drop-shadow(0 0 4px rgba(255,200,80,0.8))',
-          }}
-        >
-          ⚔️
-        </span>
-
-        {/* Label */}
-        <span style={{
-          fontFamily: '"Cinzel Decorative", "Palatino Linotype", Georgia, serif',
-          fontSize: 22,
-          fontWeight: 700,
-          letterSpacing: '0.12em',
-          color: '#3a1a00',
-          textShadow: '0 1px 0 rgba(255,240,140,0.60), 0 -1px 0 rgba(0,0,0,0.30)',
-          textTransform: 'uppercase',
-        }}>
-          Play Now
-        </span>
-      </button>
-      </motion.div>
-
-      {/* ── 5. Music ── */}
+      {/* ── 4. Music ── */}
       <audio
         ref={audioRef}
         src={`${import.meta.env.BASE_URL}landing-music.mp3`}
