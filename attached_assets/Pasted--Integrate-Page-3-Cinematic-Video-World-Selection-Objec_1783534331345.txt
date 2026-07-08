@@ -1,0 +1,157 @@
+# 🎬 Integrate Page 3 Cinematic Video – World Selection
+
+## Objective
+
+Integrate my existing Page 3 cinematic video into Fruit Blaster AI immediately after the player clicks **BEGIN THE JOURNEY** on Page 2.
+
+Do NOT recreate the animation.
+
+Do NOT redesign the UI.
+
+Use the provided MP4 exactly as it is.
+
+The video should behave like an in-game cinematic rather than a webpage.
+
+---
+
+## Flow
+
+Landing Page
+
+↓
+
+Page 2 Cinematic
+
+↓
+
+Player clicks "BEGIN THE JOURNEY"
+
+↓
+
+Fade to black (0.3–0.5 seconds)
+
+↓
+
+Play the Page 3 cinematic video in fullscreen
+
+↓
+
+Video introduces the floating kingdom and reveals every destination
+
+↓
+
+Video reaches its final frame
+
+↓
+
+The final frame becomes the interactive World Selection screen
+
+---
+
+## Video Playback
+
+• Autoplay immediately
+
+• Fullscreen
+
+• object-fit: cover
+
+• No controls
+
+• No looping
+
+• Hardware accelerated
+
+• Preserve aspect ratio
+
+• Preload before playback to eliminate buffering
+
+---
+
+## During Playback
+
+Disable all interactions.
+
+Do not display buttons.
+
+Do not show hover effects.
+
+Do not allow destination selection.
+
+Allow the cinematic to finish uninterrupted.
+
+---
+
+## End of Video
+
+When the video reaches its final frame:
+
+• Pause the video.
+
+• Keep the last frame visible.
+
+• Do NOT replay.
+
+• Do NOT automatically navigate.
+
+The paused last frame becomes the interactive World Selection page.
+
+---
+
+## Activate Interaction
+
+After the video pauses:
+
+Enable all destination interactions.
+
+The magical destination circles become interactive.
+
+Hovering over a destination should:
+
+• Intensify its glow
+
+• Enlarge the magical ring
+
+• Animate particles
+
+• Brighten nearby lanterns
+
+• Play a soft temple bell
+
+• Display destination details
+
+Clicking a destination should:
+
+• Play its selection animation
+
+• Camera zooms toward the chosen kingdom
+
+• Fade smoothly into Page 4 (Camera Calibration)
+
+---
+
+## Performance
+
+Maintain 60 FPS.
+
+Preload the video before playback.
+
+Avoid buffering.
+
+Use GPU acceleration.
+
+No browser refresh.
+
+No white flash.
+
+No loading spinner.
+
+All page transitions should feel identical to a premium AAA fantasy game.
+
+---
+
+## Desired Experience
+
+The player should feel like they are watching an in-game cinematic that naturally transforms into an interactive world map.
+
+The transition from cinematic to gameplay should be completely seamless, making the world feel alive rather than switching between separate webpages.
