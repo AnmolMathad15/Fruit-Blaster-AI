@@ -1,6 +1,7 @@
 import React from 'react';
 import SplashScreen from './screens/SplashScreen';
 import MainMenu from './screens/MainMenu';
+import GuardianOathScreen from './screens/GuardianOathScreen';
 import ModesScreen from './screens/ModesScreen';
 import GameScreen from './game/GameCanvas';
 import GameOver from './screens/GameOver';
@@ -18,6 +19,7 @@ export default function GameRoot() {
     switch (screen) {
       case 'splash': return <SplashScreen />;
       case 'menu': return <MainMenu />;
+      case 'guardian': return <GuardianOathScreen />;
       case 'modes': return <ModesScreen />;
       case 'game': return <GameScreen />;
       case 'gameover': return <GameOver />;

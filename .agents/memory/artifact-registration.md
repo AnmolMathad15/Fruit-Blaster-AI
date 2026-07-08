@@ -1,20 +1,15 @@
 ---
 name: Artifact registration gap (imported project)
-description: Project was imported from GitHub — artifact.toml files exist but artifacts aren't registered in Replit's system
+description: Project was imported from GitHub — artifact.toml files exist but weren't registered; now resolved.
 ---
 
-When this project was imported from GitHub, three artifact directories were present:
-- `artifacts/fruit-blaster/` — React/Vite game
-- `artifacts/api-server/` — Express API
-- `artifacts/mockup-sandbox/` — Vite mockup preview
+When this project was imported from GitHub, three artifact directories were present but unregistered.
 
-`listArtifacts()` returns `[]` — none are registered. As a result:
-- Managed artifact workflows don't exist
-- `WorkflowsRestart` with artifact workflow names fails
-- `Screenshot` tool's `appPreview` type can't find them
+**Resolution**: The artifacts were registered by the platform (July 2026). All three are now live:
+- `artifacts/fruit-blaster/` — React/Vite game (preview path `/`)
+- `artifacts/api-server/` — Express API (preview path `/api`)
+- `artifacts/mockup-sandbox/` — Vite mockup preview (preview path `/__mockup`)
 
-**Workaround in place:** `configureWorkflow` was used to run the fruit-blaster game manually:
-- Command: `PORT=5173 BASE_PATH=/ pnpm --filter @workspace/fruit-blaster run dev`
-- Port: 5173 (must be in the supported list; original artifact.toml used 25257 which is unsupported)
+`listArtifacts()` now returns all three. The old "Fruit Blaster" manual workflow (port 5173) and the managed `artifacts/fruit-blaster: web` workflow (port 25257) both run; they are independent. The managed one is canonical.
 
-**Why:** `createArtifact` fails if the slug directory already exists. The proper fix is Task #4: register all three artifacts through the Replit artifact system.
+**Why it was an issue earlier**: `createArtifact` fails if the slug directory already exists. Platform registration happened automatically.
