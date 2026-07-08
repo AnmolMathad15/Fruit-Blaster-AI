@@ -1,0 +1,2 @@
+- [MediaPipe WASM headers](mediapipe-wasm-headers.md) — hand tracking needs COOP/COEP headers in dev; production layer also needs them
+- [Artifact registration gap](artifact-registration.md) — project imported from GitHub; artifacts exist on disk but aren't registered; use configureWorkflow as workaround

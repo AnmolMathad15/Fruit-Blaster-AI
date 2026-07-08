@@ -69,6 +69,12 @@ export default defineConfig({
     strictPort: true,
     host: '0.0.0.0',
     allowedHosts: true,
+    // COOP + COEP headers are required to enable SharedArrayBuffer,
+    // which MediaPipe WASM (hand landmarker) needs at runtime.
+    headers: {
+      'Cross-Origin-Opener-Policy': 'same-origin',
+      'Cross-Origin-Embedder-Policy': 'credentialless',
+    },
     fs: {
       strict: true,
     },
@@ -77,5 +83,9 @@ export default defineConfig({
     port,
     host: '0.0.0.0',
     allowedHosts: true,
+    headers: {
+      'Cross-Origin-Opener-Policy': 'same-origin',
+      'Cross-Origin-Embedder-Policy': 'credentialless',
+    },
   },
 });

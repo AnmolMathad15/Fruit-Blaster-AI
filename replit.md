@@ -1,15 +1,15 @@
-# [Project name]
+# Fruit Blaster AI
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+A gesture-controlled browser game where players slice falling fruits with their index finger via webcam. Uses MediaPipe Hand Landmarker for real-time hand detection.
 
 ## Run & Operate
 
-- `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
+- **Fruit Blaster game** runs via the "Fruit Blaster" workflow (`PORT=5173 BASE_PATH=/ pnpm --filter @workspace/fruit-blaster run dev`)
+- `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000, unused by game)
 - `pnpm run typecheck` — full typecheck across all packages
 - `pnpm run build` — typecheck + build all packages
 - `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
-- `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- Required env: `DATABASE_URL` — Postgres connection string
+- Required env: `DATABASE_URL` — Postgres connection string (for API server; not used by the game)
 
 ## Stack
 

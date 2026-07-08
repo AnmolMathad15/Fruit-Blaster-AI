@@ -119,7 +119,7 @@ export default function GameScreen() {
     canvas.height = window.innerHeight;
 
     engineRef.current = new GameEngine(canvas, mode, {
-      onScore: (pts) => {
+      onScore: (pts: number, _x: number, _y: number) => {
         setScore((s: number) => s + pts);
         setCombo(comboRef.current + 1);
         addSwing(true);
@@ -291,10 +291,12 @@ export default function GameScreen() {
         IMPORTANT: must NOT be display:none — MediaPipe reads live video frames.
         Use opacity-0 + absolute to visually hide while keeping it renderable.
       */}
+      {/* width/height must be >0 so browsers don't skip video decoding;
+          opacity-0 keeps it invisible while MediaPipe can still read frames */}
       <video
         ref={videoRef}
         className="absolute opacity-0 pointer-events-none"
-        style={{ width: 1, height: 1 }}
+        style={{ width: 320, height: 240 }}
         playsInline
         muted
       />
