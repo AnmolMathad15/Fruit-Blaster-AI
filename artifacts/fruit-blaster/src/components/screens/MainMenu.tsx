@@ -204,6 +204,16 @@ export default function MainMenu() {
     >
       <style>{STYLES}</style>
 
+      {/* ── 0. Silent preload of page-2 cinematic (zero bytes downloaded until needed) ── */}
+      <video
+        src={`${import.meta.env.BASE_URL}page2-cinematic.mp4`}
+        preload="auto"
+        muted
+        playsInline
+        style={{ display: 'none' }}
+        aria-hidden="true"
+      />
+
       {/* ── 1. Looping video background ── */}
       <video
         ref={videoRef}

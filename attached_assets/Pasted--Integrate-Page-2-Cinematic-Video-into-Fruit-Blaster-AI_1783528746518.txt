@@ -1,0 +1,134 @@
+# 🎮 Integrate Page 2 Cinematic Video into Fruit Blaster AI
+
+## Objective
+
+Integrate my existing Page 2 cinematic video into the game flow after the Landing Page.
+
+This should feel like a premium AAA game transition, not like navigating between webpages.
+
+Do NOT redesign the UI.
+
+Do NOT recreate the animation.
+
+Use the provided MP4 video exactly as it is.
+
+---
+
+## Flow
+
+Landing Page
+↓
+
+Player clicks **PLAY NOW**
+
+↓
+
+Landing page performs its exit animation.
+
+↓
+
+Fade to black for 0.5 seconds.
+
+↓
+
+Immediately play the Page 2 cinematic video in fullscreen.
+
+↓
+
+The video should cover the entire viewport with no borders or controls.
+
+Use `object-fit: cover`.
+
+Hide all browser UI elements during playback.
+
+---
+
+## Video Behaviour
+
+• Autoplay immediately.
+
+• Play with sound.
+
+• Do not loop.
+
+• Disable controls.
+
+• Disable picture-in-picture.
+
+• Prevent download controls.
+
+• Prevent seeking.
+
+• Keep the aspect ratio.
+
+• Use hardware acceleration.
+
+---
+
+## During Playback
+
+The video itself contains all animations and storytelling.
+
+Do NOT overlay any HTML elements during playback.
+
+Do NOT display buttons.
+
+Do NOT display menus.
+
+Do NOT display loading indicators.
+
+Only the cinematic video should be visible.
+
+---
+
+## End of Video
+
+When the video reaches its final frame:
+
+Freeze for approximately 1 second.
+
+Then perform a smooth cinematic fade.
+
+Transition directly into Page 3 (World Selection).
+
+Do NOT reload the browser.
+
+Do NOT refresh React.
+
+Use a seamless page transition.
+
+---
+
+## Transition Style
+
+Fade to black
+
+↓
+
+Crossfade
+
+↓
+
+World Selection
+
+The transition should feel identical to moving between scenes in a modern AAA game.
+
+---
+
+## Performance
+
+Preload the video before the player clicks "PLAY NOW".
+
+Ensure there is no buffering.
+
+Maintain smooth playback.
+
+Use GPU acceleration.
+
+---
+
+## Desired Experience
+
+The player should feel like they are watching an in-game cinematic rather than navigating between webpages.
+
+The transition from the Landing Page to the Page 2 cinematic and then into the World Selection page should feel completely seamless, immersive, and premium.
