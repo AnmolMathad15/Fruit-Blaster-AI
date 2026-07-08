@@ -1,0 +1,437 @@
+This is the kind of prompt I'd give to Replit AI, Lovable, Bolt, Cursor, or Claude Code to build a **AAA-quality animated landing page**. The goal is **not** to make it look like a website, but like the **opening screen of Ghost of Tsushima, Sekiro, or Fruit Ninja 2.**
+
+---
+
+# 🎮 PREMIUM LANDING PAGE ANIMATION PROMPT
+
+## Objective
+
+Transform the provided static artwork into an immersive AAA-quality animated landing page inspired by ancient Chinese/Japanese fantasy worlds.
+
+The page should feel alive, cinematic, premium, and mystical while maintaining excellent performance (60 FPS).
+
+The atmosphere should resemble:
+
+* Ghost of Tsushima
+* Black Myth: Wukong
+* Sekiro
+* Fruit Ninja 2
+* Ancient Chinese ink painting mixed with Unreal Engine lighting.
+
+Avoid cartoon effects.
+
+Everything should feel handcrafted, elegant, and luxurious.
+
+---
+
+# Overall Mood
+
+The user should feel like they are entering an ancient ninja temple at sunset.
+
+The environment must continuously breathe with subtle cinematic motion.
+
+Every animation should feel smooth, natural and physically believable.
+
+No cheap CSS animations.
+
+No bouncing.
+
+No spinning icons.
+
+No exaggerated movements.
+
+Everything should have premium easing.
+
+---
+
+# Background Animation
+
+Animate the background using layered parallax.
+
+Separate the image into multiple depth layers.
+
+Foreground bamboo moves slightly.
+
+Cherry blossom branches sway gently.
+
+Distant mountains barely move.
+
+Temples remain almost static.
+
+The moon slowly glows.
+
+Mist continuously drifts.
+
+Waterfalls continuously flow.
+
+Tiny floating particles move with the wind.
+
+The scene should create real depth.
+
+---
+
+# Falling Sakura Leaves
+
+Cherry blossom petals continuously fall from the trees.
+
+Movement should be random.
+
+Leaves should:
+
+drift
+
+rotate
+
+twist
+
+occasionally change direction due to wind
+
+Some leaves pass close to the camera.
+
+Some remain in the distance.
+
+Different sizes.
+
+Different speeds.
+
+Never repeat obvious patterns.
+
+Spawn endlessly.
+
+---
+
+# Water Animation
+
+Lake water should have:
+
+gentle ripples
+
+moving reflections
+
+soft wave distortion
+
+floating lantern reflections
+
+Moon reflection should shimmer.
+
+Water should react subtly to ambient wind.
+
+Do not create ocean waves.
+
+Only peaceful temple lake motion.
+
+---
+
+# Waterfall Animation
+
+Waterfalls should continuously flow.
+
+Fine mist should rise.
+
+Water particles sparkle under moonlight.
+
+Subtle volumetric fog at waterfall base.
+
+---
+
+# Lantern Animation
+
+Lanterns emit warm golden light.
+
+Their light flickers softly.
+
+Paper lanterns swing gently from the wind.
+
+Light should illuminate nearby objects.
+
+---
+
+# Bamboo Animation
+
+Tall bamboo stalks sway slowly.
+
+Leaves flutter independently.
+
+Different stalks move with slightly different timing.
+
+Natural wind simulation.
+
+---
+
+# Ambient Particles
+
+Floating particles include:
+
+dust
+
+fireflies
+
+tiny glowing embers
+
+falling flower petals
+
+floating pollen
+
+Very subtle.
+
+Do not overcrowd.
+
+---
+
+# Logo Entrance Animation
+
+When the page first loads:
+
+Entire logo starts at 135% scale.
+
+Very slight blur.
+
+Opacity 0%.
+
+Slow cinematic zoom toward final size.
+
+Ease Out Expo.
+
+Logo sharpens while zooming.
+
+Opacity reaches 100%.
+
+Slight glow appears.
+
+Small camera shake when animation finishes.
+
+---
+
+# Sword Animation
+
+The swords behind the logo are the hero animation.
+
+Step 1
+
+The swords slowly slide out from behind the logo.
+
+Metal catches moonlight.
+
+A metallic shine travels across each blade.
+
+Step 2
+
+Both swords rotate slightly.
+
+One sword quickly unsheathes.
+
+Fast slash across screen.
+
+Motion blur.
+
+Sword trail.
+
+Spark particles.
+
+Metal impact sound.
+
+Step 3
+
+Sword returns behind logo.
+
+Everything settles naturally.
+
+---
+
+# Sword Slash Effect
+
+During slash:
+
+screen shake (very subtle)
+
+flying sparks
+
+wind streak
+
+motion blur
+
+slash light
+
+small glowing particles
+
+quick camera vibration
+
+No anime over-exaggeration.
+
+Premium realism.
+
+---
+
+# Logo Idle Animation
+
+After intro:
+
+Very gentle breathing motion.
+
+Scale between
+
+100%
+
+101%
+
+every 6 seconds.
+
+Tiny floating movement.
+
+Almost invisible.
+
+Premium feel.
+
+---
+
+# Play Button Animation
+
+Play button is the only interactive element.
+
+Idle:
+
+soft glowing edge
+
+slight floating motion
+
+moving highlight passes across button
+
+Hover:
+
+button lifts upward
+
+golden glow increases
+
+shadow deepens
+
+tiny particle burst
+
+Click:
+
+button depresses
+
+small shockwave
+
+golden sparks
+
+smooth transition into game
+
+---
+
+# Camera Movement
+
+Camera should continuously drift very slowly.
+
+Almost imperceptible.
+
+Creates cinematic feeling.
+
+Never distract the user.
+
+---
+
+# Lighting
+
+Use cinematic bloom.
+
+Warm lantern lighting.
+
+Cool moonlight.
+
+Soft volumetric fog.
+
+Subtle god rays.
+
+Dynamic reflections.
+
+High-quality shadow rendering.
+
+---
+
+# Sound Design
+
+Background ambience:
+
+wind
+
+birds
+
+water
+
+bamboo rustling
+
+distant temple bell every 40–60 seconds
+
+Leaves brushing.
+
+Waterfall.
+
+Soft atmosphere.
+
+---
+
+Sword sounds:
+
+metal unsheathing
+
+blade slice
+
+impact sparkle
+
+wind slash
+
+---
+
+Button hover:
+
+soft bamboo wood click
+
+---
+
+# Performance Requirements
+
+Maintain 60 FPS.
+
+GPU-accelerated animations only.
+
+Use:
+
+Transform
+
+Opacity
+
+WebGL shaders
+
+Canvas particles
+
+Avoid layout reflows.
+
+Lazy load assets.
+
+Compressed textures.
+
+Use requestAnimationFrame.
+
+---
+
+# Technologies
+
+GSAP for timeline animations.
+
+Three.js for subtle depth/parallax.
+
+PixiJS or Canvas for particles.
+
+CSS transforms only.
+
+WebGL shaders for water distortion.
+
+Shader-based bloom.
+
+Motion blur on sword slash.
+
+---
+
+# Desired User Emotion
+
+The landing page should immediately make players feel they are entering a legendary dojo hidden in the mountains. Every movement should reinforce a calm yet powerful ancient atmosphere. The logo should command attention, the sword animation should deliver a memorable first impression, and the environment should feel alive through subtle motion—falling sakura petals, rippling water, swaying bamboo, drifting mist, glowing lanterns, and cinematic lighting. The overall experience should feel like the polished opening screen of a premium AAA game rather than a typical website, leaving users eager to press **Play Now** and begin the adventure.
