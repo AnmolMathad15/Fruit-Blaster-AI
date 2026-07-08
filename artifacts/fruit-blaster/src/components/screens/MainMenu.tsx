@@ -239,11 +239,81 @@ export default function MainMenu() {
         preload="auto"
       />
 
+      {/* ── 5. Play Now button (bottom-center) ── */}
+      <div style={{
+        position: 'absolute', bottom: 60, left: 0, right: 0,
+        display: 'flex', flexDirection: 'column', alignItems: 'center',
+        gap: 14, zIndex: 30, pointerEvents: 'none',
+      }}>
+        <motion.button
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.2, duration: 0.7, ease: 'easeOut' }}
+          whileHover={{ scale: 1.08, boxShadow: '0 0 50px rgba(220,170,40,0.8)' }}
+          whileTap={{ scale: 0.95 }}
+          onClick={(e) => { e.stopPropagation(); handlePlay(); }}
+          style={{
+            pointerEvents: 'auto',
+            position: 'relative',
+            display: 'flex', alignItems: 'center', gap: 14,
+            padding: '18px 56px',
+            background: 'linear-gradient(180deg, #f0d060 0%, #c89020 45%, #9a6a10 100%)',
+            border: '2px solid #f8e070',
+            borderRadius: 8,
+            cursor: 'pointer',
+            boxShadow: '0 6px 32px rgba(180,130,20,0.55), inset 0 1px 0 rgba(255,255,255,0.3)',
+            outline: 'none',
+            overflow: 'hidden',
+          }}
+        >
+          {/* Shimmer sweep */}
+          <motion.div
+            animate={{ x: ['-120%', '220%'] }}
+            transition={{ duration: 2.2, repeat: Infinity, ease: 'linear', repeatDelay: 1.5 }}
+            style={{
+              position: 'absolute', inset: 0,
+              background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.35) 50%, transparent 100%)',
+              pointerEvents: 'none',
+            }}
+          />
+          <span style={{
+            fontFamily: 'Georgia, serif',
+            fontWeight: 700,
+            fontSize: 20,
+            letterSpacing: 4,
+            textTransform: 'uppercase',
+            color: '#1a0c00',
+            textShadow: '0 1px 3px rgba(255,255,255,0.25)',
+            position: 'relative',
+          }}>
+            ▶ &nbsp;Play Now
+          </span>
+        </motion.button>
+
+        {/* Tap-anywhere hint */}
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: [0, 0.6, 0] }}
+          transition={{ delay: 2.5, duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
+          style={{
+            pointerEvents: 'none',
+            color: 'rgba(255,220,160,0.7)',
+            fontSize: 13,
+            letterSpacing: 2,
+            fontFamily: 'Georgia, serif',
+            textTransform: 'uppercase',
+            margin: 0,
+          }}
+        >
+          or tap anywhere to begin
+        </motion.p>
+      </div>
+
       {/* ── 6. Mute toggle ── */}
       <motion.button
         whileHover={{ scale: 1.12 }}
         whileTap={{ scale: 0.88 }}
-        onClick={toggleMute}
+        onClick={(e) => { e.stopPropagation(); toggleMute(); }}
         aria-label={muted ? 'Unmute music' : 'Mute music'}
         style={{
           position: 'absolute', top: 14, right: 14,
