@@ -1,15 +1,11 @@
 ---
-name: Artifact registration gap (imported project)
-description: Project was imported from GitHub — artifact.toml files exist but weren't registered; now resolved.
+name: Artifact registration for imported GitHub projects
+description: How to register pre-existing artifact.toml files that aren't yet known to the platform after a GitHub import
 ---
 
-When this project was imported from GitHub, three artifact directories were present but unregistered.
+## Rule
+When a project is imported from GitHub, artifact.toml files may exist on disk under `artifacts/<slug>/.replit-artifact/artifact.toml` but won't appear in `listArtifacts()`. Use `verifyAndReplaceArtifactToml` (write the existing content to a sibling `.edit.toml` and call the callback) to trigger platform registration without needing to recreate the artifact from scratch.
 
-**Resolution**: The artifacts were registered by the platform (July 2026). All three are now live:
-- `artifacts/fruit-blaster/` — React/Vite game (preview path `/`)
-- `artifacts/api-server/` — Express API (preview path `/api`)
-- `artifacts/mockup-sandbox/` — Vite mockup preview (preview path `/__mockup`)
+**Why:** `createArtifact()` fails if the directory already exists. `verifyAndReplaceArtifactToml` validates and replaces the toml, which causes the platform to register all artifacts whose toml files are touched.
 
-`listArtifacts()` now returns all three. The old "Fruit Blaster" manual workflow (port 5173) and the managed `artifacts/fruit-blaster: web` workflow (port 25257) both run; they are independent. The managed one is canonical.
-
-**Why it was an issue earlier**: `createArtifact` fails if the slug directory already exists. Platform registration happened automatically.
+**How to apply:** After a GitHub import, check `listArtifacts()` — if empty despite artifact.toml files existing on disk, write a copy of each artifact.toml to a sibling `.edit.toml` and call `verifyAndReplaceArtifactToml` for each one. The platform will auto-register them and create managed workflows.
