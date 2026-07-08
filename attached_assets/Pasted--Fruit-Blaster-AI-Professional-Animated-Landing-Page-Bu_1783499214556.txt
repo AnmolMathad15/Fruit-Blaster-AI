@@ -1,0 +1,109 @@
+🍉 Fruit Blaster AI – Professional Animated Landing Page
+
+Build a premium-quality, highly polished landing page for Fruit Blaster AI. The experience should feel comparable to a modern mobile game (similar in polish to Fruit Ninja, Subway Surfers, or Candy Crush), while remaining lightweight and responsive for the web.
+
+Overall Theme
+
+A tropical summer beach during a warm sunny afternoon.
+
+The atmosphere should immediately make players smile.
+
+Use bright tropical colors, soft shadows, smooth gradients, floating particles, and playful cartoon illustrations.
+
+Everything should feel alive.
+
+Background Scene
+
+Create an animated tropical beach.
+
+Include:
+
+Ocean with continuously moving waves.
+Blue sky with soft animated clouds.
+Coconut trees gently swaying in the breeze.
+Small leaves occasionally falling.
+Beach sand with subtle sparkles.
+Flying birds in the distance.
+Butterflies randomly flying across the screen.
+Tiny glowing particles floating in the air.
+
+The entire background should have subtle parallax movement based on mouse movement.
+
+Ocean Animation
+
+The sea should never be static.
+
+Include:
+
+Slow moving waves.
+Water reflections.
+Light shimmer.
+Gentle foam reaching the beach.
+Smooth looping animation.
+Ambient Audio
+
+Loop soft tropical ambience.
+
+Include:
+
+Ocean waves
+Wind blowing
+Birds chirping
+Small insects murmuring
+Occasional coconut leaves rustling
+
+The sounds should be relaxing and low volume.
+
+Fruit Characters
+
+Create adorable cartoon fruit characters.
+
+Include:
+
+🍉 Watermelon
+
+🍍 Pineapple
+
+🍓 Strawberry
+
+🍊 Orange
+
+🥝 Kiwi
+
+🥥 Coconut
+
+🍎 Apple
+
+🍌 Banana
+
+Each fruit should have:
+
+Cute face
+Big expressive eyes
+Small blush cheeks
+Tiny hands
+Tiny feet
+Character Behaviour
+
+The fruits should feel alive.
+
+Randomly perform idle animations.
+
+Examples:
+
+Blink eyes every 2–6 seconds.
+Smile.
+Look left and right.
+Wave.
+Jump slightly.
+Stretch.
+Sip coconut juice.
+Wear sunglasses.
+Relax on beach towels.
+Float in swimming tubes.
+Read a tiny book.
+Sleep under an umbrella.
+Dance for a few seconds.
+Laugh together.
+
+Animations should occur at different times so they don't look synchronized.
