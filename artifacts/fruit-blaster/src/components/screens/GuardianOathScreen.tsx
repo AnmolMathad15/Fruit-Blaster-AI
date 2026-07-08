@@ -133,10 +133,26 @@ export default function GuardianOathScreen() {
   const { playClick } = useSoundManager();
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const audioRef  = useRef<HTMLAudioElement>(null);
   const rafRef    = useRef<number>(0);
   const petals    = useRef<Petal[]>([]);
   const [scrollReady, setScrollReady] = useState(false);
   const [btnReady, setBtnReady]       = useState(false);
+  const [muted, setMuted]             = useState(false);
+
+  /* Music: auto-start on mount (user already clicked Play Now) */
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    audio.volume = 0.6;
+    audio.play().catch(() => {/* blocked — user can unmute manually */});
+    return () => { audio.pause(); audio.currentTime = 0; };
+  }, []);
+
+  /* Sync mute state */
+  useEffect(() => {
+    if (audioRef.current) audioRef.current.muted = muted;
+  }, [muted]);
 
   /* Petal canvas */
   useEffect(() => {
@@ -190,13 +206,40 @@ export default function GuardianOathScreen() {
   return (
     <div className="w-full h-full relative overflow-hidden select-none" style={{ background: '#000' }}>
 
-      {/* ── Background video (same as landing) ── */}
+      {/* ── Background video ── */}
       <video
         autoPlay muted loop playsInline
         className="absolute inset-0 w-full h-full object-cover"
         src={`${import.meta.env.BASE_URL}landing-video.mp4`}
         style={{ opacity: 0.85 }}
       />
+
+      {/* ── Background music ── */}
+      <audio
+        ref={audioRef}
+        src={`${import.meta.env.BASE_URL}landing-music.mp3`}
+        loop
+        preload="auto"
+      />
+
+      {/* ── Mute toggle ── */}
+      <motion.button
+        whileHover={{ scale: 1.12 }}
+        whileTap={{ scale: 0.88 }}
+        onClick={() => setMuted(m => !m)}
+        aria-label={muted ? 'Unmute music' : 'Mute music'}
+        style={{
+          position: 'absolute', top: 14, right: 14,
+          width: 44, height: 44, zIndex: 50,
+          background: 'rgba(10,5,20,0.65)',
+          border: '1.5px solid rgba(255,200,100,0.35)',
+          borderRadius: '50%', cursor: 'pointer',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontSize: 19, outline: 'none',
+        }}
+      >
+        {muted ? '🔇' : '🔊'}
+      </motion.button>
 
       {/* ── Darkening overlay ── */}
       <div className="absolute inset-0" style={{
