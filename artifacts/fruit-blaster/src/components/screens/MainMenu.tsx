@@ -8,28 +8,45 @@ export default function MainMenu() {
   const { playClick } = useSoundManager();
   const audioRef = useRef<HTMLAudioElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [muted, setMuted] = useState(true);
+  const [muted, setMuted] = useState(false);
+  const musicPlayingRef = useRef(false);
 
-  // Autoplay video (always muted so browser allows it)
+  // ── Video: always hardware-muted, loops silently ──
   useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-    video.muted = true;
-    video.play().catch(() => {});
+    const v = videoRef.current;
+    if (!v) return;
+    v.muted = true;
+    v.play().catch(() => {});
   }, []);
 
-  // Start music muted; user unmutes via the button
+  // ── Music: try autoplay; fall back to first tap ──
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
-    audio.volume = 0.6;
-    audio.muted = true;
-    audio.play().catch(() => {});
+    audio.volume = 0.65;
+    audio.muted = false;
+
+    audio.play().then(() => {
+      musicPlayingRef.current = true;
+    }).catch(() => {
+      // Autoplay blocked — start on first interaction
+      const start = () => {
+        if (musicPlayingRef.current) return;
+        audio.play().then(() => { musicPlayingRef.current = true; }).catch(() => {});
+        document.removeEventListener('pointerdown', start);
+      };
+      document.addEventListener('pointerdown', start);
+    });
   }, []);
 
-  const toggleMute = () => {
+  const toggleMute = (e: React.MouseEvent) => {
+    e.stopPropagation();
     const audio = audioRef.current;
     if (!audio) return;
+    // If music never started (autoplay blocked), kick it off now
+    if (!musicPlayingRef.current) {
+      audio.play().then(() => { musicPlayingRef.current = true; }).catch(() => {});
+    }
     audio.muted = !audio.muted;
     setMuted(audio.muted);
   };
@@ -41,7 +58,8 @@ export default function MainMenu() {
 
   return (
     <div className="w-full h-full relative overflow-hidden select-none">
-      {/* ── Full-screen background video ── */}
+
+      {/* ── Full-screen looping video ── */}
       <video
         ref={videoRef}
         src={`${import.meta.env.BASE_URL}landing-video.mp4`}
@@ -51,38 +69,31 @@ export default function MainMenu() {
         playsInline
         autoPlay
         preload="auto"
+        disablePictureInPicture
       />
 
-      {/* ── Subtle dark gradient overlay so UI stays readable ── */}
-      <div
-        className="absolute inset-0 pointer-events-none"
+      {/* ── Invisible hit-area over the video's own PLAY NOW button ──
+          Position is tuned to match the button rendered inside the video frame.
+          Adjust top/height if the video composition places the button differently. ── */}
+      <button
+        onClick={handlePlay}
+        aria-label="Play Now"
+        className="absolute cursor-pointer"
         style={{
-          background:
-            'linear-gradient(to bottom, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0.05) 50%, rgba(0,0,0,0.45) 100%)',
+          left: '50%',
+          top: '60%',
+          transform: 'translate(-50%, -50%)',
+          width: 300,
+          height: 72,
+          background: 'transparent',
+          border: 'none',
+          outline: 'none',
+          borderRadius: 40,
+          zIndex: 10,
         }}
       />
 
-      {/* ── PLAY NOW button ── */}
-      <div className="absolute inset-0 flex items-center justify-center">
-        <motion.button
-          whileHover={{ scale: 1.07, boxShadow: '0 0 40px rgba(255,190,0,0.7)' }}
-          whileTap={{ scale: 0.94 }}
-          onClick={handlePlay}
-          className="flex items-center gap-3 px-10 py-4 rounded-full cursor-pointer font-black text-2xl tracking-wide text-white"
-          style={{
-            background: 'linear-gradient(135deg, #f59e0b 0%, #ef4444 100%)',
-            boxShadow: '0 6px 32px rgba(245,158,11,0.55), inset 0 1px 0 rgba(255,255,255,0.25)',
-            border: '2px solid rgba(255,255,255,0.3)',
-            textShadow: '0 1px 4px rgba(0,0,0,0.4)',
-            letterSpacing: '0.08em',
-          }}
-        >
-          <span style={{ fontSize: 26 }}>▶</span>
-          PLAY NOW
-        </motion.button>
-      </div>
-
-      {/* ── Music audio element ── */}
+      {/* ── Music (background track, separate from video) ── */}
       <audio
         ref={audioRef}
         src={`${import.meta.env.BASE_URL}landing-music.mp3`}
@@ -90,37 +101,31 @@ export default function MainMenu() {
         preload="auto"
       />
 
-      {/* ── Mute / unmute toggle ── */}
+      {/* ── Mute / unmute — only UI element added on top ── */}
       <motion.button
         whileHover={{ scale: 1.12 }}
         whileTap={{ scale: 0.9 }}
         onClick={toggleMute}
-        className="absolute z-50 flex items-center justify-center text-xl cursor-pointer"
-        style={{
-          top: 16, right: 16,
-          width: 44, height: 44,
-          background: 'rgba(0,0,0,0.50)',
-          border: '2px solid rgba(255,255,255,0.25)',
-          borderRadius: '50%',
-          boxShadow: '0 2px 10px rgba(0,0,0,0.4)',
-        }}
+        aria-label={muted ? 'Unmute music' : 'Mute music'}
         title={muted ? 'Unmute music' : 'Mute music'}
+        style={{
+          position: 'absolute',
+          top: 14, right: 14,
+          width: 42, height: 42,
+          background: 'rgba(0,0,0,0.48)',
+          border: '1.5px solid rgba(255,255,255,0.22)',
+          borderRadius: '50%',
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: 18,
+          zIndex: 50,
+        }}
       >
         {muted ? '🔇' : '🎵'}
       </motion.button>
 
-      {/* ── "tap to play music" hint ── */}
-      {muted && (
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.2 }}
-          className="absolute pointer-events-none text-white/55 text-xs font-semibold tracking-wide"
-          style={{ top: 64, right: 10, whiteSpace: 'nowrap' }}
-        >
-          🎵 tap to play music
-        </motion.p>
-      )}
     </div>
   );
 }
