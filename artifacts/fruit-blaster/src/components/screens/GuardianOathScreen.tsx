@@ -19,8 +19,8 @@ import { useGameStore } from '../../store/gameStore';
 import { useSoundManager } from '../../hooks/useSoundManager';
 
 /* ─── Video intrinsic size (known from ffprobe) ─────────────────────── */
-const VID_W = 1280;
-const VID_H = 720;
+const VID_W = 1920;
+const VID_H = 1080;
 /** Normalised button rect in the video frame (measured from frame grabs) */
 const BTN_NX1 = 0.27;
 const BTN_NY1 = 0.845;
