@@ -29,7 +29,7 @@ interface GameState {
 }
 
 export const useGameStore = create<GameState>((set) => ({
-  screen: 'splash',
+  screen: 'menu',
   setScreen: (screen) => set({ screen }),
   
   mode: 'classic',

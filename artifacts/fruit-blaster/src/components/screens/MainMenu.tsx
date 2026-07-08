@@ -173,30 +173,21 @@ export default function MainMenu() {
     return () => cancelAnimationFrame(rafRef.current);
   }, []);
 
-  /* ── Music autoplay ── */
+  /* ── Music: start on first user interaction ── */
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
     audio.volume = 0.65;
     audio.muted  = false;
 
-    let go: (() => void) | null = null;
-
-    audio.play()
-      .then(() => { musicReady.current = true; })
-      .catch(() => {
-        go = () => {
-          if (musicReady.current) return;
-          audio.play().then(() => { musicReady.current = true; }).catch(() => {});
-          document.removeEventListener('pointerdown', go!);
-          go = null;
-        };
-        document.addEventListener('pointerdown', go);
-      });
-
-    return () => {
-      if (go) document.removeEventListener('pointerdown', go);
+    const startOnInteraction = () => {
+      if (musicReady.current) return;
+      audio.play().then(() => { musicReady.current = true; }).catch(() => {});
+      document.removeEventListener('pointerdown', startOnInteraction);
     };
+
+    document.addEventListener('pointerdown', startOnInteraction);
+    return () => document.removeEventListener('pointerdown', startOnInteraction);
   }, []);
 
   /* ── Video autoplay (muted so browser allows it) ── */
