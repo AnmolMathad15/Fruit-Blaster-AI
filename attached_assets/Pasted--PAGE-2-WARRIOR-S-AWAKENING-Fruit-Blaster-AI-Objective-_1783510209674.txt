@@ -1,0 +1,532 @@
+# PAGE 2 — WARRIOR'S AWAKENING
+## Fruit Blaster AI
+
+# Objective
+
+Design the second screen of Fruit Blaster AI.
+
+This is NOT a settings page.
+
+This is NOT a camera permission page.
+
+This is NOT a webcam calibration page.
+
+It is an interactive cinematic onboarding experience that introduces the player to the game's core mechanic:
+
+"The player's real hand becomes the legendary sword."
+
+The page should feel like an initiation ceremony inside an ancient mystical kingdom.
+
+The player should forget they are granting camera access.
+
+Instead, they should feel like they are awakening an ancient weapon that has been waiting centuries for its next guardian.
+
+The entire experience should feel worthy of a AAA game.
+
+---
+
+# Story
+
+After pressing "Play Now" on the landing page...
+
+The screen fades.
+
+The camera flies through drifting clouds.
+
+Floating lanterns pass by.
+
+The music becomes quieter.
+
+The clouds slowly open.
+
+A breathtaking floating mountain kingdom appears.
+
+The player arrives at the Hall of Awakening.
+
+A legendary jade sword rests on an ancient stone pedestal.
+
+The sword has remained dormant for centuries.
+
+Only a worthy guardian can awaken it.
+
+The player is that guardian.
+
+To awaken the sword...
+
+The player must raise their real hand.
+
+This is actually the computer vision calibration process hidden inside the game's story.
+
+---
+
+# Core Gameplay Introduction
+
+Fruit Blaster AI is controlled entirely by hand gestures.
+
+There are no mouse controls during gameplay.
+
+There are no touch controls.
+
+The player's real hand controls the sword.
+
+This page must teach that concept naturally.
+
+Without tutorials.
+
+Without large instruction popups.
+
+The moment the hand is detected...
+
+The legendary sword begins following the player's movements.
+
+The player instantly understands:
+
+"My hand IS the sword."
+
+That realization should be magical.
+
+---
+
+# Visual Style
+
+Ancient Chinese fantasy
+
+Mystical
+
+Elegant
+
+Cinematic
+
+Premium
+
+AAA Game Quality
+
+Inspired by
+
+Ghost of Tsushima
+
+Black Myth Wukong
+
+Sekiro
+
+Ancient Chinese fantasy dramas
+
+Naraka Bladepoint
+
+The page should never resemble a website.
+
+It should feel like entering a game world.
+
+---
+
+# Background
+
+The environment is a floating mountain kingdom.
+
+Visible elements include:
+
+Floating temples
+
+Stone bridges
+
+Waterfalls
+
+Clouds
+
+Lanterns
+
+Cherry blossom trees
+
+Moonlight
+
+Pagodas
+
+Floating islands
+
+Ancient towers
+
+Rivers
+
+Everything should be animated.
+
+Nothing should feel static.
+
+---
+
+# Layout
+
+The UI floats naturally above the world.
+
+No modern cards.
+
+No glassmorphism.
+
+No boxed interface.
+
+No large opaque panels.
+
+Allow the player to admire the kingdom behind the interface.
+
+---
+
+# Page Header
+
+Large cinematic title
+
+WARRIOR'S AWAKENING
+
+Subtitle
+
+"The Sacred Blade Seeks Its Guardian"
+
+Gold brush lettering.
+
+Elegant.
+
+Centered.
+
+---
+
+# Camera Area
+
+This is the hero section.
+
+Instead of a rectangular webcam...
+
+Create an enormous Ancient Jade Mirror.
+
+The mirror acts as the live camera.
+
+The frame should be carved from jade and decorated with dragons, clouds, gold ornaments and ancient engravings.
+
+It should glow softly.
+
+Inside the mirror the live webcam appears.
+
+When no hand is detected:
+
+The mirror remains calm.
+
+Small jade particles float.
+
+When the hand appears:
+
+The mirror glows brighter.
+
+Golden energy spreads around the frame.
+
+---
+
+# Hand Tracking
+
+Never display raw MediaPipe landmarks.
+
+Instead:
+
+Represent each hand joint as glowing jade nodes.
+
+Connect them using thin golden energy lines.
+
+Everything should look magical.
+
+When the player moves:
+
+Create:
+
+jade energy
+
+petals
+
+tiny sparks
+
+floating leaves
+
+The trail disappears smoothly.
+
+---
+
+# Floating Sword
+
+To the right of the mirror sits the Sacred Blade.
+
+Initially:
+
+Dormant
+
+Floating above a stone pedestal
+
+Grey steel
+
+Soft jade glow
+
+Very slow floating animation
+
+When hand detection begins:
+
+The blade lights up.
+
+Ancient runes glow.
+
+Energy travels through the sword.
+
+The sword slowly leaves the pedestal.
+
+It begins following the player's hand.
+
+Perfectly.
+
+The player immediately understands the gameplay mechanic.
+
+---
+
+# Left Scroll
+
+Create an ancient parchment scroll.
+
+Title:
+
+Awakening Ritual
+
+Instructions:
+
+Raise your dominant hand.
+
+Keep your hand inside the sacred circle.
+
+Move naturally.
+
+Synchronize with the Sacred Blade.
+
+Do not use technical words like:
+
+Camera
+
+Calibration
+
+Detection
+
+Instead use immersive language.
+
+---
+
+# Synchronization Status
+
+Instead of
+
+Loading...
+
+Use
+
+Synchronizing Sacred Blade
+
+Animated bamboo progress bar.
+
+Display percentage.
+
+When complete
+
+The bar glows gold.
+
+---
+
+# Status Indicator
+
+Instead of
+
+Camera Connected
+
+Show
+
+Sacred Blade Status
+
+Searching...
+
+↓
+
+Hand Detected
+
+↓
+
+Synchronizing...
+
+↓
+
+Guardian Recognized
+
+↓
+
+Blade Awakened
+
+Each state should animate smoothly.
+
+---
+
+# Continue Button
+
+Large handcrafted carved wooden button.
+
+Gold trim.
+
+Jade center.
+
+Text:
+
+Continue Journey
+
+Hover
+
+Soft glow
+
+Leaves
+
+Tiny particles
+
+Click
+
+Wooden press animation
+
+Golden light
+
+Transition begins
+
+---
+
+# Bottom HUD
+
+Minimal information only.
+
+FPS
+
+Tracking Status
+
+Lighting Quality
+
+Synchronization Progress
+
+Small elegant icons.
+
+No debug appearance.
+
+---
+
+# Background Animation
+
+Continuously animate:
+
+Cherry blossom petals
+
+Cloud movement
+
+Waterfalls
+
+Flowing rivers
+
+Mist
+
+Floating lanterns
+
+Moon glow
+
+Fireflies
+
+Dust
+
+Bamboo
+
+Birds
+
+Everything should move naturally.
+
+Never distract.
+
+---
+
+# Audio
+
+Ambient:
+
+Wind
+
+Waterfall
+
+Temple bells
+
+Lantern crackle
+
+Birds
+
+Bamboo
+
+Soft flute
+
+When hand detected:
+
+Soft bell.
+
+When synchronization completes:
+
+Deep ceremonial gong.
+
+Sword emits metallic resonance.
+
+---
+
+# Transition
+
+When synchronization reaches 100%:
+
+Everything pauses.
+
+The Sacred Blade glows brightly.
+
+A ring of jade energy expands.
+
+Cherry blossoms swirl upward.
+
+The sword flies toward the player.
+
+The screen fills with white light.
+
+The player transitions into the next page.
+
+The transition should feel like beginning a legendary journey.
+
+---
+
+# Performance
+
+Maintain 60 FPS.
+
+Use:
+
+React
+
+TypeScript
+
+GSAP
+
+Three.js
+
+PixiJS
+
+WebGL
+
+GPU transforms only.
+
+No heavy DOM animations.
+
+---
+
+# User Emotion
+
+The player should never think:
+
+"I am calibrating my webcam."
+
+Instead they should think:
+
+"I have been chosen by an ancient kingdom."
+
+By the time the page ends, the player should already feel emotionally connected to the world and completely understand that their real hand controls the legendary sword.
+
+This page should feel like a playable cinematic from a AAA action game, not a setup screen.

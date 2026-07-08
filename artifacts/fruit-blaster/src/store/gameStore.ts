@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-export type GameScreen = 'splash' | 'menu' | 'modes' | 'game' | 'pause' | 'gameover' | 'settings' | 'leaderboard' | 'achievements' | 'statistics';
+export type GameScreen = 'splash' | 'menu' | 'awakening' | 'modes' | 'game' | 'pause' | 'gameover' | 'settings' | 'leaderboard' | 'achievements' | 'statistics';
 export type GameMode = 'classic' | 'arcade' | 'zen' | 'challenge';
 
 interface GameState {
