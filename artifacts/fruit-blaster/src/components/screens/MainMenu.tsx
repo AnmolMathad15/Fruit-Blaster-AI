@@ -72,23 +72,23 @@ export default function MainMenu() {
         disablePictureInPicture
       />
 
-      {/* ── Invisible hit-area over the video's own PLAY NOW button ──
-          Position is tuned to match the button rendered inside the video frame.
-          Adjust top/height if the video composition places the button differently. ── */}
+      {/* ── Invisible hit-area over the video's PLAY NOW button ──
+          Video native: 1376×768. Button center in source: x≈688 (50%), y≈512 (66.7%).
+          With object-fit:cover the % coords stay constant for any landscape viewport. ── */}
       <button
         onClick={handlePlay}
         aria-label="Play Now"
         className="absolute cursor-pointer"
         style={{
           left: '50%',
-          top: '60%',
+          top: '66.7%',
           transform: 'translate(-50%, -50%)',
-          width: 300,
-          height: 72,
+          width: '22%',
+          height: '8.5%',
           background: 'transparent',
           border: 'none',
           outline: 'none',
-          borderRadius: 40,
+          borderRadius: 999,
           zIndex: 10,
         }}
       />
