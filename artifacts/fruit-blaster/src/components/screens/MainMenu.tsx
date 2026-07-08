@@ -39,11 +39,6 @@ export default function MainMenu() {
     setScreen('modes');
   };
 
-  const handleNav = (screen: Parameters<typeof setScreen>[0]) => {
-    playClick();
-    setScreen(screen);
-  };
-
   return (
     <div className="w-full h-full relative overflow-hidden select-none">
       {/* ── Full-screen background video ── */}
@@ -68,7 +63,7 @@ export default function MainMenu() {
       />
 
       {/* ── PLAY NOW button ── */}
-      <div className="absolute inset-0 flex flex-col items-center justify-end pb-[14%] gap-5">
+      <div className="absolute inset-0 flex items-center justify-center">
         <motion.button
           whileHover={{ scale: 1.07, boxShadow: '0 0 40px rgba(255,190,0,0.7)' }}
           whileTap={{ scale: 0.94 }}
@@ -85,37 +80,6 @@ export default function MainMenu() {
           <span style={{ fontSize: 26 }}>▶</span>
           PLAY NOW
         </motion.button>
-
-        {/* ── Bottom nav row ── */}
-        <div className="flex items-center gap-5">
-          {[
-            { icon: '🎮', label: 'Modes',        screen: 'modes'        as const },
-            { icon: '🏆', label: 'Leaderboard',  screen: 'leaderboard'  as const },
-            { icon: '🏅', label: 'Achievements',  screen: 'achievements' as const },
-            { icon: '⚙️', label: 'Settings',     screen: 'settings'     as const },
-          ].map(btn => (
-            <motion.button
-              key={btn.label}
-              whileHover={{ scale: 1.12, y: -3 }}
-              whileTap={{ scale: 0.9 }}
-              onClick={() => handleNav(btn.screen)}
-              className="flex flex-col items-center gap-1 cursor-pointer"
-              style={{
-                width: 64, height: 64,
-                background: 'rgba(0,0,0,0.40)',
-                border: '1.5px solid rgba(255,255,255,0.25)',
-                borderRadius: 16,
-                backdropFilter: 'blur(8px)',
-              }}
-              title={btn.label}
-            >
-              <span style={{ fontSize: 24, lineHeight: 1, marginTop: 10 }}>{btn.icon}</span>
-              <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.8)', fontWeight: 700, letterSpacing: '0.05em' }}>
-                {btn.label.toUpperCase()}
-              </span>
-            </motion.button>
-          ))}
-        </div>
       </div>
 
       {/* ── Music audio element ── */}
