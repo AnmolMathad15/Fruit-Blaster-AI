@@ -127,7 +127,7 @@ export default function GameScreen() {
       onMiss: () => {
         setCombo(0);
         addSwing(false);
-        if (mode === 'classic') {
+        if (mode === 'classic' || mode === 'survival') {
           playMiss();
           setLives((l: number) => {
             if (l <= 1) { setTimeout(() => setScreen('gameover'), 100); return 0; }
@@ -137,7 +137,7 @@ export default function GameScreen() {
       },
       onBombHit: () => {
         setCombo(0);
-        if (mode === 'classic' || mode === 'arcade') {
+        if (mode === 'classic' || mode === 'arcade' || mode === 'survival') {
           setLives((l: number) => {
             if (l <= 1) { setTimeout(() => setScreen('gameover'), 100); return 0; }
             return l - 1;
