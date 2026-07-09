@@ -1,0 +1,532 @@
+# 🐉 CRIMSON TEMPLE — COMPLETE GAME ZONE DESIGN (MASTER PROMPT)
+
+## OBJECTIVE
+
+Design the **Crimson Temple**, the second legendary world of Fruit Blaster.
+
+This is NOT a simple reskin of the Moon Shrine.
+
+This is a completely new premium game world inspired by **ancient Chinese dragon mythology, volcanic temples, infernal martial arts, legendary dragon guardians, and sacred fire rituals**.
+
+The player should immediately feel that they have entered the domain of the Infernal Dragon Emperor.
+
+The environment must feel ancient, majestic, dangerous, mystical, luxurious, and worthy of a AAA fantasy action game.
+
+Everything should be handcrafted with premium quality.
+
+---
+
+# OVERALL FEELING
+
+Imagine a forgotten temple built inside a gigantic volcanic mountain.
+
+Lava rivers flow beneath ancient stone bridges.
+
+Dragon statues guard sacred halls.
+
+Massive glowing crystals emerge from volcanic rock.
+
+Ancient pagodas stand beneath a crimson sky.
+
+Molten waterfalls illuminate the temple.
+
+Dragon spirits occasionally fly through the sky.
+
+Everything radiates ancient infernal energy.
+
+The atmosphere should feel:
+
+• Powerful
+• Ancient
+• Mysterious
+• Dangerous
+• Elegant
+• Legendary
+
+Never dark enough to hide gameplay.
+
+Everything remains clean and highly readable.
+
+---
+
+# ENVIRONMENT
+
+The Crimson Temple sits high above an active volcano.
+
+Visible environment includes:
+
+Massive Dragon Temple
+
+Ancient Chinese architecture
+
+Stone stairways
+
+Huge ceremonial gates
+
+Volcanic mountains
+
+Lava rivers
+
+Molten waterfalls
+
+Dragon shrines
+
+Burning braziers
+
+Stone lanterns
+
+Infernal trees with crimson leaves
+
+Ancient bridges
+
+Floating volcanic rocks
+
+Dragon banners
+
+Large ceremonial bells
+
+Dragon statues
+
+Temple courtyards
+
+Everything should reinforce the identity of the Crimson Temple.
+
+---
+
+# SKY
+
+Deep crimson sunset.
+
+Dark volcanic clouds.
+
+Orange horizon.
+
+Soft drifting ash.
+
+Occasional glowing embers.
+
+Subtle dragon silhouettes flying across distant mountains.
+
+Beautiful cinematic lighting.
+
+Never overly dark.
+
+---
+
+# BACKGROUND ANIMATION
+
+Continuous flowing lava.
+
+Molten waterfalls.
+
+Floating ember particles.
+
+Ancient banners moving gently.
+
+Heat shimmer.
+
+Occasional dragon spirit flying overhead.
+
+Temple lantern flames flicker naturally.
+
+Soft volcanic smoke in distant mountains only.
+
+No excessive visual clutter.
+
+---
+
+# GAMEPLAY AREA
+
+The center gameplay area remains perfectly clean.
+
+No objects block fruits.
+
+Background remains visually rich but never distracting.
+
+Excellent visibility for every fruit.
+
+Perfect contrast.
+
+---
+
+# PLAYER SWORD
+
+The sword evolves into the legendary
+
+## 🔥 Infernal Dragon Blade
+
+Inspired by:
+
+Ancient Chinese Dragon Sword
+
+Dragon Emperor
+
+Infernal Katana
+
+Legendary Fire Blade
+
+The blade is forged from dragon steel.
+
+Dark obsidian body.
+
+Crimson glowing edge.
+
+Molten lava flowing inside the blade.
+
+Ancient dragon engravings.
+
+Dragon head guard.
+
+Infernal ruby embedded in the hilt.
+
+Elegant wrapped handle.
+
+Premium craftsmanship.
+
+Looks ancient and priceless.
+
+---
+
+# SWORD EFFECTS
+
+Every slash should feel powerful.
+
+As the sword moves:
+
+Dragon fire trails follow the blade.
+
+Molten sparks scatter.
+
+Tiny embers explode outward.
+
+Heat distortion appears behind the slash.
+
+Glowing crimson energy follows the swing.
+
+Each strike briefly summons a transparent dragon spirit made of fire.
+
+The dragon follows the slash for a fraction of a second before disappearing.
+
+The dragon should never block gameplay.
+
+No oversized effects.
+
+Everything remains elegant.
+
+---
+
+# FRUIT SLICE EFFECT
+
+When fruits are sliced:
+
+Molten juice bursts outward.
+
+Tiny lava sparks.
+
+Fire petals.
+
+Crimson particles.
+
+Dragon energy fragments.
+
+Glowing ember dust.
+
+Soft fire shockwave.
+
+The sliced halves briefly glow before disappearing.
+
+Every slice feels satisfying.
+
+---
+
+# COMBO EFFECTS
+
+Small Combo
+
+Dragon flame trail grows brighter.
+
+Medium Combo
+
+Circular fire rune appears beneath slices.
+
+Large Combo
+
+Golden dragon briefly coils around the combo.
+
+Massive Combo
+
+A giant Infernal Dragon spirit roars across the screen before fading.
+
+Everything lasts less than a second.
+
+Never blocks gameplay.
+
+---
+
+# FRUITS
+
+The Crimson Temple contains legendary infernal fruits.
+
+Every fruit appears forged by dragon fire.
+
+Examples include:
+
+Infernal Apple
+
+Infernal Orange
+
+Infernal Banana
+
+Infernal Grapes
+
+Infernal Strawberry
+
+Infernal Pineapple
+
+Infernal Papaya
+
+Infernal Watermelon
+
+Infernal Tomato
+
+Every fruit has:
+
+Molten veins
+
+Dragon energy
+
+Premium glossy surface
+
+Volcanic crystals
+
+Subtle ember glow
+
+Beautiful silhouettes
+
+Ultra readable.
+
+---
+
+# FRUIT SPAWNING
+
+Increase fruit frequency significantly.
+
+Current world feels too empty.
+
+Target:
+
+30–50% more fruits appearing.
+
+Frequent multi-fruit launches.
+
+Triple fruit throws.
+
+Quad fruit throws.
+
+Five-fruit bursts.
+
+Occasional massive fruit waves.
+
+Spawn timing feels energetic but fair.
+
+No long empty gaps.
+
+Player should constantly have slicing opportunities.
+
+The screen should feel alive.
+
+---
+
+# BOMB SYSTEM
+
+Danger level increases inside Crimson Temple.
+
+Bomb appearance frequency should be noticeably higher than Moon Shrine.
+
+Bombs should appear naturally among fruit waves.
+
+Single bomb throws.
+
+Double bomb throws.
+
+Bomb mixed with fruits.
+
+Late-game triple bomb patterns.
+
+Bomb timing should test player skill rather than feel unfair.
+
+Bomb spacing remains readable.
+
+Players always have a chance to react.
+
+Difficulty feels challenging but satisfying.
+
+---
+
+# INFERNAL DRAGON CORE (BOMB)
+
+The bomb becomes the legendary:
+
+Infernal Dragon Core.
+
+Forged from obsidian.
+
+Glowing lava fissures.
+
+Dragon engravings.
+
+Molten core.
+
+Infernal crimson aura.
+
+Tiny ember particles.
+
+Dragon runes.
+
+Volcanic crystals.
+
+Looks extremely dangerous.
+
+Never resembles a modern grenade.
+
+---
+
+# PARTICLE EFFECTS
+
+Floating embers.
+
+Molten sparks.
+
+Fireflies made of lava.
+
+Ash particles.
+
+Tiny dragon scales.
+
+Heat distortion.
+
+Subtle glowing dust.
+
+Everything remains lightweight and optimized.
+
+---
+
+# LIGHTING
+
+AAA cinematic lighting.
+
+Warm volcanic lighting.
+
+Golden highlights.
+
+Crimson ambient lighting.
+
+Beautiful reflections.
+
+Premium shadows.
+
+Strong depth.
+
+Excellent visibility.
+
+---
+
+# CAMERA
+
+Static gameplay camera.
+
+Slight cinematic depth.
+
+No camera shake except:
+
+Perfect fruit slice.
+
+Critical combo.
+
+Bomb explosion.
+
+Dragon ultimate.
+
+Shake remains subtle.
+
+---
+
+# UI THEME
+
+Crimson and gold interface.
+
+Dragon motifs.
+
+Ancient Chinese ornaments.
+
+Volcanic textures.
+
+Premium polished panels.
+
+Elegant fonts.
+
+No cartoon UI.
+
+---
+
+# AUDIO STYLE
+
+Deep taiko drums.
+
+Chinese instruments.
+
+Ancient bells.
+
+Dragon roars.
+
+Flowing lava ambience.
+
+Crackling fire.
+
+Powerful sword slashes.
+
+Heavy combo sounds.
+
+Legendary atmosphere.
+
+---
+
+# PERFORMANCE
+
+Maintain smooth gameplay.
+
+Stable 60 FPS.
+
+Optimized particles.
+
+Efficient animations.
+
+No frame drops.
+
+Fast loading.
+
+Responsive controls.
+
+---
+
+# QUALITY TARGET
+
+Everything should feel like an official premium mobile game.
+
+AAA quality.
+
+Ultra polished.
+
+Highly readable.
+
+Elegant.
+
+Legendary.
+
+Ancient.
+
+Powerful.
+
+Visually satisfying.
+
+The Crimson Temple should feel significantly more intense, rewarding, and majestic than the Moon Shrine while preserving flawless gameplay clarity. Every slash should make the player feel like they are wielding the legendary Infernal Dragon Blade inside the sacred volcanic temple of the Dragon Emperor.
