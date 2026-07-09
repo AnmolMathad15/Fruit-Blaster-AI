@@ -15,13 +15,13 @@ export const FRUIT_DATA: Record<FruitType, { color: string; colorInner: string; 
   'Rainbow Mango': { color: 'rainbow', colorInner: '#FFD700', score: 75, radius: 40, probability: 0.2 },
 
   // ── Bamboo Grove (Zen Mode) — custom hand-painted assets ──
-  'Jade Apple':    { color: '#7CCB6A', colorInner: '#E8F7D8', score: 10, radius: 56, probability: 18, image: 'jade-apple.png' },
-  'Bamboo Pear':   { color: '#B7D96A', colorInner: '#F1F8DC', score: 10, radius: 58, probability: 16, image: 'bamboo-pear.png' },
-  'Emerald Kiwi':  { color: '#5C9E4A', colorInner: '#C7E8A8', score: 15, radius: 46, probability: 16, image: 'emerald-kiwi.png' },
-  'Lotus Peach':   { color: '#F3C6D6', colorInner: '#FFF3EE', score: 20, radius: 58, probability: 14, image: 'lotus-peach.png' },
-  'Zen Melon':     { color: '#4E9A5A', colorInner: '#DFF3C4', score: 20, radius: 66, probability: 12, image: 'zen-melon.png' },
-  'Sacred Plum':   { color: '#8E5AC2', colorInner: '#E2CBF2', score: 30, radius: 52, probability: 10, image: 'sacred-plum.png' },
-  'Forest Lime':   { color: '#9ACD4A', colorInner: '#EEF7CF', score: 15, radius: 48, probability: 14, image: 'forest-lime.png' },
+  'Jade Apple':    { color: '#7CCB6A', colorInner: '#E8F7D8', score: 10, radius: 76, probability: 18, image: 'jade-apple.png' },
+  'Bamboo Pear':   { color: '#B7D96A', colorInner: '#F1F8DC', score: 10, radius: 78, probability: 16, image: 'bamboo-pear.png' },
+  'Emerald Kiwi':  { color: '#5C9E4A', colorInner: '#C7E8A8', score: 15, radius: 64, probability: 16, image: 'emerald-kiwi.png' },
+  'Lotus Peach':   { color: '#F3C6D6', colorInner: '#FFF3EE', score: 20, radius: 78, probability: 14, image: 'lotus-peach.png' },
+  'Zen Melon':     { color: '#4E9A5A', colorInner: '#DFF3C4', score: 20, radius: 88, probability: 12, image: 'zen-melon.png' },
+  'Sacred Plum':   { color: '#8E5AC2', colorInner: '#E2CBF2', score: 30, radius: 72, probability: 10, image: 'sacred-plum.png' },
+  'Forest Lime':   { color: '#9ACD4A', colorInner: '#EEF7CF', score: 15, radius: 66, probability: 14, image: 'forest-lime.png' },
 
   // ── Moon Shrine (Survival Mode) — custom celestial assets ──
   // Lunar Kiwi has no custom art yet — it's wired here but left out of
