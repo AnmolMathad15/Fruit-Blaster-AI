@@ -88,9 +88,9 @@ export class GameEngine {
       this.baseSpawnRate = 45;
       this.baseSpeedMultiplier = 1;
     } else if (mode === 'challenge') {
-      // Crimson Temple — Challenge Mode: ~40% faster spawns and noticeably more
-      // bombs than the base game, per the zone's "screen should feel alive" design.
-      this.bombChance = 0.28;
+      // Crimson Temple — Challenge Mode: ~40% faster spawns and a heavy, relentless
+      // bomb presence — the Infernal Dragon Core should be a constant threat.
+      this.bombChance = 0.45;
       this.spawnRate = 36;
       this.speedMultiplier = 1.15;
     } else {
@@ -223,7 +223,16 @@ export class GameEngine {
         : this.mode === 'moon' ? 'Cursed Eclipse Orb'
         : this.mode === 'challenge' ? 'Infernal Dragon Core'
         : 'Normal';
-      this.bombs.push(new Bomb(startX, startY, vx, vy, type));
+      // Crimson Temple: bombs frequently arrive in bursts of 2-3 Infernal Dragon
+      // Cores rather than one at a time, keeping constant pressure on the player.
+      const bombCount = this.mode === 'challenge'
+        ? (Math.random() < 0.3 ? 3 : Math.random() < 0.55 ? 2 : 1)
+        : 1;
+      for (let i = 0; i < bombCount; i++) {
+        const jitterX = startX + (Math.random() - 0.5) * 140 * i;
+        const jitterVx = vx + (Math.random() - 0.5) * 2.5;
+        this.bombs.push(new Bomb(jitterX, startY, jitterVx, vy, type));
+      }
     } else if (this.mode === 'challenge') {
       // Crimson Temple spawns exclusively from our eight infernal fruits, weighted
       // by probability, and frequently launches multi-fruit waves (2-4 at once)
