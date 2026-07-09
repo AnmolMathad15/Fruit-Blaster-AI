@@ -1,0 +1,368 @@
+# 🎮 RESULT SCREEN PANEL REPLACEMENT (ALL 5 GAME MODES)
+
+## OBJECTIVE
+
+Replace ONLY the decorative Result Screen panel for every game mode.
+
+DO NOT redesign the Result Screen.
+
+DO NOT rebuild the UI.
+
+DO NOT modify gameplay.
+
+DO NOT modify animations.
+
+DO NOT modify buttons.
+
+DO NOT modify score calculation.
+
+DO NOT modify rank calculation.
+
+The ONLY objective is replacing the generic Result Screen panel with our custom themed panels.
+
+The rest of the Result Screen should continue functioning exactly as it does now.
+
+--------------------------------------------------
+
+# CURRENT RESULT SCREEN
+
+The current Result Screen already works correctly.
+
+Keep:
+
+• Game Over title
+• Final Score
+• Best Score
+• Rank
+• Buttons
+• Animations
+• Popup behavior
+• Fade animation
+• Score counting
+• Button functionality
+
+Everything above should remain untouched.
+
+--------------------------------------------------
+
+# REMOVE
+
+Remove ONLY the current generic black futuristic panel.
+
+It no longer matches the game's premium visual style.
+
+Do not reuse any part of the old decorative panel.
+
+--------------------------------------------------
+
+# REPLACE WITH THEMED RESULT PANEL
+
+The decorative frame should automatically change depending on the selected game mode.
+
+--------------------------------------------------
+
+🎋 BAMBOO GROVE
+
+Load
+
+Bamboo Grove Result Panel
+
+Theme
+
+• Premium Bamboo
+• Polished Wood
+• Jade
+• Hemp Rope
+• Lotus Carvings
+• Bamboo Leaves
+
+Feeling
+
+Peaceful
+
+Natural
+
+Premium
+
+Elegant
+
+--------------------------------------------------
+
+🌙 MOON SHRINE
+
+Load
+
+Moon Shrine Result Panel
+
+Theme
+
+• White Marble
+• Moonstone
+• Silver
+• Crystal
+• Crescent Moon
+• Cherry Blossoms
+
+Feeling
+
+Celestial
+
+Elegant
+
+Magical
+
+Premium
+
+--------------------------------------------------
+
+🔥 CRIMSON TEMPLE
+
+Load
+
+Crimson Temple Result Panel
+
+Theme
+
+• Black Obsidian
+• Molten Gold
+• Dragon Carvings
+• Lava Stone
+• Crimson Crystal
+
+Feeling
+
+Powerful
+
+Ancient
+
+Legendary
+
+Premium
+
+--------------------------------------------------
+
+👑 IMPERIAL HEAVEN PALACE
+
+Load
+
+Imperial Heaven Palace Result Panel
+
+Theme
+
+• White Imperial Jade
+• Pure Gold
+• Imperial Dragons
+• Heavenly Clouds
+• Phoenix
+• Royal Silk
+
+Feeling
+
+Royal
+
+Luxurious
+
+Majestic
+
+Premium
+
+--------------------------------------------------
+
+🏯 DOJO GATE
+
+Load
+
+Dojo Gate Result Panel
+
+Theme
+
+• Cedar Wood
+• Antique Bronze
+• Rice Paper
+• Temple Bells
+• Sakura Carvings
+• Samurai Crest
+
+Feeling
+
+Disciplined
+
+Elegant
+
+Authentic
+
+Premium
+
+--------------------------------------------------
+
+# KEEP EXACTLY THE SAME LAYOUT
+
+The layout must NOT change.
+
+Keep exactly the same positions for:
+
+GAME OVER
+
+FINAL SCORE
+
+BEST SCORE
+
+YOUR RANK
+
+RANK BADGE
+
+HOME BUTTON
+
+PLAY AGAIN BUTTON
+
+Everything stays in its current location.
+
+Only the decorative frame changes.
+
+--------------------------------------------------
+
+# RESPONSIVE DESIGN
+
+The themed panel must automatically resize for
+
+Desktop
+
+Tablet
+
+Mobile
+
+Landscape
+
+Portrait
+
+The decorative frame should never overlap buttons or text.
+
+--------------------------------------------------
+
+# THEME SWITCHING
+
+The game should automatically load the correct Result Panel according to the active game mode.
+
+Example
+
+Current Theme
+
+↓
+
+Bamboo Grove
+
+↓
+
+Display Bamboo Result Panel
+
+Current Theme
+
+↓
+
+Moon Shrine
+
+↓
+
+Display Moon Result Panel
+
+Current Theme
+
+↓
+
+Crimson Temple
+
+↓
+
+Display Crimson Result Panel
+
+Current Theme
+
+↓
+
+Imperial Heaven Palace
+
+↓
+
+Display Imperial Result Panel
+
+Current Theme
+
+↓
+
+Dojo Gate
+
+↓
+
+Display Dojo Result Panel
+
+No manual switching should be required.
+
+--------------------------------------------------
+
+# DO NOT CHANGE
+
+Do NOT change
+
+Game Over popup
+
+Popup animation
+
+Score animation
+
+Button animation
+
+Score calculation
+
+Rank calculation
+
+Game logic
+
+Navigation
+
+Audio
+
+Only replace the decorative frame.
+
+--------------------------------------------------
+
+# IMPLEMENTATION
+
+Create one reusable Result Screen component.
+
+The component should remain identical for every theme.
+
+Only swap the Result Panel artwork.
+
+Everything else should be shared.
+
+Pseudo architecture
+
+ResultScreen
+
+↓
+
+Current Theme
+
+↓
+
+ThemeUIManager
+
+↓
+
+Load Result Panel
+
+↓
+
+Render Existing UI
+
+This avoids duplicate code.
+
+--------------------------------------------------
+
+# FINAL GOAL
+
+The Result Screen should continue working exactly as it does now.
+
+The only visible difference should be that every game mode displays its own premium themed Result Panel instead of the generic black futuristic panel.
+
+The player should immediately recognize the active world from the Result Screen alone while enjoying a consistent layout and user experience across all five themes.
