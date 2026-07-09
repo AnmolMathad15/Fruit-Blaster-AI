@@ -1,0 +1,615 @@
+# 🎮 COMPLETE AAA UI FRAMEWORK REBUILD USING OUR CUSTOM UI KITS
+
+## OBJECTIVE
+
+The current user interface is no longer acceptable.
+
+It contains generic UI elements that do not match the premium visual quality of the game worlds.
+
+Our newly designed UI Kits are now the OFFICIAL DESIGN SYSTEM of the entire game.
+
+The goal is NOT to modify the current UI.
+
+The goal is to completely remove the existing interface and rebuild the entire UI framework using our handcrafted UI Kits.
+
+Every menu, every button, every panel, every popup, every scoreboard, every icon and every result screen should come exclusively from our custom UI assets.
+
+This should feel like a professionally built AAA mobile game.
+
+--------------------------------------------------
+
+# REMOVE THE EXISTING UI COMPLETELY
+
+Delete every existing UI implementation including:
+
+Gameplay HUD
+
+Old Scoreboard
+
+Old Result Screen
+
+Game Over Screen
+
+Victory Screen
+
+Pause Menu
+
+Settings Menu
+
+Leaderboard
+
+Daily Rewards
+
+Profile
+
+Inventory
+
+Quest Screen
+
+Loading Screen
+
+Progress Bars
+
+Buttons
+
+Lives
+
+Combo UI
+
+Coins
+
+XP
+
+Badges
+
+Achievement Popups
+
+Notification Panels
+
+Checkboxes
+
+Toggle Switches
+
+Dialog Boxes
+
+Confirmation Windows
+
+Every old UI asset should be removed.
+
+Nothing from the old UI should remain inside the project.
+
+--------------------------------------------------
+
+# NEW UI ARCHITECTURE
+
+Build one reusable UI Framework.
+
+Do NOT build five different UI systems.
+
+There should only be ONE UI framework.
+
+The framework loads different artwork depending on the selected theme.
+
+Everything below should remain identical across every game mode:
+
+Layout
+
+Spacing
+
+Sizing
+
+Touch Targets
+
+Animations
+
+Transitions
+
+Screen Logic
+
+Popup Logic
+
+Navigation
+
+Game Logic
+
+Only the visual assets change.
+
+--------------------------------------------------
+
+# CREATE A THEME UI MANAGER
+
+Create a dedicated ThemeUIManager.
+
+Responsibilities:
+
+Load active UI theme.
+
+Unload inactive UI themes.
+
+Swap assets automatically.
+
+Keep the UI code identical.
+
+Supported Themes
+
+Bamboo Grove
+
+Moon Shrine
+
+Crimson Temple
+
+Imperial Heaven Palace
+
+Dojo Gate
+
+Switching themes should instantly replace every UI asset while preserving layout and functionality.
+
+--------------------------------------------------
+
+# UI FOLDER STRUCTURE
+
+Organize assets like this
+
+assets/
+
+ui/
+
+bamboo/
+
+moon/
+
+crimson/
+
+imperial/
+
+dojo/
+
+Each folder should contain
+
+Gameplay HUD
+
+Result Panel
+
+Pause Panel
+
+Settings Panel
+
+Buttons
+
+Icons
+
+Badges
+
+Coins
+
+XP
+
+Lives
+
+Combo Banner
+
+Progress Bar
+
+Loading Bar
+
+Leaderboard
+
+Daily Reward
+
+Notification
+
+Profile Frame
+
+Dialogs
+
+No asset mixing.
+
+--------------------------------------------------
+
+# GAMEPLAY HUD
+
+Replace the old HUD.
+
+Use our custom Gameplay Scoreboard.
+
+Display
+
+Current Score
+
+Combo
+
+Combo Multiplier
+
+Best Score
+
+Lives
+
+Pause Button
+
+Power-up Indicator
+
+The HUD must remain
+
+Minimal
+
+Clean
+
+Easy to read
+
+Never block gameplay.
+
+--------------------------------------------------
+
+# RESULT SCREEN
+
+Use our custom Result Panel.
+
+Display
+
+Final Score
+
+Best Score
+
+Highest Combo
+
+Accuracy
+
+Coins Earned
+
+XP Earned
+
+Rank
+
+Buttons
+
+Replay
+
+Home
+
+Next Theme
+
+Smooth entrance animation.
+
+--------------------------------------------------
+
+# BUTTON SYSTEM
+
+Replace every button.
+
+Play
+
+Pause
+
+Resume
+
+Retry
+
+Settings
+
+Home
+
+Next
+
+Back
+
+Confirm
+
+Cancel
+
+Buttons should come ONLY from the active theme.
+
+Animations
+
+Hover
+
+Press
+
+Scale
+
+Glow
+
+Sound
+
+--------------------------------------------------
+
+# LIFE SYSTEM
+
+Replace hearts.
+
+Use theme-specific lives.
+
+Bamboo
+
+Sacred Leaf
+
+Moon
+
+Crescent Moon
+
+Crimson
+
+Dragon Flame
+
+Imperial
+
+Imperial Seal
+
+Dojo
+
+Samurai Crest
+
+Losing a life should trigger
+
+Small animation
+
+Particles
+
+Sound
+
+--------------------------------------------------
+
+# COMBO SYSTEM
+
+Replace generic combo banner.
+
+Use custom Combo Banner.
+
+Display
+
+Precision Combo
+
+Master Combo
+
+Zen Master
+
+Legendary Combo
+
+Use theme particles.
+
+--------------------------------------------------
+
+# RANK SYSTEM
+
+Replace generic badges.
+
+Load theme-specific badges.
+
+Display
+
+Rank
+
+Promotion
+
+Achievement
+
+Victory
+
+--------------------------------------------------
+
+# COINS
+
+Each theme has unique currency.
+
+Bamboo
+
+Jade Coin
+
+Moon
+
+Moon Crystal Coin
+
+Crimson
+
+Dragon Coin
+
+Imperial
+
+Imperial Gold Coin
+
+Dojo
+
+Samurai Coin
+
+--------------------------------------------------
+
+# XP
+
+Theme-specific XP icon.
+
+--------------------------------------------------
+
+# PROGRESS BAR
+
+Replace old bar.
+
+Load theme version.
+
+--------------------------------------------------
+
+# LOADING BAR
+
+Replace old loading bar.
+
+Theme-specific.
+
+--------------------------------------------------
+
+# NOTIFICATIONS
+
+Every popup must use the current theme.
+
+Achievement
+
+Quest Complete
+
+Reward
+
+Rank Up
+
+Daily Login
+
+--------------------------------------------------
+
+# PROFILE
+
+Theme-specific frame.
+
+--------------------------------------------------
+
+# INVENTORY
+
+Theme-specific window.
+
+--------------------------------------------------
+
+# SHOP
+
+Theme-specific shop window.
+
+--------------------------------------------------
+
+# DAILY REWARD
+
+Theme-specific reward panel.
+
+--------------------------------------------------
+
+# SETTINGS
+
+Theme-specific settings panel.
+
+--------------------------------------------------
+
+# LEADERBOARD
+
+Theme-specific leaderboard.
+
+--------------------------------------------------
+
+# PAUSE MENU
+
+Theme-specific pause panel.
+
+--------------------------------------------------
+
+# GAME OVER
+
+Theme-specific Game Over screen.
+
+--------------------------------------------------
+
+# VICTORY
+
+Theme-specific Victory screen.
+
+--------------------------------------------------
+
+# ANIMATIONS
+
+Reuse the same animation system.
+
+Only particles change.
+
+Bamboo
+
+Leaves
+
+Moon
+
+Moon petals
+
+Crimson
+
+Fire embers
+
+Imperial
+
+Golden clouds
+
+Dojo
+
+Cherry blossoms
+
+Animation timing should remain identical.
+
+--------------------------------------------------
+
+# AUDIO
+
+Theme-specific UI sounds.
+
+Buttons
+
+Hover
+
+Victory
+
+Game Over
+
+Popup
+
+Combo
+
+Coins
+
+XP
+
+--------------------------------------------------
+
+# RESPONSIVE DESIGN
+
+Support
+
+Phones
+
+Tablets
+
+Landscape
+
+Different resolutions
+
+No clipping.
+
+No overlap.
+
+No stretching.
+
+--------------------------------------------------
+
+# PERFORMANCE
+
+Load only the active UI theme.
+
+Unload inactive themes.
+
+Target
+
+60 FPS
+
+Low memory
+
+Fast loading
+
+Optimized texture usage
+
+--------------------------------------------------
+
+# IMPORTANT IMPLEMENTATION RULE
+
+The Bamboo Grove UI Kit is the MASTER REFERENCE.
+
+The UI layout, spacing, animations, touch areas, and interactions implemented for Bamboo Grove become the template for every other theme.
+
+Moon Shrine, Crimson Temple, Imperial Heaven Palace, and Dojo Gate must reuse the exact same framework, changing ONLY their visual assets, colors, decorative motifs, particles, and sounds.
+
+Do NOT create separate UI logic for each theme.
+
+--------------------------------------------------
+
+# FINAL REQUIREMENT
+
+The player should feel that each world has its own handcrafted interface while the game behaves consistently everywhere.
+
+When switching between Bamboo Grove, Moon Shrine, Crimson Temple, Imperial Heaven Palace, and Dojo Gate, the UI should transform seamlessly into the selected theme without changing layout, controls, or usability.
+
+The final result should look like a commercially released AAA mobile game, where every UI component feels handcrafted, polished, highly responsive, visually immersive, and perfectly integrated with its corresponding game world.

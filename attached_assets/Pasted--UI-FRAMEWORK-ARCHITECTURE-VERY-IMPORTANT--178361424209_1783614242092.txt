@@ -1,0 +1,339 @@
+--------------------------------------------------
+
+# UI FRAMEWORK ARCHITECTURE (VERY IMPORTANT)
+
+Do NOT hardcode separate UI implementations for each game mode.
+
+Do NOT duplicate UI code.
+
+Do NOT create five different scoreboards.
+
+Do NOT create five different pause systems.
+
+Do NOT create five different result screens.
+
+Instead, build ONE reusable UI Framework.
+
+The UI Framework should contain all gameplay logic, animations, layouts, spacing, transitions, touch handling, and screen behavior.
+
+Everything visual should be loaded dynamically from the active theme.
+
+--------------------------------------------------
+
+# CREATE A DATA-DRIVEN THEME UI MANAGER
+
+Create a dedicated class called
+
+ThemeUIManager
+
+or
+
+UIThemeManager
+
+This manager becomes the only system responsible for loading UI assets.
+
+Every screen in the game must obtain its artwork from this manager.
+
+The UI Manager must support:
+
+• Bamboo Grove
+• Moon Shrine
+• Crimson Temple
+• Imperial Heaven Palace
+• Dojo Gate
+
+Future themes should be easy to add without changing gameplay code.
+
+--------------------------------------------------
+
+# THEME CONFIGURATION SYSTEM
+
+Each theme should be stored as a configuration object instead of hardcoded logic.
+
+Example
+
+Theme
+
+↓
+
+UI Panels
+
+↓
+
+Buttons
+
+↓
+
+Icons
+
+↓
+
+Particles
+
+↓
+
+Sounds
+
+↓
+
+Colors
+
+↓
+
+Fonts
+
+↓
+
+Decorations
+
+↓
+
+Animations
+
+↓
+
+Asset Paths
+
+Everything should be loaded automatically from the active theme configuration.
+
+Never use
+
+if (theme == bamboo)
+
+if (theme == moon)
+
+if (theme == dojo)
+
+inside gameplay code.
+
+The gameplay should never know which theme is active.
+
+Only ThemeUIManager should know.
+
+--------------------------------------------------
+
+# EXAMPLE PROJECT STRUCTURE
+
+src/
+
+core/
+
+ThemeUIManager
+
+ThemeRegistry
+
+ThemeLoader
+
+themes/
+
+bamboo/
+
+moon/
+
+crimson/
+
+imperial/
+
+dojo/
+
+assets/
+
+ui/
+
+bamboo/
+
+moon/
+
+crimson/
+
+imperial/
+
+dojo/
+
+Each theme folder should contain:
+
+Gameplay HUD
+
+Result Screen
+
+Pause Menu
+
+Settings
+
+Buttons
+
+Combo Banner
+
+Lives
+
+Rank Badges
+
+Achievement Badges
+
+Coins
+
+XP
+
+Progress Bar
+
+Loading Bar
+
+Leaderboard
+
+Daily Rewards
+
+Notification Panels
+
+Dialogs
+
+Profile Frame
+
+Inventory
+
+Shop
+
+Quest Panels
+
+--------------------------------------------------
+
+# HOW THE SYSTEM SHOULD WORK
+
+Player selects
+
+Moon Shrine
+
+↓
+
+ThemeUIManager loads
+
+Moon Shrine Assets
+
+↓
+
+Gameplay HUD updates
+
+↓
+
+Buttons update
+
+↓
+
+Lives update
+
+↓
+
+Combo Banner updates
+
+↓
+
+Coins update
+
+↓
+
+Result Screen updates
+
+↓
+
+Pause Menu updates
+
+↓
+
+Particles update
+
+↓
+
+UI Sounds update
+
+Everything changes automatically.
+
+Gameplay code remains exactly the same.
+
+--------------------------------------------------
+
+# ADDING FUTURE THEMES
+
+The framework must be scalable.
+
+If a future theme is added, developers should only need to:
+
+1.
+
+Create a new asset folder.
+
+2.
+
+Register the theme.
+
+3.
+
+Provide configuration.
+
+No gameplay code should require modification.
+
+--------------------------------------------------
+
+# THEME INHERITANCE
+
+Every theme inherits the same UI framework.
+
+Only replace
+
+Panels
+
+Buttons
+
+Icons
+
+Badges
+
+Frames
+
+Colors
+
+Particles
+
+Sounds
+
+Decorative elements
+
+Everything else remains identical.
+
+--------------------------------------------------
+
+# MEMORY OPTIMIZATION
+
+Only load the active theme.
+
+Unload unused UI assets.
+
+Do not keep all five themes loaded simultaneously.
+
+Use lazy loading where appropriate.
+
+Reuse animation controllers.
+
+Reuse UI layouts.
+
+Reuse transitions.
+
+--------------------------------------------------
+
+# MAINTAINABILITY
+
+The entire UI framework should be modular.
+
+Changing one theme should never affect another.
+
+Changing gameplay should never require editing theme assets.
+
+Changing theme assets should never require editing gameplay code.
+
+The system should follow clean architecture principles with clear separation between UI logic and visual presentation.
+
+--------------------------------------------------
+
+# FINAL DEVELOPMENT GOAL
+
+The player should experience five completely different visual interfaces while the underlying UI framework, interactions, layout, and behavior remain identical.
+
+The project should be easy to maintain, easy to extend, highly optimized, and structured like a professional AAA mobile game rather than a collection of separate UI implementations.
