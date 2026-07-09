@@ -57,15 +57,18 @@ export const FRUIT_DATA: Record<FruitType, { color: string; colorInner: string; 
   'Imperial Durian':     { color: '#88a848', colorInner: '#f0f4d0', score: 35, radius: 98, probability: 6, image: 'imperial-durian.png' },
 
   // ── Dojo Gate (Classic Mode) — serene celestial dojo fruits ──
-  'Celestial Peach':        { color: '#f0b090', colorInner: '#fff0e0', score: 10, radius: 88, probability: 16, image: 'dojo-peach.png' },
-  'Celestial Yuzu':         { color: '#e8d040', colorInner: '#fff8d0', score: 10, radius: 76, probability: 15, image: 'dojo-yuzu.png' },
-  'Celestial Kyoho Grapes': { color: '#4a2050', colorInner: '#c8a0e0', score: 15, radius: 80, probability: 15, image: 'dojo-grapes.png' },
-  'Celestial Watermelon':   { color: '#2a7a3a', colorInner: '#ff5050', score: 20, radius: 100, probability: 10, image: 'dojo-watermelon.png' },
-  'Celestial Persimmon':    { color: '#e07020', colorInner: '#ffd8a0', score: 15, radius: 82, probability: 14, image: 'dojo-persimmon.png' },
-  'Celestial Japanese Plum':{ color: '#5a2050', colorInner: '#e8b8d0', score: 15, radius: 78, probability: 14, image: 'dojo-plum.png' },
-  'Celestial Pomegranate':  { color: '#a01818', colorInner: '#ff6060', score: 20, radius: 90, probability: 11, image: 'dojo-pomegranate.png' },
-  'Celestial Avocado':      { color: '#2a4a20', colorInner: '#c8e090', score: 15, radius: 84, probability: 12, image: 'dojo-avocado.png' },
-  'Celestial Dragon Fruit': { color: '#c81858', colorInner: '#fff0f0', score: 25, radius: 86, probability: 9, image: 'dojo-dragonfruit.png' },
+  // Sized down (~30% smaller than the original 76-100 range) so a wave of
+  // 3-8 fruits reads as distinct individual fruits instead of an oversized,
+  // overlapping cluster — see pendingDojoSpawns staggering in GameEngine.ts.
+  'Celestial Peach':        { color: '#f0b090', colorInner: '#fff0e0', score: 10, radius: 62, probability: 16, image: 'dojo-peach.png' },
+  'Celestial Yuzu':         { color: '#e8d040', colorInner: '#fff8d0', score: 10, radius: 54, probability: 15, image: 'dojo-yuzu.png' },
+  'Celestial Kyoho Grapes': { color: '#4a2050', colorInner: '#c8a0e0', score: 15, radius: 56, probability: 15, image: 'dojo-grapes.png' },
+  'Celestial Watermelon':   { color: '#2a7a3a', colorInner: '#ff5050', score: 20, radius: 70, probability: 10, image: 'dojo-watermelon.png' },
+  'Celestial Persimmon':    { color: '#e07020', colorInner: '#ffd8a0', score: 15, radius: 58, probability: 14, image: 'dojo-persimmon.png' },
+  'Celestial Japanese Plum':{ color: '#5a2050', colorInner: '#e8b8d0', score: 15, radius: 55, probability: 14, image: 'dojo-plum.png' },
+  'Celestial Pomegranate':  { color: '#a01818', colorInner: '#ff6060', score: 20, radius: 63, probability: 11, image: 'dojo-pomegranate.png' },
+  'Celestial Avocado':      { color: '#2a4a20', colorInner: '#c8e090', score: 15, radius: 59, probability: 12, image: 'dojo-avocado.png' },
+  'Celestial Dragon Fruit': { color: '#c81858', colorInner: '#fff0f0', score: 25, radius: 60, probability: 9, image: 'dojo-dragonfruit.png' },
 };
 
 export const BOMB_DATA: Record<BombType, { color: string; fuseColor: string; radius: number; probability: number; effect: string; image?: string }> = {

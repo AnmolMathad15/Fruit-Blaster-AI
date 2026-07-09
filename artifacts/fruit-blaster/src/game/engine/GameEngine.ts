@@ -17,6 +17,11 @@ export class GameEngine {
   particles: Particle[] = [];
   
   swordTrail: {x: number, y: number, age: number}[] = [];
+
+  // Dojo Gate: fruits within a wave launch one at a time rather than all at
+  // once, so they read as an individual, readable stream instead of a bundled
+  // clump. Each queued entry counts down independently before spawning.
+  pendingDojoSpawns: { timer: number; x: number; vx: number; vy: number; type: FruitType }[] = [];
   
   gravity: number = 0.3;
   
@@ -151,6 +156,19 @@ export class GameEngine {
       this.spawnTimer = this.spawnRate / this.speedMultiplier;
       // Add randomness
       this.spawnTimer += (Math.random() - 0.5) * 20;
+    }
+
+    // Dojo Gate: release queued wave fruits one at a time as their individual
+    // launch delay elapses, instead of all appearing in the same frame.
+    if (this.pendingDojoSpawns.length) {
+      for (let i = this.pendingDojoSpawns.length - 1; i >= 0; i--) {
+        const p = this.pendingDojoSpawns[i];
+        p.timer -= dt;
+        if (p.timer <= 0) {
+          this.fruits.push(new Fruit(p.x, this.height + 50, p.vx, p.vy, p.type));
+          this.pendingDojoSpawns.splice(i, 1);
+        }
+      }
     }
     
     // Update entities
@@ -307,8 +325,11 @@ export class GameEngine {
       }
     } else if (this.mode === 'classic') {
       // Dojo Gate spawns exclusively from our nine celestial fruits, weighted by
-      // probability, in generous waves (4-8 fruits) with almost no idle time,
-      // per the zone's "nonstop, rewarding" design brief.
+      // probability, in generous waves (3-8 fruits) with almost no idle time,
+      // per the zone's "nonstop, rewarding" design brief. Rather than pushing
+      // the whole wave onto screen in the same frame (which reads as a bundled
+      // clump), each fruit is queued with its own short launch delay so the
+      // wave streams in individually, one fruit at a time.
       const pool = DOJO_FRUIT_TYPES.map(t => [t, FRUIT_DATA[t]] as const);
       const totalProb = pool.reduce((sum, [, v]) => sum + v.probability, 0);
       const roll = Math.random();
@@ -321,9 +342,11 @@ export class GameEngine {
           cumProb += v.probability;
           if (rand <= cumProb) { type = k; break; }
         }
-        const jitterX = startX + (Math.random() - 0.5) * 130 * i;
+        const jitterX = this.width * 0.15 + Math.random() * (this.width * 0.7);
         const jitterVx = vx + (Math.random() - 0.5) * 2;
-        this.fruits.push(new Fruit(jitterX, startY, jitterVx, vy, type));
+        // Stagger launches ~7 frames apart (plus small jitter) so each fruit
+        // is visually distinct instead of arriving in the same instant.
+        this.pendingDojoSpawns.push({ timer: i * 7 + Math.random() * 3, x: jitterX, vx: jitterVx, vy, type });
       }
     } else if (this.mode === 'bamboo') {
       // Bamboo Grove spawns exclusively from our seven custom fruits.
