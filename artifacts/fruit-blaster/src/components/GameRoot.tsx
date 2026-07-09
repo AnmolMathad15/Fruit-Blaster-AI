@@ -3,6 +3,7 @@ import SplashScreen from './screens/SplashScreen';
 import MainMenu from './screens/MainMenu';
 import GuardianOathScreen from './screens/GuardianOathScreen';
 import WorldSelectionScreen from './screens/WorldSelectionScreen';
+import DojoGateIntroScreen from './screens/DojoGateIntroScreen';
 import BambooGroveIntroScreen from './screens/BambooGroveIntroScreen';
 import CrimsonTempleIntroScreen from './screens/CrimsonTempleIntroScreen';
 import GameScreen from './game/GameCanvas';
@@ -23,6 +24,7 @@ export default function GameRoot() {
       case 'menu': return <MainMenu />;
       case 'guardian': return <GuardianOathScreen />;
       case 'modes': return <WorldSelectionScreen />;
+      case 'dojo-intro': return <DojoGateIntroScreen />;
       case 'bamboo-intro': return <BambooGroveIntroScreen />;
       case 'crimson-intro': return <CrimsonTempleIntroScreen />;
       case 'game': return <GameScreen />;

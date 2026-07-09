@@ -477,7 +477,9 @@ export default function WorldSelectionScreen() {
       setPhase('exiting');
       setTimeout(() => {
         // Some worlds get their own cinematic intro before the game
-        if (dest.id === 'arcade') {
+        if (dest.id === 'classic') {
+          setScreen('dojo-intro');
+        } else if (dest.id === 'arcade') {
           setScreen('bamboo-intro');
         } else if (dest.id === 'challenge') {
           setScreen('crimson-intro');
