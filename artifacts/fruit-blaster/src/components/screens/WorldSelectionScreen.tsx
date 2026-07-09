@@ -483,6 +483,8 @@ export default function WorldSelectionScreen() {
           setScreen('bamboo-intro');
         } else if (dest.id === 'challenge') {
           setScreen('crimson-intro');
+        } else if (dest.id === 'survival') {
+          setScreen('imperial-intro');
         } else {
           setMode(dest.id);
           resetGame();
