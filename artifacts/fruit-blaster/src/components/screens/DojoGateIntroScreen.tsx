@@ -26,9 +26,9 @@ const VID_H = 1080;
 
 /* ─── "Enter the Dojo" button position in native 1920×1080 pixels ──── */
 // ⚠️  Calibrate these with Debug Mode, then hard-code the result.
-let BTN_VX = 960;   // centre X  (start: horizontal middle)
-let BTN_VY = 870;   // centre Y  (start: lower-third)
-let BTN_VW = 480;   // width  of clickable rectangle
+let BTN_VX = 968;   // centre X
+let BTN_VY = 916;   // centre Y
+let BTN_VW = 490;   // width  of clickable rectangle
 let BTN_VH = 110;   // height of clickable rectangle
 
 /* ─── Cover-layout helpers ───────────────────────────────────────────── */
