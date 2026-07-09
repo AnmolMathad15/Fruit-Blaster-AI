@@ -26,8 +26,8 @@ const VID_H = 720;
 
 /* ─── "Enter the Shrine" button position in native 1280×720 pixels ─── */
 // ⚠️  Calibrate these with Debug Mode, then hard-code the result.
-let BTN_VX = 640;   // centre X  (start: horizontal middle)
-let BTN_VY = 615;   // centre Y  (start: lower-third)
+let BTN_VX = 637;   // centre X
+let BTN_VY = 648;   // centre Y
 let BTN_VW = 380;   // width  of clickable rectangle
 let BTN_VH = 85;    // height of clickable rectangle
 
