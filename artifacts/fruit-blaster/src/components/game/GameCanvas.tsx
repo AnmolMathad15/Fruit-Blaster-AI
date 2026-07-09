@@ -18,9 +18,10 @@ export default function GameScreen() {
   const engineRef   = useRef<GameEngine | null>(null);
   const reqRef      = useRef<number>(0);
   const lastTimeRef = useRef<number>(performance.now());
+  const musicRef    = useRef<HTMLAudioElement>(null);
 
   const { setScreen, mode, setScore, setLives, score, combo, setCombo, isPaused, setPaused, timeLeft, setTimeLeft } = useGameStore();
-  const { webcamMirror, swordSkin } = useSettingsStore();
+  const { webcamMirror, swordSkin, musicVolume } = useSettingsStore();
   const { addSwing, updateBestCombo } = useStatsStore();
   const {
     addSpiritEnergy, activateBlessing, tickBlessing, moonBlessingActive,
@@ -333,6 +334,31 @@ export default function GameScreen() {
     }
   }, [mode, isTracking, fingertip.isPresent, isPaused, setPaused]);
 
+  // ─── Bamboo Grove: ambient music plays only while the camera feed is live
+  // and the player is actively slicing (not paused). ─────────────────────────
+  useEffect(() => {
+    const audio = musicRef.current;
+    if (!audio || mode !== 'bamboo') return;
+
+    if (cameraReady && !isPaused) {
+      audio.volume = Math.min(1, Math.max(0, musicVolume / 100));
+      audio.play().catch(() => {});
+    } else {
+      audio.pause();
+    }
+  }, [mode, cameraReady, isPaused, musicVolume]);
+
+  // Stop and rewind bamboo music whenever we leave the game screen / mode changes.
+  useEffect(() => {
+    return () => {
+      const audio = musicRef.current;
+      if (audio) {
+        audio.pause();
+        audio.currentTime = 0;
+      }
+    };
+  }, [mode]);
+
   // ─── Challenge mode timer ──────────────────────────────────────────────────
   useEffect(() => {
     if ((mode !== 'challenge' && mode !== 'bamboo') || isPaused) return;
@@ -363,6 +389,15 @@ export default function GameScreen() {
       />
 
       <canvas ref={canvasRef} className="absolute inset-0 w-full h-full touch-none" />
+
+      {mode === 'bamboo' && (
+        <audio
+          ref={musicRef}
+          src={`${import.meta.env.BASE_URL}bamboo/bamboo-grove-music.mp3`}
+          loop
+          preload="auto"
+        />
+      )}
 
       <HUD />
 
