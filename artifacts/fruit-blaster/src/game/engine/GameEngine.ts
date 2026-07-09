@@ -80,10 +80,10 @@ export class GameEngine {
       // Imperial Heaven Palace — the hardest, most intense world: ~40-50% more
       // fruits than the Crimson Temple, heavier bomb frequency, and a difficulty
       // ramp every 30-45s per the zone's design brief.
-      this.bombChance = 0.5;
+      this.bombChance = 0.3;
       this.spawnRate = 26;
       this.speedMultiplier = 1.25;
-      this.baseBombChance = 0.5;
+      this.baseBombChance = 0.3;
       this.baseSpawnRate = 26;
       this.baseSpeedMultiplier = 1.25;
     } else if (mode === 'classic') {
@@ -133,7 +133,7 @@ export class GameEngine {
     const tier = Math.min(10, Math.floor(this.survivalSeconds / 35)); // 0..10
     this.speedMultiplier = this.baseSpeedMultiplier + tier * 0.1;
     this.spawnRate = Math.max(16, this.baseSpawnRate - tier * 1.6);
-    this.bombChance = Math.min(0.65, this.baseBombChance + tier * 0.015);
+    this.bombChance = Math.min(0.45, this.baseBombChance + tier * 0.015);
   }
   
   resize(w: number, h: number) {

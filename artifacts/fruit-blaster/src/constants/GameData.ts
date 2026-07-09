@@ -46,15 +46,16 @@ export const FRUIT_DATA: Record<FruitType, { color: string; colorInner: string; 
   'Infernal Pineapple':  { color: '#3a1508', colorInner: '#ffaa33', score: 30, radius: 86, probability: 6, image: 'infernal-pineapple.png' },
 
   // ── Imperial Heaven Palace (Survival Mode) — legendary jade-and-gold fruits ──
-  'Imperial Apple':      { color: '#a01818', colorInner: '#ffe8b8', score: 20, radius: 96, probability: 16, image: 'imperial-apple.png' },
-  'Imperial Banana':     { color: '#d8c060', colorInner: '#fff8e0', score: 20, radius: 92, probability: 14, image: 'imperial-banana.png' },
-  'Imperial Cherry':     { color: '#b81818', colorInner: '#ffd8d8', score: 25, radius: 82, probability: 14, image: 'imperial-cherry.png' },
-  'Imperial Raspberry':  { color: '#c02040', colorInner: '#ffd0e0', score: 25, radius: 84, probability: 13, image: 'imperial-raspberry.png' },
-  'Imperial Gooseberry': { color: '#a8c840', colorInner: '#f0f8c8', score: 20, radius: 90, probability: 13, image: 'imperial-gooseberry.png' },
-  'Imperial Grapefruit': { color: '#e07850', colorInner: '#ffe0d0', score: 25, radius: 94, probability: 12, image: 'imperial-grapefruit.png' },
-  'Imperial Sugarcane':  { color: '#c8d8a0', colorInner: '#f4f8e8', score: 15, radius: 88, probability: 11, image: 'imperial-sugarcane.png' },
-  'Imperial Jackfruit':  { color: '#c8a838', colorInner: '#fff0c0', score: 30, radius: 100, probability: 8, image: 'imperial-jackfruit.png' },
-  'Imperial Durian':     { color: '#88a848', colorInner: '#f0f4d0', score: 35, radius: 98, probability: 6, image: 'imperial-durian.png' },
+  // Radii reduced ~30% (matching Dojo Gate) — Imperial fruits were oversized relative to other zones.
+  'Imperial Apple':      { color: '#a01818', colorInner: '#ffe8b8', score: 20, radius: 68, probability: 16, image: 'imperial-apple.png' },
+  'Imperial Banana':     { color: '#d8c060', colorInner: '#fff8e0', score: 20, radius: 64, probability: 14, image: 'imperial-banana.png' },
+  'Imperial Cherry':     { color: '#b81818', colorInner: '#ffd8d8', score: 25, radius: 58, probability: 14, image: 'imperial-cherry.png' },
+  'Imperial Raspberry':  { color: '#c02040', colorInner: '#ffd0e0', score: 25, radius: 59, probability: 13, image: 'imperial-raspberry.png' },
+  'Imperial Gooseberry': { color: '#a8c840', colorInner: '#f0f8c8', score: 20, radius: 63, probability: 13, image: 'imperial-gooseberry.png' },
+  'Imperial Grapefruit': { color: '#e07850', colorInner: '#ffe0d0', score: 25, radius: 66, probability: 12, image: 'imperial-grapefruit.png' },
+  'Imperial Sugarcane':  { color: '#c8d8a0', colorInner: '#f4f8e8', score: 15, radius: 62, probability: 11, image: 'imperial-sugarcane.png' },
+  'Imperial Jackfruit':  { color: '#c8a838', colorInner: '#fff0c0', score: 30, radius: 70, probability: 8, image: 'imperial-jackfruit.png' },
+  'Imperial Durian':     { color: '#88a848', colorInner: '#f0f4d0', score: 35, radius: 69, probability: 6, image: 'imperial-durian.png' },
 
   // ── Dojo Gate (Classic Mode) — serene celestial dojo fruits ──
   // Sized down (~30% smaller than the original 76-100 range) so a wave of
