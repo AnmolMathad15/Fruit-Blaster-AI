@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useGameStore } from '../../store/gameStore';
+import { useGameStore, GameMode } from '../../store/gameStore';
 import { useSettingsStore } from '../../store/settingsStore';
 import { useStatsStore } from '../../store/statsStore';
 import { useHandTracker } from '../../hooks/useHandTracker';
@@ -9,6 +9,13 @@ import { getSwordSkinColors } from '../../utils/mathUtils';
 import { useMoonStore } from '../../store/moonStore';
 import HUD from './HUD';
 import { GlassPanel, Button } from '../ui/UIComponents';
+
+// Zones with a dedicated ambient/gameplay music track. Add new zones here —
+// the play/pause/cleanup effects below key off this map generically.
+const ZONE_MUSIC: Partial<Record<GameMode, string>> = {
+  bamboo: 'bamboo/bamboo-grove-music.mp3',
+  challenge: 'crimson/crimson-temple-music.mp3',
+};
 
 export default function GameScreen() {
   const canvasRef   = useRef<HTMLCanvasElement>(null);
@@ -334,11 +341,12 @@ export default function GameScreen() {
     }
   }, [mode, isTracking, fingertip.isPresent, isPaused, setPaused]);
 
-  // ─── Bamboo Grove: ambient music plays only while the camera feed is live
-  // and the player is actively slicing (not paused). ─────────────────────────
+  // ─── Zone ambient music: plays only while the camera feed is live and the
+  // player is actively slicing (not paused). Each zone with a dedicated track
+  // is listed in ZONE_MUSIC below. ─────────────────────────────────────────────
   useEffect(() => {
     const audio = musicRef.current;
-    if (!audio || mode !== 'bamboo') return;
+    if (!audio || !(mode in ZONE_MUSIC)) return;
 
     if (cameraReady && !isPaused) {
       audio.volume = Math.min(1, Math.max(0, musicVolume / 100));
@@ -348,7 +356,7 @@ export default function GameScreen() {
     }
   }, [mode, cameraReady, isPaused, musicVolume]);
 
-  // Stop and rewind bamboo music whenever we leave the game screen / mode changes.
+  // Stop and rewind zone music whenever we leave the game screen / mode changes.
   useEffect(() => {
     return () => {
       const audio = musicRef.current;
@@ -390,10 +398,10 @@ export default function GameScreen() {
 
       <canvas ref={canvasRef} className="absolute inset-0 w-full h-full touch-none" />
 
-      {mode === 'bamboo' && (
+      {mode in ZONE_MUSIC && (
         <audio
           ref={musicRef}
-          src={`${import.meta.env.BASE_URL}bamboo/bamboo-grove-music.mp3`}
+          src={`${import.meta.env.BASE_URL}${ZONE_MUSIC[mode]}`}
           loop
           preload="auto"
         />
