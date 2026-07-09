@@ -16,6 +16,7 @@ import Achievements from './screens/Achievements';
 import Statistics from './screens/Statistics';
 import { useGameStore } from '../store/gameStore';
 import { ScreenTransition } from './ui/UIComponents';
+import FullscreenButton from './ui/FullscreenButton';
 
 export default function GameRoot() {
   const { screen } = useGameStore();
@@ -43,6 +44,7 @@ export default function GameRoot() {
 
   return (
     <div className="w-screen h-[100dvh] overflow-hidden bg-background text-foreground font-sans">
+      <FullscreenButton />
       <ScreenTransition keyName={screen}>
         {renderScreen()}
       </ScreenTransition>
