@@ -26,10 +26,10 @@ const VID_H = 768;
 
 /* ─── PLAY NOW button position in native 1376×768 video pixels ──────── */
 // ⚠️  Calibrate with Debug Mode, then hard-code the result.
-let BTN_VX = 688;   // centre X
-let BTN_VY = 560;   // centre Y
-let BTN_VW = 340;   // width
-let BTN_VH = 80;    // height
+let BTN_VX = 729;   // centre X
+let BTN_VY = 463;   // centre Y
+let BTN_VW = 345;   // width
+let BTN_VH = 87;    // height
 
 /* ─── Cover-layout helpers ───────────────────────────────────────────── */
 interface CoverLayout { scale: number; offsetX: number; offsetY: number; }
