@@ -1,0 +1,200 @@
+# 🎮 GAMEPLAY RULES
+
+The Crimson Temple uses the same core mechanics as Fruit Blaster, but with a higher difficulty and faster pace.
+
+## Objective
+
+Slice as many legendary Infernal Fruits as possible.
+
+Avoid slicing the Infernal Dragon Core (bomb).
+
+Earn the highest score while maintaining combos.
+
+---
+
+## Fruit Behaviour
+
+• Fruits launch upward from the bottom of the screen.
+• Fruits follow smooth natural arc trajectories.
+• Fruits rotate while flying.
+• Fruits may overlap naturally.
+• Fruits spawn from random horizontal positions.
+• Every fruit is fully sliceable.
+
+---
+
+## Fruit Spawn Rate
+
+Compared to Moon Shrine:
+
+• Increase fruit spawn rate by approximately 40%.
+• Reduce empty time between waves.
+• Launch frequent multi-fruit waves.
+• Randomize every wave.
+
+Possible wave patterns:
+
+• Single Fruit
+• Double Fruit
+• Triple Fruit
+• Quadruple Fruit
+• Five Fruits
+• Mixed Fruit Cluster
+• Large Combo Wave
+
+Gameplay should always feel active.
+
+---
+
+## Bomb Behaviour
+
+The Infernal Dragon Core replaces normal bombs.
+
+Bombs appear more frequently than in Moon Shrine.
+
+Possible patterns:
+
+• Single Bomb
+• Bomb + 2 Fruits
+• Bomb + 3 Fruits
+• Double Bomb
+• Late-game Triple Bomb
+
+Bombs should never create impossible situations.
+
+Players must always have a reaction window.
+
+---
+
+## Sword Controls
+
+Mouse movement controls the Infernal Dragon Blade.
+
+Every fast swipe creates:
+
+• Dragon flame trail
+• Ember particles
+• Heat distortion
+• Dragon spirit slash effect
+
+The sword should feel smooth with zero noticeable input delay.
+
+---
+
+## Slice Detection
+
+A fruit is sliced when the sword trail intersects its collider.
+
+The slice should:
+
+Split fruit into two realistic halves.
+
+Apply natural physics.
+
+Spawn infernal juice.
+
+Spawn ember particles.
+
+Play slice animation.
+
+Award score instantly.
+
+---
+
+## Combo System
+
+Slice multiple fruits with one continuous swipe.
+
+3 Fruits = Small Combo
+
+5 Fruits = Great Combo
+
+7 Fruits = Dragon Combo
+
+10+ Fruits = Infernal Combo
+
+Higher combos award:
+
+Bonus score
+
+Extra particles
+
+Dragon visual effects
+
+Special sound effects
+
+---
+
+## Score System
+
+Single Fruit = 1 Point
+
+Combo Bonus = Additional Points
+
+Perfect Combo = Extra Multiplier
+
+Long Combo Chains increase score multiplier.
+
+---
+
+## Miss Rules
+
+If a fruit falls off-screen unsliced:
+
+Lose 1 Life.
+
+Player begins with 3 Lives.
+
+Game ends when all lives are lost.
+
+Bombs falling safely do NOT reduce lives.
+
+---
+
+## Bomb Rules
+
+If the player slices the Infernal Dragon Core:
+
+Immediate Game Over.
+
+Play volcanic explosion.
+
+Brief screen shake.
+
+Display final score.
+
+Offer Restart and Main Menu.
+
+---
+
+## Difficulty Progression
+
+Every 30–45 seconds:
+
+Increase fruit speed.
+
+Increase fruit count.
+
+Increase bomb frequency.
+
+Increase combo opportunities.
+
+Gameplay should become more challenging while remaining fair.
+
+---
+
+## Performance
+
+Maintain stable 60 FPS.
+
+No lag.
+
+No missed collision detection.
+
+Smooth animations.
+
+Instant input response.
+
+Optimized particle effects.
+
+Gameplay clarity always takes priority over visual effects.

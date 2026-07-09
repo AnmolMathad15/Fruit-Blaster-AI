@@ -3,17 +3,22 @@
  * All drawing is relative to origin (0,0); caller must translate+rotate first.
  */
 
-import { FRUIT_DATA, BOMB_DATA, MOON_FRUIT_TYPES } from '../../constants/GameData';
-import { getBambooImage, getMoonImage } from '../../utils/imageCache';
+import { FRUIT_DATA, BOMB_DATA, MOON_FRUIT_TYPES, CRIMSON_FRUIT_TYPES } from '../../constants/GameData';
+import { getBambooImage, getMoonImage, getCrimsonImage } from '../../utils/imageCache';
 
 /** True for any type that belongs to the Moon Shrine's custom celestial asset set. */
 function isMoonType(type: string): boolean {
   return MOON_FRUIT_TYPES.includes(type as any) || type === 'Lunar Kiwi' || type === 'Cursed Eclipse Orb';
 }
 
+/** True for any type that belongs to the Crimson Temple's custom infernal asset set. */
+function isCrimsonType(type: string): boolean {
+  return CRIMSON_FRUIT_TYPES.includes(type as any) || type === 'Infernal Dragon Core';
+}
+
 /** Fruit/hazard types rendered from our hand-painted Bamboo Grove sprites instead of vector art. */
 function bambooImageFor(type: string): string | undefined {
-  if (isMoonType(type)) return undefined;
+  if (isMoonType(type) || isCrimsonType(type)) return undefined;
   return (FRUIT_DATA as any)[type]?.image ?? (BOMB_DATA as any)[type]?.image;
 }
 
@@ -21,6 +26,32 @@ function bambooImageFor(type: string): string | undefined {
 function moonImageFor(type: string): string | undefined {
   if (!isMoonType(type)) return undefined;
   return (FRUIT_DATA as any)[type]?.image ?? (BOMB_DATA as any)[type]?.image;
+}
+
+/** Crimson Temple sprites (infernal fruits, Infernal Dragon Core) — loaded from public/crimson/. */
+function crimsonImageFor(type: string): string | undefined {
+  if (!isCrimsonType(type)) return undefined;
+  return (FRUIT_DATA as any)[type]?.image ?? (BOMB_DATA as any)[type]?.image;
+}
+
+/** Same contract as drawBambooSprite, but reads from the Crimson Temple asset folder. Fruits render larger (2.6x radius) per the Crimson Temple's "big fruit" design goal. */
+export function drawCrimsonSprite(ctx: CanvasRenderingContext2D, type: string, r: number): boolean {
+  const file = crimsonImageFor(type);
+  if (!file) return false;
+  const img = getCrimsonImage(file);
+  if (!img) return false;
+
+  ctx.save();
+  ctx.globalAlpha = 1;
+  ctx.globalCompositeOperation = 'source-over';
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
+
+  const targetH = r * 2.6;
+  const targetW = targetH * (img.naturalWidth / img.naturalHeight);
+  ctx.drawImage(img, -targetW / 2, -targetH / 2, targetW, targetH);
+  ctx.restore();
+  return true;
 }
 
 /** Same contract as drawBambooSprite, but reads from the Moon Shrine asset folder. */
@@ -98,6 +129,12 @@ export function drawFruit(ctx: CanvasRenderingContext2D, type: string, r: number
     drawMoonSprite(ctx, type, r);
     return;
   }
+  if (crimsonImageFor(type)) {
+    // Crimson Temple sprites: skip drawing entirely until the real asset is
+    // loaded rather than flashing generic vector art as a placeholder.
+    drawCrimsonSprite(ctx, type, r);
+    return;
+  }
   if (bambooImageFor(type)) {
     // Bamboo Grove sprites: skip drawing entirely until the real asset is
     // loaded rather than flashing generic vector art as a placeholder.
@@ -152,6 +189,9 @@ function getFruitInnerColor(type: string): string {
     'Celestial Apple': '#e8e6ff', 'Spirit Pear': '#ffffff', 'Lunar Kiwi': '#ffffff',
     'Moon Peach': '#fff5f8', 'Moon Mandarin': '#ffffff', 'Silver Melon': '#ffffff',
     'Luna Plum': '#c9b3e8', 'Moon Lime': '#f5f8d8',
+    'Infernal Apple': '#ff8a3d', 'Infernal Banana': '#ffb347', 'Infernal Grape': '#ff6b3d',
+    'Infernal Papaya': '#ff9a3d', 'Infernal Strawberry': '#ff5533', 'Infernal Tomato': '#ff6a33',
+    'Infernal Watermelon': '#ff7733', 'Infernal Pineapple': '#ffaa33',
   };
   return map[type] || '#ffffff';
 }

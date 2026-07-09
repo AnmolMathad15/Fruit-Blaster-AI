@@ -34,6 +34,16 @@ export const FRUIT_DATA: Record<FruitType, { color: string; colorInner: string; 
   'Silver Melon':      { color: '#e6e9f2', colorInner: '#ffffff', score: 10, radius: 76, probability: 12, image: 'silver-melon.png' },
   'Luna Plum':         { color: '#4a3568', colorInner: '#c9b3e8', score: 10, radius: 68, probability: 14, image: 'luna-plum.png' },
   'Moon Lime':         { color: '#d8e070', colorInner: '#f5f8d8', score: 10, radius: 68, probability: 12, image: 'moon-lime.png' },
+
+  // ── Crimson Temple (Challenge Mode) — legendary infernal fruits ──
+  'Infernal Apple':      { color: '#7a1a12', colorInner: '#ff8a3d', score: 15, radius: 84, probability: 16, image: 'infernal-apple.png' },
+  'Infernal Banana':     { color: '#4a1810', colorInner: '#ffb347', score: 15, radius: 78, probability: 14, image: 'infernal-banana.png' },
+  'Infernal Grape':      { color: '#3a1220', colorInner: '#ff6b3d', score: 20, radius: 70, probability: 14, image: 'infernal-grape.png' },
+  'Infernal Papaya':     { color: '#5a1a14', colorInner: '#ff9a3d', score: 20, radius: 80, probability: 12, image: 'infernal-papaya.png' },
+  'Infernal Strawberry': { color: '#4a0f0f', colorInner: '#ff5533', score: 20, radius: 74, probability: 14, image: 'infernal-strawberry.png' },
+  'Infernal Tomato':     { color: '#5a1512', colorInner: '#ff6a33', score: 15, radius: 82, probability: 15, image: 'infernal-tomato.png' },
+  'Infernal Watermelon': { color: '#2a1414', colorInner: '#ff7733', score: 25, radius: 90, probability: 9, image: 'infernal-watermelon.png' },
+  'Infernal Pineapple':  { color: '#3a1508', colorInner: '#ffaa33', score: 30, radius: 86, probability: 6, image: 'infernal-pineapple.png' },
 };
 
 export const BOMB_DATA: Record<BombType, { color: string; fuseColor: string; radius: number; probability: number; effect: string; image?: string }> = {
@@ -43,6 +53,7 @@ export const BOMB_DATA: Record<BombType, { color: string; fuseColor: string; rad
   'Explosive': { color: '#FF5500', fuseColor: '#FFDD00', radius: 40, probability: 5, effect: 'large_explosion' },
   'Cursed Bamboo Seed': { color: '#3D1E52', fuseColor: '#B87CF0', radius: 42, probability: 100, effect: 'lose_life', image: 'cursed-bamboo-seed.png' },
   'Cursed Eclipse Orb': { color: '#120a1e', fuseColor: '#B87CF0', radius: 74, probability: 100, effect: 'lose_life', image: 'cursed-eclipse-orb.png' },
+  'Infernal Dragon Core': { color: '#1a0806', fuseColor: '#FF5522', radius: 78, probability: 100, effect: 'lose_life', image: 'infernal-dragon-core.png' },
 };
 
 // Fruit pool spawned exclusively inside the Bamboo Grove Zen world.
@@ -57,6 +68,13 @@ export const MOON_FRUIT_TYPES: FruitType[] = [
   'Celestial Apple', 'Spirit Pear', 'Moon Peach', 'Moon Mandarin', 'Silver Melon', 'Luna Plum', 'Moon Lime',
 ];
 export const MOON_ASSET_BASE = 'moon/';
+
+// Fruit pool spawned exclusively inside the Crimson Temple Challenge world.
+export const CRIMSON_FRUIT_TYPES: FruitType[] = [
+  'Infernal Apple', 'Infernal Banana', 'Infernal Grape', 'Infernal Papaya',
+  'Infernal Strawberry', 'Infernal Tomato', 'Infernal Watermelon', 'Infernal Pineapple',
+];
+export const CRIMSON_ASSET_BASE = 'crimson/';
 
 export const generateLevels = (): LevelConfig[] => {
   const levels: LevelConfig[] = [];

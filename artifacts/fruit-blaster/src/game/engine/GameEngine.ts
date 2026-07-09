@@ -1,8 +1,8 @@
 import { Fruit, Bomb, FruitHalf, Particle } from '../entities/Entities';
 import { FruitType, BombType } from '../../types/GameTypes';
-import { FRUIT_DATA, BOMB_DATA, BAMBOO_FRUIT_TYPES, MOON_FRUIT_TYPES } from '../../constants/GameData';
-import { drawFruit, drawFruitHalf, drawBambooSprite, drawMoonSprite } from './FruitRenderer';
-import { getBambooImage, getMoonImage } from '../../utils/imageCache';
+import { FRUIT_DATA, BOMB_DATA, BAMBOO_FRUIT_TYPES, MOON_FRUIT_TYPES, CRIMSON_FRUIT_TYPES } from '../../constants/GameData';
+import { drawFruit, drawFruitHalf, drawBambooSprite, drawMoonSprite, drawCrimsonSprite } from './FruitRenderer';
+import { getBambooImage, getMoonImage, getCrimsonImage } from '../../utils/imageCache';
 
 export class GameEngine {
   canvas: HTMLCanvasElement;
@@ -87,6 +87,12 @@ export class GameEngine {
       this.baseBombChance = 0.14;
       this.baseSpawnRate = 45;
       this.baseSpeedMultiplier = 1;
+    } else if (mode === 'challenge') {
+      // Crimson Temple — Challenge Mode: ~40% faster spawns and noticeably more
+      // bombs than the base game, per the zone's "screen should feel alive" design.
+      this.bombChance = 0.28;
+      this.spawnRate = 36;
+      this.speedMultiplier = 1.15;
     } else {
       this.bombChance = 0.2;
       this.spawnRate = 60;
@@ -215,8 +221,28 @@ export class GameEngine {
     if (isBomb) {
       const type: BombType = this.mode === 'bamboo' ? 'Cursed Bamboo Seed'
         : this.mode === 'moon' ? 'Cursed Eclipse Orb'
+        : this.mode === 'challenge' ? 'Infernal Dragon Core'
         : 'Normal';
       this.bombs.push(new Bomb(startX, startY, vx, vy, type));
+    } else if (this.mode === 'challenge') {
+      // Crimson Temple spawns exclusively from our eight infernal fruits, weighted
+      // by probability, and frequently launches multi-fruit waves (2-4 at once)
+      // to keep the screen feeling alive per the zone's design brief.
+      const pool = CRIMSON_FRUIT_TYPES.map(t => [t, FRUIT_DATA[t]] as const);
+      const totalProb = pool.reduce((sum, [, v]) => sum + v.probability, 0);
+      const waveSize = Math.random() < 0.35 ? (Math.random() < 0.4 ? 4 : 3) : (Math.random() < 0.5 ? 2 : 1);
+      for (let i = 0; i < waveSize; i++) {
+        const rand = Math.random() * totalProb;
+        let cumProb = 0;
+        let type: FruitType = CRIMSON_FRUIT_TYPES[0];
+        for (const [k, v] of pool) {
+          cumProb += v.probability;
+          if (rand <= cumProb) { type = k; break; }
+        }
+        const jitterX = startX + (Math.random() - 0.5) * 120 * i;
+        const jitterVx = vx + (Math.random() - 0.5) * 2;
+        this.fruits.push(new Fruit(jitterX, startY, jitterVx, vy, type));
+      }
     } else if (this.mode === 'bamboo') {
       // Bamboo Grove spawns exclusively from our seven custom fruits.
       const type = BAMBOO_FRUIT_TYPES[Math.floor(Math.random() * BAMBOO_FRUIT_TYPES.length)];
@@ -235,7 +261,7 @@ export class GameEngine {
       this.fruits.push(new Fruit(startX, startY, vx, vy, type));
     } else {
       // Pick fruit type by probability
-      const pool = Object.entries(FRUIT_DATA).filter(([k]) => !BAMBOO_FRUIT_TYPES.includes(k as FruitType) && !MOON_FRUIT_TYPES.includes(k as FruitType) && k !== 'Lunar Kiwi');
+      const pool = Object.entries(FRUIT_DATA).filter(([k]) => !BAMBOO_FRUIT_TYPES.includes(k as FruitType) && !MOON_FRUIT_TYPES.includes(k as FruitType) && !CRIMSON_FRUIT_TYPES.includes(k as FruitType) && k !== 'Lunar Kiwi');
       const totalProb = pool.reduce((sum, [, v]) => sum + v.probability, 0);
       const rand = Math.random() * totalProb;
       let cumProb = 0;
@@ -414,7 +440,7 @@ export class GameEngine {
       ctx.translate(b.pos.x, b.pos.y);
       ctx.rotate(b.rotation);
 
-      if (drawMoonSprite(ctx, b.type, b.radius) || drawBambooSprite(ctx, b.type, b.radius)) {
+      if (drawMoonSprite(ctx, b.type, b.radius) || drawBambooSprite(ctx, b.type, b.radius) || drawCrimsonSprite(ctx, b.type, b.radius)) {
         ctx.restore();
         return;
       }
@@ -506,6 +532,27 @@ export class GameEngine {
       }
     }
 
+    // Crimson Temple: the Infernal Dragon Blade follows the fingertip — sized to
+    // read as a heavy, weighty weapon (~230-260px on a 1080p canvas) without
+    // overwhelming the fruits.
+    if (this.mode === 'challenge' && this.swordTrail.length > 0) {
+      const tip = this.swordTrail[0];
+      const prev = this.swordTrail[Math.min(3, this.swordTrail.length - 1)];
+      const swordImg = getCrimsonImage('infernal-dragon-blade.png');
+      if (swordImg) {
+        const angle = Math.atan2(tip.y - prev.y, tip.x - prev.x) + Math.PI / 4;
+        const h = (240 / 1080) * this.height * 1.9;
+        const w = h * (swordImg.naturalWidth / swordImg.naturalHeight);
+        ctx.save();
+        ctx.translate(tip.x, tip.y);
+        ctx.rotate(angle);
+        ctx.shadowBlur = 24;
+        ctx.shadowColor = 'rgba(255,90,40,0.85)';
+        ctx.drawImage(swordImg, -w * 0.15, -h * 0.85, w, h);
+        ctx.restore();
+      }
+    }
+
     // Draw Sword Trail
     if (this.swordTrail.length > 1) {
       ctx.save();
@@ -538,8 +585,9 @@ export class GameEngine {
       ctx.shadowBlur = 0;
       ctx.strokeStyle = this.mode === 'bamboo' ? 'rgba(180,255,180,0.55)'
         : this.mode === 'moon' ? 'rgba(190,215,255,0.6)'
+        : this.mode === 'challenge' ? 'rgba(255,120,60,0.6)'
         : '#ffffff';
-      ctx.lineWidth = (this.mode === 'bamboo' || this.mode === 'moon') ? 2 : 3;
+      ctx.lineWidth = (this.mode === 'bamboo' || this.mode === 'moon' || this.mode === 'challenge') ? 2 : 3;
       ctx.stroke();
       
       ctx.restore();
