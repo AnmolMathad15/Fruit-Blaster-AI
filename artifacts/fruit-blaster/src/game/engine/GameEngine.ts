@@ -613,7 +613,7 @@ export class GameEngine {
         ctx.rotate(angle);
         ctx.shadowBlur = 18;
         ctx.shadowColor = 'rgba(120,255,140,0.65)';
-        ctx.drawImage(swordImg, -w * 0.15, -h * 0.85, w, h);
+        ctx.drawImage(swordImg, -w / 2, -h / 2, w, h);
         ctx.restore();
       }
     }
@@ -632,7 +632,7 @@ export class GameEngine {
         ctx.rotate(angle);
         ctx.shadowBlur = this.moonBlessingActive ? 30 : 20;
         ctx.shadowColor = this.moonBlessingActive ? 'rgba(140,190,255,0.95)' : 'rgba(200,220,255,0.75)';
-        ctx.drawImage(swordImg, -w * 0.15, -h * 0.85, w, h);
+        ctx.drawImage(swordImg, -w / 2, -h / 2, w, h);
         ctx.restore();
       }
     }
@@ -653,7 +653,7 @@ export class GameEngine {
         ctx.rotate(angle);
         ctx.shadowBlur = 24;
         ctx.shadowColor = 'rgba(255,90,40,0.85)';
-        ctx.drawImage(swordImg, -w * 0.15, -h * 0.85, w, h);
+        ctx.drawImage(swordImg, -w / 2, -h / 2, w, h);
         ctx.restore();
       }
     }
@@ -674,7 +674,7 @@ export class GameEngine {
         ctx.rotate(angle);
         ctx.shadowBlur = 28;
         ctx.shadowColor = 'rgba(255,220,140,0.9)';
-        ctx.drawImage(swordImg, -w * 0.15, -h * 0.85, w, h);
+        ctx.drawImage(swordImg, -w / 2, -h / 2, w, h);
         ctx.restore();
       }
     }
@@ -694,7 +694,7 @@ export class GameEngine {
         ctx.rotate(angle);
         ctx.shadowBlur = 22;
         ctx.shadowColor = 'rgba(255,215,160,0.8)';
-        ctx.drawImage(swordImg, -w * 0.15, -h * 0.85, w, h);
+        ctx.drawImage(swordImg, -w / 2, -h / 2, w, h);
         ctx.restore();
       }
     }
