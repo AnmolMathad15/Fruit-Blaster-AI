@@ -16,6 +16,7 @@ const ZONE_MUSIC: Partial<Record<GameMode, string>> = {
   bamboo: 'bamboo/bamboo-grove-music.mp3',
   challenge: 'crimson/crimson-temple-music.mp3',
   survival: 'imperial/imperial-palace-music.mp3',
+  classic: 'dojo/dojo-gate-music.mp3',
 };
 
 export default function GameScreen() {
