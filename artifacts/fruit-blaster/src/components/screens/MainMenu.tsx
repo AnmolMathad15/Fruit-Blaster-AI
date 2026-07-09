@@ -1,7 +1,49 @@
-import { useEffect, useRef, useState } from 'react';
+/**
+ * MainMenu — Landing page
+ *
+ * The looping video (landing-video.mp4, 1376×768) contains its own
+ * "PLAY NOW" button in the animation. An invisible hit-area is placed
+ * exactly over it using the same cover-layout system as the intro screens.
+ *
+ * ── Debug / Calibration ─────────────────────────────────────────────
+ *   1.  Click "⚫ Debug OFF" (top-right) → turns red, shows overlay.
+ *   2.  A draggable red rectangle appears over the button area.
+ *   3.  Drag it until it perfectly covers the video's PLAY NOW button.
+ *   4.  Read vx / vy / vw / vh from the live panel.
+ *   5.  Paste those values into BTN_VX / BTN_VY / BTN_VW / BTN_VH below.
+ *   6.  Toggle debug off — the hit-area is fully invisible and pixel-perfect.
+ * ────────────────────────────────────────────────────────────────────
+ */
+
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { useGameStore } from '../../store/gameStore';
 import { useSoundManager } from '../../hooks/useSoundManager';
+
+/* ─── Native video dimensions (1376×768) ───────────────────────────── */
+const VID_W = 1376;
+const VID_H = 768;
+
+/* ─── PLAY NOW button position in native 1376×768 video pixels ──────── */
+// ⚠️  Calibrate with Debug Mode, then hard-code the result.
+let BTN_VX = 688;   // centre X
+let BTN_VY = 560;   // centre Y
+let BTN_VW = 340;   // width
+let BTN_VH = 80;    // height
+
+/* ─── Cover-layout helpers ───────────────────────────────────────────── */
+interface CoverLayout { scale: number; offsetX: number; offsetY: number; }
+
+function computeCoverLayout(cw: number, ch: number): CoverLayout {
+  const scale = Math.max(cw / VID_W, ch / VID_H);
+  return { scale, offsetX: (cw - VID_W * scale) / 2, offsetY: (ch - VID_H * scale) / 2 };
+}
+function toScreen(vx: number, vy: number, l: CoverLayout) {
+  return { x: l.offsetX + vx * l.scale, y: l.offsetY + vy * l.scale };
+}
+function toNative(sx: number, sy: number, l: CoverLayout) {
+  return { vx: Math.round((sx - l.offsetX) / l.scale), vy: Math.round((sy - l.offsetY) / l.scale) };
+}
 
 /* ─────────────────────────────────────────────
    Sakura petal type
@@ -17,9 +59,6 @@ interface Petal {
   hue: number;
 }
 
-/* ─────────────────────────────────────────────
-   CSS keyframes
-───────────────────────────────────────────── */
 const STYLES = `
 @keyframes vignette-breathe {
   0%,100% { opacity: .80; }
@@ -29,29 +68,8 @@ const STYLES = `
   0%,100% { box-shadow: 0 0 8px rgba(200,140,20,.25); }
   50%     { box-shadow: 0 0 16px rgba(255,200,60,.50); }
 }
-@keyframes btn-float {
-  0%,100% { transform: translateY(0px);  }
-  50%     { transform: translateY(-8px); }
-}
-@keyframes btn-glow-pulse {
-  0%,100% { box-shadow: 0 0 20px 6px rgba(255,190,40,.55), 0 0 60px 14px rgba(220,130,10,.28), inset 0 0 12px rgba(255,210,80,.15); }
-  50%     { box-shadow: 0 0 38px 12px rgba(255,220,60,.80), 0 0 90px 26px rgba(240,160,20,.45), inset 0 0 22px rgba(255,230,100,.28); }
-}
-@keyframes btn-shine {
-  0%   { transform: translateX(-140%) skewX(-18deg); opacity: 0; }
-  10%  { opacity: 1; }
-  90%  { opacity: 1; }
-  100% { transform: translateX(340%)  skewX(-18deg); opacity: 0; }
-}
-@keyframes sword-idle {
-  0%,100% { transform: rotate(-8deg) scale(1);    }
-  50%     { transform: rotate(-5deg) scale(1.04); }
-}
 `;
 
-/* ─────────────────────────────────────────────
-   Spawn helper
-───────────────────────────────────────────── */
 function spawnPetal(W: number, scatterY = false): Petal {
   return {
     x:          Math.random() * W,
@@ -69,9 +87,6 @@ function spawnPetal(W: number, scatterY = false): Petal {
   };
 }
 
-/* ─────────────────────────────────────────────
-   Draw a single sakura petal (3 overlapping ellipses)
-───────────────────────────────────────────── */
 function drawPetal(ctx: CanvasRenderingContext2D, p: Petal) {
   ctx.save();
   ctx.translate(p.x, p.y);
@@ -99,31 +114,47 @@ function drawPetal(ctx: CanvasRenderingContext2D, p: Petal) {
   ctx.restore();
 }
 
-/* ─────────────────────────────────────────────
-   Main component
-───────────────────────────────────────────── */
 const PETAL_COUNT = 200;
 
+/* ═══════════════════════════════════════════════════════════════════════
+   Main component
+═══════════════════════════════════════════════════════════════════════ */
 export default function MainMenu() {
   const { setScreen } = useGameStore();
-  const { playClick }  = useSoundManager();
+  const { playClick } = useSoundManager();
 
-  const audioRef   = useRef<HTMLAudioElement>(null);
-  const videoRef   = useRef<HTMLVideoElement>(null);
-  const canvasRef  = useRef<HTMLCanvasElement>(null);
-  const rafRef     = useRef<number>(0);
-  const petals     = useRef<Petal[]>([]);
-  const musicReady = useRef(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const audioRef     = useRef<HTMLAudioElement>(null);
+  const videoRef     = useRef<HTMLVideoElement>(null);
+  const canvasRef    = useRef<HTMLCanvasElement>(null);
+  const rafRef       = useRef<number>(0);
+  const petals       = useRef<Petal[]>([]);
+  const musicReady   = useRef(false);
 
-  const [muted, setMuted] = useState(false);
+  const [muted,  setMuted]  = useState(false);
+  const [debug,  setDebug]  = useState(false);
+  const [layout, setLayout] = useState<CoverLayout>({ scale: 1, offsetX: 0, offsetY: 0 });
+  const [drag,   setDrag]   = useState({ dx: 0, dy: 0 });
+  const [copied, setCopied] = useState(false);
+
+  /* ── Cover-layout tracker ── */
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const update = () => setLayout(computeCoverLayout(el.clientWidth, el.clientHeight));
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
   /* ── Canvas resize ── */
-  const resizeCanvas = () => {
+  const resizeCanvas = useCallback(() => {
     const c = canvasRef.current;
     if (!c) return;
     c.width  = window.innerWidth;
     c.height = window.innerHeight;
-  };
+  }, []);
 
   /* ── Init petals ── */
   useEffect(() => {
@@ -132,7 +163,7 @@ export default function MainMenu() {
     const W = window.innerWidth;
     petals.current = Array.from({ length: PETAL_COUNT }, () => spawnPetal(W, true));
     return () => window.removeEventListener('resize', resizeCanvas);
-  }, []);
+  }, [resizeCanvas]);
 
   /* ── RAF loop: 200 sakura petals ── */
   useEffect(() => {
@@ -143,20 +174,16 @@ export default function MainMenu() {
     const tick = () => {
       const W = canvas.width, H = canvas.height;
       ctx.clearRect(0, 0, W, H);
-
       for (const p of petals.current) {
         p.phase += p.phaseSpeed;
         p.x     += p.vx + Math.sin(p.phase) * p.swayAmp;
         p.y     += p.vy;
         p.rot   += p.rotV;
-
         if (p.x < -20)    p.x = W + 10;
         if (p.x > W + 20) p.x = -10;
         if (p.y > H + 20) Object.assign(p, spawnPetal(W, false));
-
         drawPetal(ctx, p);
       }
-
       rafRef.current = requestAnimationFrame(tick);
     };
 
@@ -172,7 +199,6 @@ export default function MainMenu() {
     audio.muted  = false;
 
     let fallback: (() => void) | null = null;
-
     audio.play()
       .then(() => { musicReady.current = true; })
       .catch(() => {
@@ -185,12 +211,10 @@ export default function MainMenu() {
         document.addEventListener('pointerdown', fallback);
       });
 
-    return () => {
-      if (fallback) document.removeEventListener('pointerdown', fallback);
-    };
+    return () => { if (fallback) document.removeEventListener('pointerdown', fallback); };
   }, []);
 
-  /* ── Video autoplay (always muted so browser permits it) ── */
+  /* ── Video autoplay (muted so browser permits it) ── */
   useEffect(() => {
     const v = videoRef.current;
     if (!v) return;
@@ -198,6 +222,7 @@ export default function MainMenu() {
     v.play().catch(() => {});
   }, []);
 
+  /* ── Mute toggle ── */
   const toggleMute = (e: React.MouseEvent) => {
     e.stopPropagation();
     const audio = audioRef.current;
@@ -209,13 +234,53 @@ export default function MainMenu() {
     setMuted(audio.muted);
   };
 
-  const handlePlay = () => {
+  /* ── PLAY NOW handler ── */
+  const handlePlay = useCallback(() => {
     playClick();
     setScreen('guardian');
+  }, [playClick, setScreen]);
+
+  /* ── Compute screen-space button rect ── */
+  const btnBase = toScreen(BTN_VX, BTN_VY, layout);
+  const btnW    = BTN_VW * layout.scale;
+  const btnH    = BTN_VH * layout.scale;
+  const btnL    = btnBase.x - btnW / 2 + drag.dx;
+  const btnT    = btnBase.y - btnH / 2 + drag.dy;
+
+  /* ── Live native coords for debug panel ── */
+  const liveCentre = toNative(btnL + btnW / 2, btnT + btnH / 2, layout);
+
+  /* ── Debug drag handlers ── */
+  const startDrag = useCallback((e: React.MouseEvent) => {
+    if (!debug) return;
+    e.preventDefault();
+    const startX = e.clientX - drag.dx;
+    const startY = e.clientY - drag.dy;
+    const onMove = (ev: MouseEvent) => setDrag({ dx: ev.clientX - startX, dy: ev.clientY - startY });
+    const onUp   = () => {
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseup', onUp);
+    };
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+  }, [debug, drag]);
+
+  /* ── Copy coords ── */
+  const copyCoords = () => {
+    const text =
+      `let BTN_VX = ${liveCentre.vx};   // centre X\n` +
+      `let BTN_VY = ${liveCentre.vy};   // centre Y\n` +
+      `let BTN_VW = ${BTN_VW};   // width\n` +
+      `let BTN_VH = ${BTN_VH};   // height`;
+    navigator.clipboard.writeText(text).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
   };
 
   return (
     <div
+      ref={containerRef}
       className="w-full h-full relative overflow-hidden select-none"
       style={{ background: '#060208' }}
     >
@@ -224,20 +289,15 @@ export default function MainMenu() {
       {/* ── 0. Silent preload of page-2 cinematic ── */}
       <video
         src={`${import.meta.env.BASE_URL}page2-cinematic.mp4`}
-        preload="auto"
-        muted
-        playsInline
-        style={{ display: 'none' }}
-        aria-hidden="true"
+        preload="auto" muted playsInline
+        style={{ display: 'none' }} aria-hidden="true"
       />
 
       {/* ── 1. Looping video background ── */}
       <video
         ref={videoRef}
         src={`${import.meta.env.BASE_URL}landing-video.mp4`}
-        loop
-        muted
-        playsInline
+        loop muted playsInline
         className="absolute inset-0 w-full h-full"
         style={{ objectFit: 'cover', objectPosition: 'center' }}
       />
@@ -258,84 +318,94 @@ export default function MainMenu() {
         style={{ mixBlendMode: 'screen' }}
       />
 
-      {/* ── 4. PLAY NOW button ── */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.82 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.6, duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+      {/* ── 4. Invisible PLAY NOW hit-area (over video's own button) ── */}
+      <div
+        onMouseDown={debug ? startDrag : undefined}
+        onClick={!debug ? handlePlay : undefined}
         style={{
-          position: 'absolute',
-          left: '50%',
-          top: '72%',
-          transform: 'translateX(-50%)',
-          zIndex: 30,
+          position:      'absolute',
+          left:          btnL,
+          top:           btnT,
+          width:         btnW,
+          height:        btnH,
+          cursor:        debug ? 'grab' : 'pointer',
+          pointerEvents: 'auto',
+          zIndex:        20,
+          /* invisible in production; red outline in debug */
+          background:    debug ? 'rgba(255,30,30,0.28)' : 'transparent',
+          border:        debug ? '2px dashed rgba(255,80,80,0.85)' : 'none',
+          borderRadius:  8,
         }}
       >
-        <button
-          onClick={handlePlay}
-          aria-label="Play Now"
-          style={{
-            animation: 'btn-float 3.8s ease-in-out infinite, btn-glow-pulse 2.4s ease-in-out infinite',
-            cursor: 'pointer',
-            background: 'linear-gradient(180deg, #f5d97a 0%, #d4a520 35%, #b8840e 65%, #e8c54a 100%)',
-            border: '3px solid rgba(255,220,80,0.70)',
-            borderRadius: 6,
-            padding: '0 48px',
-            height: 62,
-            minWidth: 260,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 14,
-            outline: 'none',
-            overflow: 'hidden',
-            position: 'relative',
-          }}
-        >
-          {/* Shimmer sweep */}
-          <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', borderRadius: 6, pointerEvents: 'none' }}>
-            <div style={{
-              position: 'absolute', top: 0, left: 0,
-              width: '32%', height: '100%',
-              background: 'linear-gradient(90deg, transparent, rgba(255,245,180,0.55), transparent)',
-              animation: 'btn-shine 2.8s ease-in-out 1.2s infinite',
-            }}/>
+        {debug && (
+          <div style={{
+            position: 'absolute', top: '50%', left: '50%',
+            transform: 'translate(-50%,-50%)',
+            fontFamily: 'monospace', fontSize: 11, color: '#fff',
+            textShadow: '0 0 4px #000,0 0 4px #000',
+            pointerEvents: 'none', textAlign: 'center', lineHeight: 1.6,
+          }}>
+            <div style={{ fontWeight: 700, fontSize: 12 }}>PLAY NOW</div>
+            <div>vx:{liveCentre.vx}  vy:{liveCentre.vy}</div>
+            <div>vw:{BTN_VW}  vh:{BTN_VH}</div>
+            <div style={{ fontSize: 10, opacity: 0.7 }}>drag to align</div>
           </div>
+        )}
+      </div>
 
-          {/* Sword icon */}
-          <span style={{
-            fontSize: 26, lineHeight: 1,
-            animation: 'sword-idle 3s ease-in-out infinite',
-            display: 'inline-block',
-            filter: 'drop-shadow(0 0 4px rgba(255,200,80,0.8))',
-          }}>
-            ⚔️
-          </span>
+      {/* ── 5. Debug calibration panel ── */}
+      {debug && (
+        <div style={{
+          position: 'absolute', top: 50, right: 12, zIndex: 200,
+          background: 'rgba(0,0,0,0.90)',
+          border: '1px solid rgba(255,80,80,0.45)',
+          borderRadius: 10, padding: '14px 16px',
+          fontFamily: 'monospace', fontSize: 11, color: '#fff',
+          minWidth: 230, backdropFilter: 'blur(6px)',
+          boxShadow: '0 4px 24px rgba(0,0,0,0.8)',
+        }}>
+          <div style={{ fontWeight: 700, fontSize: 12, marginBottom: 10, color: '#ff8080' }}>
+            🎯 PLAY NOW button calibration
+          </div>
+          <div style={{ lineHeight: 2, color: '#aaa' }}>
+            centre X: <b style={{ color: '#fff' }}>{liveCentre.vx}</b><br />
+            centre Y: <b style={{ color: '#fff' }}>{liveCentre.vy}</b><br />
+            width:    <b style={{ color: '#fff' }}>{BTN_VW}</b><br />
+            height:   <b style={{ color: '#fff' }}>{BTN_VH}</b>
+          </div>
+          <div style={{ display: 'flex', gap: 6, marginTop: 12 }}>
+            <button onClick={copyCoords} style={{
+              flex: 1, padding: '6px 0',
+              background: copied ? 'rgba(60,180,60,0.8)' : 'rgba(255,80,80,0.7)',
+              border: 'none', borderRadius: 6,
+              color: '#fff', fontFamily: 'monospace',
+              fontSize: 11, cursor: 'pointer', fontWeight: 700,
+            }}>
+              {copied ? '✓ Copied!' : '📋 Copy coords'}
+            </button>
+            <button onClick={() => setDrag({ dx: 0, dy: 0 })} style={{
+              padding: '6px 10px',
+              background: 'rgba(255,255,255,0.1)',
+              border: '1px solid rgba(255,255,255,0.2)',
+              borderRadius: 6, color: '#ccc',
+              fontFamily: 'monospace', fontSize: 11, cursor: 'pointer',
+            }}>↺</button>
+          </div>
+          <div style={{ marginTop: 10, color: 'rgba(255,255,255,0.35)', fontSize: 10, lineHeight: 1.5 }}>
+            Drag the red box onto the PLAY NOW button.<br />
+            Copy → paste values into BTN_VX/VY/VW/VH.
+          </div>
+        </div>
+      )}
 
-          {/* Label */}
-          <span style={{
-            fontFamily: '"Cinzel Decorative", "Palatino Linotype", Georgia, serif',
-            fontSize: 22,
-            fontWeight: 700,
-            letterSpacing: '0.12em',
-            color: '#3a1a00',
-            textShadow: '0 1px 0 rgba(255,240,140,0.60), 0 -1px 0 rgba(0,0,0,0.30)',
-            textTransform: 'uppercase',
-          }}>
-            Play Now
-          </span>
-        </button>
-      </motion.div>
-
-      {/* ── 5. Music ── */}
+      {/* ── 6. Music ── */}
       <audio
         ref={audioRef}
         src={`${import.meta.env.BASE_URL}landing-music.mp3`}
-        loop
-        preload="auto"
+        loop preload="auto"
       />
 
-      {/* ── 6. Mute toggle ── */}
+      {/* ── 7. Mute toggle ── */}
       <motion.button
         whileHover={{ scale: 1.12 }}
         whileTap={{ scale: 0.88 }}
@@ -355,6 +425,22 @@ export default function MainMenu() {
       >
         {muted ? '🔇' : '🔊'}
       </motion.button>
+
+      {/* ── 8. Debug toggle ── */}
+      <button
+        onClick={() => setDebug(v => !v)}
+        style={{
+          position: 'absolute', top: 14, left: 14, zIndex: 300,
+          padding: '5px 12px', fontFamily: 'monospace', fontSize: 11,
+          background: debug ? 'rgba(255,60,60,0.85)' : 'rgba(0,0,0,0.55)',
+          color: '#fff',
+          border: `1px solid ${debug ? '#ff4444' : 'rgba(255,255,255,0.2)'}`,
+          borderRadius: 6, cursor: 'pointer', backdropFilter: 'blur(4px)',
+          transition: 'all 0.2s',
+        }}
+      >
+        {debug ? '🔴 Debug ON' : '⚫ Debug OFF'}
+      </button>
     </div>
   );
 }
