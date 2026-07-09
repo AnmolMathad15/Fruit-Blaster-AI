@@ -19,8 +19,9 @@ export interface Circle {
 export type FruitType = 'Apple' | 'Orange' | 'Banana' | 'Watermelon' | 'Kiwi' | 'Pineapple' | 'Pear' | 'Dragon Fruit' | 'Strawberry' | 'Blueberry' | 'Golden Apple' | 'Rainbow Mango'
   | 'Jade Apple' | 'Bamboo Pear' | 'Emerald Kiwi' | 'Lotus Peach' | 'Zen Melon' | 'Sacred Plum' | 'Forest Lime'
   | 'Celestial Apple' | 'Spirit Pear' | 'Lunar Kiwi' | 'Moon Peach' | 'Moon Mandarin' | 'Silver Melon' | 'Luna Plum' | 'Moon Lime'
-  | 'Infernal Apple' | 'Infernal Banana' | 'Infernal Grape' | 'Infernal Papaya' | 'Infernal Strawberry' | 'Infernal Tomato' | 'Infernal Watermelon' | 'Infernal Pineapple';
-export type BombType = 'Normal' | 'Golden' | 'Frozen' | 'Explosive' | 'Cursed Bamboo Seed' | 'Cursed Eclipse Orb' | 'Infernal Dragon Core';
+  | 'Infernal Apple' | 'Infernal Banana' | 'Infernal Grape' | 'Infernal Papaya' | 'Infernal Strawberry' | 'Infernal Tomato' | 'Infernal Watermelon' | 'Infernal Pineapple'
+  | 'Imperial Apple' | 'Imperial Banana' | 'Imperial Cherry' | 'Imperial Raspberry' | 'Imperial Gooseberry' | 'Imperial Grapefruit' | 'Imperial Sugarcane' | 'Imperial Jackfruit' | 'Imperial Durian';
+export type BombType = 'Normal' | 'Golden' | 'Frozen' | 'Explosive' | 'Cursed Bamboo Seed' | 'Cursed Eclipse Orb' | 'Infernal Dragon Core' | "Emperor's Judgment Orb";
 
 export interface ParticleConfig {
   x: number;

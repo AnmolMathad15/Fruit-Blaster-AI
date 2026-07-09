@@ -37,3 +37,7 @@ export function getMoonImage(fileName: string): HTMLImageElement | null {
 export function getCrimsonImage(fileName: string): HTMLImageElement | null {
   return getSpriteImage('crimson', fileName);
 }
+
+export function getImperialImage(fileName: string): HTMLImageElement | null {
+  return getSpriteImage('imperial', fileName);
+}

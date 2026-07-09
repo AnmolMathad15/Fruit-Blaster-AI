@@ -1,0 +1,719 @@
+# 👑 IMPERIAL HEAVEN PALACE — COMPLETE MASTER GAME ZONE PROMPT
+
+## OBJECTIVE
+
+Design the **Imperial Heaven Palace**, the FINAL and most prestigious world of Fruit Blaster.
+
+This is NOT a recolor of previous worlds.
+
+This is NOT simply a palace with gold decorations.
+
+This is the highest realm of the Fruit Blaster universe—the sacred residence of the Celestial Emperor, floating above the heavens where only legendary sword masters may enter.
+
+The player should immediately feel they have reached the final stage of mastery.
+
+Everything must feel divine, luxurious, elegant, majestic, and worthy of a AAA premium fantasy mobile game.
+
+---
+
+# WORLD LORE
+
+After mastering the Moon Shrine and conquering the Crimson Temple, the warrior is finally granted permission to enter the Imperial Heaven Palace.
+
+Here, every fruit has been blessed by Heaven.
+
+Every sword strike is judged by the Celestial Emperor.
+
+Every combo is witnessed by the Golden Dragon and Divine Phoenix.
+
+This is the realm where only true masters can survive.
+
+---
+
+# ART STYLE
+
+AAA Premium Mobile Game
+
+Ultra High-End Fantasy
+
+Chinese Imperial Fantasy
+
+Ancient Eastern Mythology
+
+Stylized Semi-Realistic
+
+Highly Polished PBR Materials
+
+Elegant
+
+Luxurious
+
+Game Ready
+
+NOT Cartoon
+
+NOT Anime
+
+NOT Sci-Fi
+
+NOT Medieval European
+
+Everything should look handcrafted and premium.
+
+---
+
+# ENVIRONMENT
+
+The palace floats above an endless ocean of clouds.
+
+Visible environment includes:
+
+Massive Imperial Palace
+
+Ancient Chinese architecture
+
+White marble staircases
+
+Golden palace gates
+
+Imperial throne halls
+
+Floating temples
+
+Cloud bridges
+
+Golden rooftops
+
+White jade dragon pillars
+
+Phoenix statues
+
+Dragon statues
+
+Sacred heavenly waterfalls
+
+Crystal rivers
+
+Floating islands
+
+Golden cherry blossom trees
+
+Ancient bonsai gardens
+
+Imperial lanterns
+
+Ceremonial bells
+
+Heavenly lotus ponds
+
+Royal banners
+
+Cloud terraces
+
+Everything should feel enormous.
+
+Nothing should look abandoned.
+
+Everything is clean, sacred and luxurious.
+
+---
+
+# SKY
+
+Golden sunrise.
+
+Ocean of clouds.
+
+God rays.
+
+Blue heavenly sky.
+
+Soft rainbow reflections.
+
+Flying white cranes.
+
+Golden dragon occasionally circles the palace.
+
+Divine phoenix occasionally flies across the sky.
+
+Soft floating petals.
+
+Everything feels peaceful yet majestic.
+
+---
+
+# BACKGROUND ANIMATIONS
+
+Moving clouds.
+
+Flowing heavenly waterfalls.
+
+Floating golden leaves.
+
+Cherry blossom petals.
+
+Small glowing particles.
+
+Cloud movement.
+
+Dragon silhouette flying in distance.
+
+Phoenix silhouette occasionally appears.
+
+Imperial banners gently wave.
+
+Temple bells move slightly.
+
+Everything should remain subtle.
+
+Never distract gameplay.
+
+---
+
+# GAMEPLAY AREA
+
+The center gameplay area must remain perfectly clean.
+
+No background object should block fruits.
+
+Excellent visibility.
+
+Strong contrast.
+
+Maximum readability.
+
+Player should instantly identify every fruit.
+
+---
+
+# PLAYER WEAPON
+
+## 👑 Imperial Heaven Blade
+
+Use the custom Imperial Heaven Blade already designed.
+
+The sword should immediately communicate divine authority.
+
+Materials:
+
+Celestial Steel
+
+White Jade
+
+Imperial Gold
+
+Heavenly Crystal
+
+Pearl White
+
+Dragon engraving
+
+Phoenix engraving
+
+Cloud motifs
+
+Mirror polished finish
+
+The weapon should feel like the strongest sword ever forged.
+
+---
+
+# SWORD SIZE
+
+Increase sword size compared to previous worlds.
+
+Blade Length:
+Approximately 20–25% larger than Crimson Temple sword.
+
+Blade Width:
+Increase width by approximately 20%.
+
+The sword should appear powerful without hiding gameplay.
+
+The sword must remain elegant rather than oversized.
+
+It should feel heavy, premium and satisfying.
+
+---
+
+# SWORD CONTROLS
+
+The sword follows mouse movement with zero noticeable latency.
+
+Movement should feel:
+
+Extremely responsive
+
+Smooth
+
+Fluid
+
+Natural
+
+High precision
+
+Professional quality.
+
+Every movement should accurately follow the cursor.
+
+No delayed tracking.
+
+No jitter.
+
+No skipped frames.
+
+No collision inaccuracies.
+
+---
+
+# SLICE DETECTION
+
+Collision detection must prioritize accuracy.
+
+Every swipe intersecting a fruit should register instantly.
+
+No missed slices.
+
+No false positives.
+
+High-frequency collision updates.
+
+Fast swipe recognition.
+
+Precise trail detection.
+
+Even quick flicks should consistently slice fruits.
+
+---
+
+# SWORD STRIKE EFFECTS
+
+Every slash should feel divine.
+
+Each strike creates:
+
+Golden energy trail
+
+White celestial light
+
+Flowing cloud ribbons
+
+Dragon-shaped golden energy
+
+Phoenix feather particles
+
+Tiny glowing lotus petals
+
+Pearlescent sparkles
+
+Golden light fragments
+
+Soft divine shockwave
+
+Beautiful trailing light
+
+Everything elegant.
+
+No flames.
+
+No lava.
+
+No smoke.
+
+No explosions.
+
+Effects should disappear quickly to preserve visibility.
+
+---
+
+# UNIQUE SPECIAL SLASHES
+
+Randomly alternate between:
+
+Golden Dragon Slash
+
+Phoenix Wing Slash
+
+Heavenly Crescent Slash
+
+Celestial Light Arc
+
+Imperial Divine Slash
+
+Each slash has its own elegant trail animation.
+
+No two consecutive slashes should feel identical.
+
+---
+
+# FRUITS
+
+Use all Imperial Heaven Palace assets:
+
+Imperial Apple
+
+Imperial Banana
+
+Imperial Cherry
+
+Imperial Raspberry
+
+Imperial Grapefruit
+
+Imperial Durian
+
+Imperial Jackfruit
+
+Imperial Gooseberry
+
+Imperial Pumpkin
+
+Imperial Sugarcane
+
+Every fruit should retain:
+
+Premium glossy material
+
+Golden veins
+
+Jade accents
+
+Divine aura
+
+Perfect readability
+
+AAA quality.
+
+---
+
+# FRUIT SIZE
+
+Increase fruit size by approximately 15–20% compared to previous worlds.
+
+The larger size improves:
+
+Visibility
+
+Slice satisfaction
+
+Gameplay clarity
+
+Combo accuracy
+
+No fruit should appear tiny.
+
+Even Cherry and Raspberry must remain clearly visible.
+
+---
+
+# FRUIT SPAWN RATE
+
+The Imperial Heaven Palace is the most intense world.
+
+Increase fruit frequency significantly.
+
+Target:
+
+40–50% more fruits than Crimson Temple.
+
+Very little idle time.
+
+Frequent multi-fruit waves.
+
+Examples:
+
+2 fruits
+
+3 fruits
+
+4 fruits
+
+5 fruits
+
+6 fruits
+
+7 fruits
+
+Occasional massive fruit storms.
+
+The screen should always feel alive.
+
+Never empty.
+
+---
+
+# FRUIT MOVEMENT
+
+Natural physics.
+
+Smooth arcs.
+
+Different launch heights.
+
+Different launch speeds.
+
+Random rotations.
+
+Natural spacing.
+
+No impossible overlaps.
+
+Large combo opportunities.
+
+---
+
+# BOMB
+
+Use the Emperor's Judgment Orb.
+
+Never use modern bombs.
+
+The orb appears sacred yet dangerous.
+
+Materials:
+
+White Jade
+
+Imperial Gold
+
+Celestial Crystal
+
+Floating golden rings
+
+Golden runes
+
+Heavenly energy core
+
+Soft divine glow.
+
+---
+
+# BOMB FREQUENCY
+
+Increase bomb frequency compared to Crimson Temple.
+
+Bombs appear frequently enough to create tension.
+
+Patterns include:
+
+Single bomb
+
+Bomb + 2 fruits
+
+Bomb + 3 fruits
+
+Double bombs
+
+Late-game triple bomb waves
+
+Bomb placement must always remain fair.
+
+The player must always have time to react.
+
+No unavoidable deaths.
+
+---
+
+# FRUIT SLICE EFFECTS
+
+When sliced:
+
+Fruit splits naturally into two halves.
+
+Golden juice bursts outward.
+
+Pearlescent droplets.
+
+Lotus petals.
+
+Golden particles.
+
+Cloud mist.
+
+Tiny jade fragments.
+
+Divine sparkles.
+
+The sliced halves glow briefly before disappearing.
+
+---
+
+# COMBO SYSTEM
+
+3 Fruits
+
+Golden Petal Burst
+
+5 Fruits
+
+Dragon Spirit appears
+
+7 Fruits
+
+Phoenix flies across screen
+
+10 Fruits
+
+Dragon and Phoenix circle together
+
+15 Fruits
+
+Heaven Gate opens briefly
+
+20+ Fruits
+
+Celestial Emperor's Blessing fills the screen with divine light for less than one second.
+
+All effects must remain fast and never block gameplay.
+
+---
+
+# SCORE SYSTEM
+
+Each fruit awards points.
+
+Combo chains multiply score.
+
+Perfect continuous slicing earns higher multipliers.
+
+Large combo waves should feel highly rewarding.
+
+---
+
+# LIVES
+
+Player starts with 3 lives.
+
+Missing one fruit:
+
+Lose 1 life.
+
+Bomb falling safely:
+
+No penalty.
+
+Slicing Emperor's Judgment Orb:
+
+Immediate Game Over.
+
+---
+
+# DIFFICULTY
+
+This is the hardest world.
+
+Difficulty increases gradually.
+
+Every 30–45 seconds:
+
+Increase fruit speed.
+
+Increase fruit count.
+
+Increase bomb frequency.
+
+Increase combo opportunities.
+
+Gameplay becomes faster but always fair.
+
+---
+
+# CAMERA
+
+Static gameplay camera.
+
+No unnecessary movement.
+
+Very subtle camera shake only for:
+
+Huge combo
+
+Bomb explosion
+
+Ultimate combo
+
+Critical slice
+
+Shake should last less than 0.2 seconds.
+
+---
+
+# USER INTERFACE
+
+White marble panels.
+
+Imperial gold borders.
+
+Jade ornaments.
+
+Elegant Chinese-inspired decorative corners.
+
+Premium serif-inspired English typography.
+
+Smooth UI animations.
+
+Luxury appearance.
+
+---
+
+# AUDIO
+
+Chinese orchestra.
+
+Temple bells.
+
+Flowing water.
+
+Golden chimes.
+
+Dragon calls.
+
+Phoenix cries.
+
+Elegant sword swishes.
+
+Rich fruit slicing sounds.
+
+Deep combo effects.
+
+Grand orchestral finish.
+
+---
+
+# PERFORMANCE
+
+Maintain stable 60 FPS.
+
+Smooth animations.
+
+Optimized particle effects.
+
+Efficient rendering.
+
+No frame drops.
+
+Low input latency.
+
+Responsive gameplay.
+
+Fast loading.
+
+---
+
+# OVERALL EXPERIENCE
+
+The Imperial Heaven Palace should feel like the ultimate reward for reaching the final realm of Fruit Blaster.
+
+Every slice should feel precise.
+
+Every combo should feel legendary.
+
+The sword should feel powerful yet elegant.
+
+The fruits should be large, luxurious, and easy to hit.
+
+Bombs should create excitement without feeling unfair.
+
+The gameplay should always be active, fast-paced, highly responsive, visually spectacular, and satisfying while preserving perfect clarity.
+
+The player should feel like the Celestial Emperor's chosen sword master wielding the legendary Imperial Heaven Blade within the most sacred palace in the heavens.

@@ -44,6 +44,17 @@ export const FRUIT_DATA: Record<FruitType, { color: string; colorInner: string; 
   'Infernal Tomato':     { color: '#5a1512', colorInner: '#ff6a33', score: 15, radius: 82, probability: 15, image: 'infernal-tomato.png' },
   'Infernal Watermelon': { color: '#2a1414', colorInner: '#ff7733', score: 25, radius: 90, probability: 9, image: 'infernal-watermelon.png' },
   'Infernal Pineapple':  { color: '#3a1508', colorInner: '#ffaa33', score: 30, radius: 86, probability: 6, image: 'infernal-pineapple.png' },
+
+  // ── Imperial Heaven Palace (Survival Mode) — legendary jade-and-gold fruits ──
+  'Imperial Apple':      { color: '#a01818', colorInner: '#ffe8b8', score: 20, radius: 96, probability: 16, image: 'imperial-apple.png' },
+  'Imperial Banana':     { color: '#d8c060', colorInner: '#fff8e0', score: 20, radius: 92, probability: 14, image: 'imperial-banana.png' },
+  'Imperial Cherry':     { color: '#b81818', colorInner: '#ffd8d8', score: 25, radius: 82, probability: 14, image: 'imperial-cherry.png' },
+  'Imperial Raspberry':  { color: '#c02040', colorInner: '#ffd0e0', score: 25, radius: 84, probability: 13, image: 'imperial-raspberry.png' },
+  'Imperial Gooseberry': { color: '#a8c840', colorInner: '#f0f8c8', score: 20, radius: 90, probability: 13, image: 'imperial-gooseberry.png' },
+  'Imperial Grapefruit': { color: '#e07850', colorInner: '#ffe0d0', score: 25, radius: 94, probability: 12, image: 'imperial-grapefruit.png' },
+  'Imperial Sugarcane':  { color: '#c8d8a0', colorInner: '#f4f8e8', score: 15, radius: 88, probability: 11, image: 'imperial-sugarcane.png' },
+  'Imperial Jackfruit':  { color: '#c8a838', colorInner: '#fff0c0', score: 30, radius: 100, probability: 8, image: 'imperial-jackfruit.png' },
+  'Imperial Durian':     { color: '#88a848', colorInner: '#f0f4d0', score: 35, radius: 98, probability: 6, image: 'imperial-durian.png' },
 };
 
 export const BOMB_DATA: Record<BombType, { color: string; fuseColor: string; radius: number; probability: number; effect: string; image?: string }> = {
@@ -54,6 +65,7 @@ export const BOMB_DATA: Record<BombType, { color: string; fuseColor: string; rad
   'Cursed Bamboo Seed': { color: '#3D1E52', fuseColor: '#B87CF0', radius: 42, probability: 100, effect: 'lose_life', image: 'cursed-bamboo-seed.png' },
   'Cursed Eclipse Orb': { color: '#120a1e', fuseColor: '#B87CF0', radius: 74, probability: 100, effect: 'lose_life', image: 'cursed-eclipse-orb.png' },
   'Infernal Dragon Core': { color: '#1a0806', fuseColor: '#FF5522', radius: 78, probability: 100, effect: 'lose_life', image: 'infernal-dragon-core.png' },
+  "Emperor's Judgment Orb": { color: '#f0ead0', fuseColor: '#FFD700', radius: 82, probability: 100, effect: 'lose_life', image: 'emperors-judgment-orb.png' },
 };
 
 // Fruit pool spawned exclusively inside the Bamboo Grove Zen world.
@@ -75,6 +87,13 @@ export const CRIMSON_FRUIT_TYPES: FruitType[] = [
   'Infernal Strawberry', 'Infernal Tomato', 'Infernal Watermelon', 'Infernal Pineapple',
 ];
 export const CRIMSON_ASSET_BASE = 'crimson/';
+
+// Fruit pool spawned exclusively inside the Imperial Heaven Palace Survival world.
+export const IMPERIAL_FRUIT_TYPES: FruitType[] = [
+  'Imperial Apple', 'Imperial Banana', 'Imperial Cherry', 'Imperial Raspberry',
+  'Imperial Gooseberry', 'Imperial Grapefruit', 'Imperial Sugarcane', 'Imperial Jackfruit', 'Imperial Durian',
+];
+export const IMPERIAL_ASSET_BASE = 'imperial/';
 
 export const generateLevels = (): LevelConfig[] => {
   const levels: LevelConfig[] = [];

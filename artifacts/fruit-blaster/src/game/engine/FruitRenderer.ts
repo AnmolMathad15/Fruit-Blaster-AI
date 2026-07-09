@@ -3,8 +3,8 @@
  * All drawing is relative to origin (0,0); caller must translate+rotate first.
  */
 
-import { FRUIT_DATA, BOMB_DATA, MOON_FRUIT_TYPES, CRIMSON_FRUIT_TYPES } from '../../constants/GameData';
-import { getBambooImage, getMoonImage, getCrimsonImage } from '../../utils/imageCache';
+import { FRUIT_DATA, BOMB_DATA, MOON_FRUIT_TYPES, CRIMSON_FRUIT_TYPES, IMPERIAL_FRUIT_TYPES } from '../../constants/GameData';
+import { getBambooImage, getMoonImage, getCrimsonImage, getImperialImage } from '../../utils/imageCache';
 
 /** True for any type that belongs to the Moon Shrine's custom celestial asset set. */
 function isMoonType(type: string): boolean {
@@ -16,9 +16,14 @@ function isCrimsonType(type: string): boolean {
   return CRIMSON_FRUIT_TYPES.includes(type as any) || type === 'Infernal Dragon Core';
 }
 
+/** True for any type that belongs to the Imperial Heaven Palace's custom legendary asset set. */
+function isImperialType(type: string): boolean {
+  return IMPERIAL_FRUIT_TYPES.includes(type as any) || type === "Emperor's Judgment Orb";
+}
+
 /** Fruit/hazard types rendered from our hand-painted Bamboo Grove sprites instead of vector art. */
 function bambooImageFor(type: string): string | undefined {
-  if (isMoonType(type) || isCrimsonType(type)) return undefined;
+  if (isMoonType(type) || isCrimsonType(type) || isImperialType(type)) return undefined;
   return (FRUIT_DATA as any)[type]?.image ?? (BOMB_DATA as any)[type]?.image;
 }
 
@@ -31,6 +36,12 @@ function moonImageFor(type: string): string | undefined {
 /** Crimson Temple sprites (infernal fruits, Infernal Dragon Core) — loaded from public/crimson/. */
 function crimsonImageFor(type: string): string | undefined {
   if (!isCrimsonType(type)) return undefined;
+  return (FRUIT_DATA as any)[type]?.image ?? (BOMB_DATA as any)[type]?.image;
+}
+
+/** Imperial Heaven Palace sprites (legendary fruits, Emperor's Judgment Orb) — loaded from public/imperial/. */
+function imperialImageFor(type: string): string | undefined {
+  if (!isImperialType(type)) return undefined;
   return (FRUIT_DATA as any)[type]?.image ?? (BOMB_DATA as any)[type]?.image;
 }
 
@@ -48,6 +59,26 @@ export function drawCrimsonSprite(ctx: CanvasRenderingContext2D, type: string, r
   ctx.imageSmoothingQuality = 'high';
 
   const targetH = r * 2.6;
+  const targetW = targetH * (img.naturalWidth / img.naturalHeight);
+  ctx.drawImage(img, -targetW / 2, -targetH / 2, targetW, targetH);
+  ctx.restore();
+  return true;
+}
+
+/** Same contract as drawBambooSprite, but reads from the Imperial Heaven Palace asset folder. Fruits render largest of all worlds (2.9x radius) per the zone's "increase fruit size ~15-20% over Crimson Temple" design goal. */
+export function drawImperialSprite(ctx: CanvasRenderingContext2D, type: string, r: number): boolean {
+  const file = imperialImageFor(type);
+  if (!file) return false;
+  const img = getImperialImage(file);
+  if (!img) return false;
+
+  ctx.save();
+  ctx.globalAlpha = 1;
+  ctx.globalCompositeOperation = 'source-over';
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
+
+  const targetH = r * 2.9;
   const targetW = targetH * (img.naturalWidth / img.naturalHeight);
   ctx.drawImage(img, -targetW / 2, -targetH / 2, targetW, targetH);
   ctx.restore();
@@ -123,6 +154,12 @@ function drawLeaf(ctx: CanvasRenderingContext2D, r: number, color = '#4CAF50') {
 }
 
 export function drawFruit(ctx: CanvasRenderingContext2D, type: string, r: number) {
+  if (imperialImageFor(type)) {
+    // Imperial Heaven Palace sprites: skip drawing entirely until the real asset
+    // is loaded rather than flashing generic vector art as a placeholder.
+    drawImperialSprite(ctx, type, r);
+    return;
+  }
   if (moonImageFor(type)) {
     // Moon Shrine sprites: skip drawing entirely until the real asset is
     // loaded rather than flashing generic vector art as a placeholder.
@@ -192,6 +229,9 @@ function getFruitInnerColor(type: string): string {
     'Infernal Apple': '#ff8a3d', 'Infernal Banana': '#ffb347', 'Infernal Grape': '#ff6b3d',
     'Infernal Papaya': '#ff9a3d', 'Infernal Strawberry': '#ff5533', 'Infernal Tomato': '#ff6a33',
     'Infernal Watermelon': '#ff7733', 'Infernal Pineapple': '#ffaa33',
+    'Imperial Apple': '#ffe8b8', 'Imperial Banana': '#fff8e0', 'Imperial Cherry': '#ffd8d8',
+    'Imperial Raspberry': '#ffd0e0', 'Imperial Gooseberry': '#f0f8c8', 'Imperial Grapefruit': '#ffe0d0',
+    'Imperial Sugarcane': '#f4f8e8', 'Imperial Jackfruit': '#fff0c0', 'Imperial Durian': '#f0f4d0',
   };
   return map[type] || '#ffffff';
 }

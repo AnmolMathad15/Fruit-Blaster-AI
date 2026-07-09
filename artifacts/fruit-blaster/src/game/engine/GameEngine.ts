@@ -1,8 +1,8 @@
 import { Fruit, Bomb, FruitHalf, Particle } from '../entities/Entities';
 import { FruitType, BombType } from '../../types/GameTypes';
-import { FRUIT_DATA, BOMB_DATA, BAMBOO_FRUIT_TYPES, MOON_FRUIT_TYPES, CRIMSON_FRUIT_TYPES } from '../../constants/GameData';
-import { drawFruit, drawFruitHalf, drawBambooSprite, drawMoonSprite, drawCrimsonSprite } from './FruitRenderer';
-import { getBambooImage, getMoonImage, getCrimsonImage } from '../../utils/imageCache';
+import { FRUIT_DATA, BOMB_DATA, BAMBOO_FRUIT_TYPES, MOON_FRUIT_TYPES, CRIMSON_FRUIT_TYPES, IMPERIAL_FRUIT_TYPES } from '../../constants/GameData';
+import { drawFruit, drawFruitHalf, drawBambooSprite, drawMoonSprite, drawCrimsonSprite, drawImperialSprite } from './FruitRenderer';
+import { getBambooImage, getMoonImage, getCrimsonImage, getImperialImage } from '../../utils/imageCache';
 
 export class GameEngine {
   canvas: HTMLCanvasElement;
@@ -72,9 +72,15 @@ export class GameEngine {
       this.spawnRate = 30;
       this.speedMultiplier = 1.2;
     } else if (mode === 'survival') {
-      this.bombChance = 0.30;
-      this.spawnRate = 25;
-      this.speedMultiplier = 1.5;
+      // Imperial Heaven Palace — the hardest, most intense world: ~40-50% more
+      // fruits than the Crimson Temple, heavier bomb frequency, and a difficulty
+      // ramp every 30-45s per the zone's design brief.
+      this.bombChance = 0.5;
+      this.spawnRate = 26;
+      this.speedMultiplier = 1.25;
+      this.baseBombChance = 0.5;
+      this.baseSpawnRate = 26;
+      this.baseSpeedMultiplier = 1.25;
     } else if (mode === 'bamboo') {
       // Bamboo Grove — Zen Mode: calm, balanced, no escalating difficulty.
       this.bombChance = 0.1;
@@ -107,6 +113,15 @@ export class GameEngine {
     this.spawnRate = Math.max(14, this.baseSpawnRate - tier * 3);
     this.bombChance = Math.min(0.4, this.baseBombChance + tier * 0.02);
   }
+
+  /** Imperial Heaven Palace difficulty ramp: every ~35s, gradually push speed/spawn/bombs higher — the hardest world in the game. */
+  updateImperialDifficulty(dt: number) {
+    this.survivalSeconds += dt / 60;
+    const tier = Math.min(10, Math.floor(this.survivalSeconds / 35)); // 0..10
+    this.speedMultiplier = this.baseSpeedMultiplier + tier * 0.1;
+    this.spawnRate = Math.max(16, this.baseSpawnRate - tier * 1.6);
+    this.bombChance = Math.min(0.65, this.baseBombChance + tier * 0.015);
+  }
   
   resize(w: number, h: number) {
     this.width = w;
@@ -119,6 +134,7 @@ export class GameEngine {
     // dt represents multiplier for 60fps
 
     if (this.mode === 'moon') this.updateMoonDifficulty(dt);
+    if (this.mode === 'survival') this.updateImperialDifficulty(dt);
     
     // Spawn logic
     this.spawnTimer -= dt;
@@ -222,16 +238,40 @@ export class GameEngine {
       const type: BombType = this.mode === 'bamboo' ? 'Cursed Bamboo Seed'
         : this.mode === 'moon' ? 'Cursed Eclipse Orb'
         : this.mode === 'challenge' ? 'Infernal Dragon Core'
+        : this.mode === 'survival' ? "Emperor's Judgment Orb"
         : 'Normal';
-      // Crimson Temple: bombs frequently arrive in bursts of 2-3 Infernal Dragon
-      // Cores rather than one at a time, keeping constant pressure on the player.
+      // Crimson Temple / Imperial Palace: bombs frequently arrive in bursts of
+      // 2-3 (Imperial even reaching double/triple Judgment Orb waves) rather
+      // than one at a time, keeping constant pressure on the player.
       const bombCount = this.mode === 'challenge'
         ? (Math.random() < 0.3 ? 3 : Math.random() < 0.55 ? 2 : 1)
+        : this.mode === 'survival'
+        ? (Math.random() < 0.4 ? 3 : Math.random() < 0.65 ? 2 : 1)
         : 1;
       for (let i = 0; i < bombCount; i++) {
         const jitterX = startX + (Math.random() - 0.5) * 140 * i;
         const jitterVx = vx + (Math.random() - 0.5) * 2.5;
         this.bombs.push(new Bomb(jitterX, startY, jitterVx, vy, type));
+      }
+    } else if (this.mode === 'survival') {
+      // Imperial Heaven Palace spawns exclusively from our nine legendary fruits,
+      // weighted by probability, with large multi-fruit waves (2-5, occasionally
+      // more) to satisfy the "40-50% more fruits than Crimson Temple" design goal.
+      const pool = IMPERIAL_FRUIT_TYPES.map(t => [t, FRUIT_DATA[t]] as const);
+      const totalProb = pool.reduce((sum, [, v]) => sum + v.probability, 0);
+      const roll = Math.random();
+      const waveSize = roll < 0.2 ? 5 : roll < 0.45 ? 4 : roll < 0.7 ? 3 : roll < 0.9 ? 2 : 1;
+      for (let i = 0; i < waveSize; i++) {
+        const rand = Math.random() * totalProb;
+        let cumProb = 0;
+        let type: FruitType = IMPERIAL_FRUIT_TYPES[0];
+        for (const [k, v] of pool) {
+          cumProb += v.probability;
+          if (rand <= cumProb) { type = k; break; }
+        }
+        const jitterX = startX + (Math.random() - 0.5) * 130 * i;
+        const jitterVx = vx + (Math.random() - 0.5) * 2.2;
+        this.fruits.push(new Fruit(jitterX, startY, jitterVx, vy, type));
       }
     } else if (this.mode === 'challenge') {
       // Crimson Temple spawns exclusively from our eight infernal fruits, weighted
@@ -270,7 +310,7 @@ export class GameEngine {
       this.fruits.push(new Fruit(startX, startY, vx, vy, type));
     } else {
       // Pick fruit type by probability
-      const pool = Object.entries(FRUIT_DATA).filter(([k]) => !BAMBOO_FRUIT_TYPES.includes(k as FruitType) && !MOON_FRUIT_TYPES.includes(k as FruitType) && !CRIMSON_FRUIT_TYPES.includes(k as FruitType) && k !== 'Lunar Kiwi');
+      const pool = Object.entries(FRUIT_DATA).filter(([k]) => !BAMBOO_FRUIT_TYPES.includes(k as FruitType) && !MOON_FRUIT_TYPES.includes(k as FruitType) && !CRIMSON_FRUIT_TYPES.includes(k as FruitType) && !IMPERIAL_FRUIT_TYPES.includes(k as FruitType) && k !== 'Lunar Kiwi');
       const totalProb = pool.reduce((sum, [, v]) => sum + v.probability, 0);
       const rand = Math.random() * totalProb;
       let cumProb = 0;
@@ -449,7 +489,7 @@ export class GameEngine {
       ctx.translate(b.pos.x, b.pos.y);
       ctx.rotate(b.rotation);
 
-      if (drawMoonSprite(ctx, b.type, b.radius) || drawBambooSprite(ctx, b.type, b.radius) || drawCrimsonSprite(ctx, b.type, b.radius)) {
+      if (drawMoonSprite(ctx, b.type, b.radius) || drawBambooSprite(ctx, b.type, b.radius) || drawCrimsonSprite(ctx, b.type, b.radius) || drawImperialSprite(ctx, b.type, b.radius)) {
         ctx.restore();
         return;
       }
@@ -562,6 +602,27 @@ export class GameEngine {
       }
     }
 
+    // Imperial Heaven Palace: the Imperial Heaven Blade follows the fingertip —
+    // 20-25% longer and ~20% wider than the Crimson Temple's blade per the
+    // zone's "increase sword size" design goal, while staying elegant.
+    if (this.mode === 'survival' && this.swordTrail.length > 0) {
+      const tip = this.swordTrail[0];
+      const prev = this.swordTrail[Math.min(3, this.swordTrail.length - 1)];
+      const swordImg = getImperialImage('imperial-heaven-blade.png');
+      if (swordImg) {
+        const angle = Math.atan2(tip.y - prev.y, tip.x - prev.x) + Math.PI / 4;
+        const h = (240 / 1080) * this.height * 1.9 * 1.22;
+        const w = h * (swordImg.naturalWidth / swordImg.naturalHeight) * 1.2;
+        ctx.save();
+        ctx.translate(tip.x, tip.y);
+        ctx.rotate(angle);
+        ctx.shadowBlur = 28;
+        ctx.shadowColor = 'rgba(255,220,140,0.9)';
+        ctx.drawImage(swordImg, -w * 0.15, -h * 0.85, w, h);
+        ctx.restore();
+      }
+    }
+
     // Draw Sword Trail
     if (this.swordTrail.length > 1) {
       ctx.save();
@@ -595,8 +656,9 @@ export class GameEngine {
       ctx.strokeStyle = this.mode === 'bamboo' ? 'rgba(180,255,180,0.55)'
         : this.mode === 'moon' ? 'rgba(190,215,255,0.6)'
         : this.mode === 'challenge' ? 'rgba(255,120,60,0.6)'
+        : this.mode === 'survival' ? 'rgba(255,225,150,0.65)'
         : '#ffffff';
-      ctx.lineWidth = (this.mode === 'bamboo' || this.mode === 'moon' || this.mode === 'challenge') ? 2 : 3;
+      ctx.lineWidth = (this.mode === 'bamboo' || this.mode === 'moon' || this.mode === 'challenge' || this.mode === 'survival') ? 2 : 3;
       ctx.stroke();
       
       ctx.restore();
