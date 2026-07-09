@@ -1,0 +1,802 @@
+# 🌕 FRUIT BLASTER AI — MOON SHRINE (SURVIVAL MODE)
+
+## OBJECTIVE
+
+Build the complete Moon Shrine gameplay experience using ONLY our custom Moon Shrine assets.
+
+Do NOT generate placeholder artwork.
+
+Do NOT replace any assets.
+
+Use our custom assets exactly as designed.
+
+This should feel like a AAA fantasy survival game inspired by Ghost of Tsushima, Black Myth: Wukong, Sekiro, and ancient Chinese mythology.
+
+Maintain a stable 60 FPS with premium graphics, smooth gameplay, and highly accurate hand tracking.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# CUSTOM ASSETS
+
+Load ONLY these Moon Shrine assets.
+
+━━━━━━━━━━━━━━━━━━
+
+⚔ WEAPON
+
+• Moonlight Katana
+
+━━━━━━━━━━━━━━━━━━
+
+🍎 FRUITS
+
+• Celestial Apple
+
+• Spirit Pear
+
+• Lunar Kiwi
+
+• Moon Peach
+
+• Moon Mandarin
+
+• Silver Melon
+
+• Luna Plum
+
+• Moon Lime
+
+━━━━━━━━━━━━━━━━━━
+
+🌑 HAZARD
+
+• Cursed Eclipse Orb
+
+━━━━━━━━━━━━━━━━━━
+
+HUD
+
+• Moon Shrine HUD
+
+• Spirit Energy Meter
+
+• Survival Scoreboard
+
+• Results Scroll
+
+• Moon Rank Medals
+
+━━━━━━━━━━━━━━━━━━
+
+PARTICLES
+
+• Moon Dust
+
+• Tiny Stars
+
+• White Feathers
+
+• Spirit Butterflies
+
+• Sapphire Particles
+
+• Silver Sparkles
+
+• Celestial Mist
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# ENVIRONMENT
+
+The player enters the Sacred Moon Shrine.
+
+Create an elegant celestial environment.
+
+Include:
+
+• Giant Eternal Full Moon
+
+• Ancient Shrine
+
+• Torii Gates
+
+• Blue Crystal Waterfalls
+
+• Sacred Moon Lake
+
+• Floating Lotus Flowers
+
+• White Cherry Blossom Trees
+
+• Stone Lanterns
+
+• Fox Spirit Statues
+
+• White Spirit Butterflies
+
+• Fireflies
+
+• Moving Clouds
+
+• White Mist
+
+• Ancient Bells
+
+• Floating Spirit Lanterns
+
+• Sacred Mountains
+
+Everything continuously animates.
+
+Clouds move slowly.
+
+Waterfalls flow naturally.
+
+Lanterns gently sway.
+
+Butterflies fly naturally.
+
+Mist drifts.
+
+Moonlight shimmers.
+
+Nothing should remain static.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# CAMERA
+
+Blend the webcam naturally into the Moon Shrine.
+
+Soft feathered edges.
+
+Mirror correctly.
+
+No harsh borders.
+
+Subtle cinematic camera drift.
+
+Very slight parallax.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# COMPUTER VISION
+
+Use MediaPipe Hands.
+
+Track ONLY one hand.
+
+Track Landmark 8.
+
+(Index Finger Tip)
+
+Minimum Detection Confidence
+
+0.85
+
+Minimum Tracking Confidence
+
+0.85
+
+Apply smoothing.
+
+Remove jitter.
+
+Stable tracking.
+
+No shaking.
+
+No teleporting.
+
+Keep sword latency extremely low.
+
+If hand disappears:
+
+Pause gameplay.
+
+Dim spirit lanterns.
+
+Display:
+
+"Hand Lost"
+
+Resume automatically when tracking returns.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# MOONLIGHT KATANA
+
+Load our custom Moonlight Katana.
+
+DO NOT scale it down too much.
+
+Requirements:
+
+• Sword length approximately 180–220 px on a 1920×1080 canvas.
+• Always remain clearly visible.
+• Perfectly follow the player's index fingertip.
+• Zero noticeable latency.
+• Smooth interpolation.
+• High slicing accuracy.
+• Wide collision trail for satisfying gameplay.
+• Bright moonlight glow.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# SWORD POWER
+
+The Moonlight Katana should feel powerful.
+
+Increase slicing radius slightly.
+
+Use trail collision instead of a single-point collision.
+
+Fast hand movement should never miss a fruit.
+
+Every swing should feel responsive and satisfying.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# SLASH EFFECTS
+
+Every slice creates:
+
+• Giant crescent moon slash
+
+• Moon dust
+
+• White feathers
+
+• Sapphire energy ribbon
+
+• Tiny glowing stars
+
+• Silver sparkles
+
+• Spirit butterflies
+
+• Blue crystal fragments
+
+Perfect Slice
+
+Generate:
+
+Large glowing crescent wave.
+
+Additional stars.
+
+Extra feathers.
+
+Silver shockwave.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# GAME START
+
+Never begin instantly.
+
+Sequence:
+
+Fade in.
+
+Preparing Sacred Vision...
+
+↓
+
+Initialize webcam.
+
+↓
+
+Detect one hand.
+
+↓
+
+Display:
+
+✋ Hand Detected
+
+━━━━━━━━━━━━━━━━━━
+
+RULES
+
+🌕
+
+SURVIVAL MODE
+
+❤️ You have 3 Lives.
+
+🍎 Slice all celestial fruits.
+
+🌑 Avoid Cursed Eclipse Orbs.
+
+⚡ Build combos to earn higher scores.
+
+🌙 Fill the Spirit Energy Meter.
+
+✨ Activate Moon Blessing for Double Score.
+
+🎯 Survive as long as possible.
+
+Difficulty increases every 30 seconds.
+
+━━━━━━━━━━━━━━━━━━
+
+READY
+
+3
+
+2
+
+1
+
+GO
+
+Only after GO
+
+Begin spawning fruits.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# GAME MODE
+
+SURVIVAL MODE
+
+No timer.
+
+Player begins with:
+
+❤️❤️❤️
+
+Three lives.
+
+Game ends after losing all three lives.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# DIFFICULTY
+
+Every 30 seconds:
+
+Increase:
+
+Fruit Speed
+
+Spawn Rate
+
+Fruit Combinations
+
+Eclipse Orb Frequency
+
+Maximum difficulty after 5 minutes.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# FRUIT SPAWNING
+
+Spawn ONLY:
+
+• Celestial Apple
+
+• Spirit Pear
+
+• Lunar Kiwi
+
+• Moon Peach
+
+• Moon Mandarin
+
+• Silver Melon
+
+• Luna Plum
+
+• Moon Lime
+
+━━━━━━━━━━━━━━━━━━
+
+Fruit Size
+
+Make fruits LARGE.
+
+Minimum diameter:
+
+140–180 px.
+
+Large enough for comfortable slicing.
+
+━━━━━━━━━━━━━━━━━━
+
+Spawn Count
+
+Always keep
+
+6–12 fruits
+
+visible during normal gameplay.
+
+During advanced difficulty
+
+8–15 fruits.
+
+Never let the screen feel empty.
+
+━━━━━━━━━━━━━━━━━━
+
+Spawn Styles
+
+Some fruits:
+
+Float upward.
+
+Some drift sideways.
+
+Some descend slowly from moonlight.
+
+Some emerge through celestial mist.
+
+Some appear from glowing portals.
+
+Movement should feel magical.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# CURSED ECLIPSE ORB
+
+Spawn occasionally.
+
+Never confuse with fruit.
+
+Always emit:
+
+Purple smoke.
+
+Shadow particles.
+
+Dark runes.
+
+Black flames.
+
+━━━━━━━━━━━━━━━━━━
+
+If sliced
+
+Lose 1 Life.
+
+Break Combo.
+
+Reduce Spirit Energy.
+
+Display
+
+"ECLIPSE CURSE"
+
+Deep shrine gong.
+
+Purple explosion.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# SCORING
+
+Normal Slice
+
++10
+
+Clean Slice
+
++20
+
+Perfect Slice
+
++50
+
+Moon Blessing Slice
+
++100
+
+Floating score numbers appear beside each slice.
+
+Silver-blue calligraphy.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# SPIRIT ENERGY
+
+Bottom Left.
+
+Circular Moon Meter.
+
+Silver-blue.
+
+Filled by:
+
+Successful slices.
+
+Perfect slices.
+
+Long combos.
+
+━━━━━━━━━━━━━━━━━━
+
+MOON BLESSING
+
+Activates automatically at 100%.
+
+Duration
+
+6 seconds.
+
+Effects
+
+Time Slow.
+
+Double Score.
+
+Blue Aurora.
+
+Moon becomes brighter.
+
+Lanterns glow.
+
+Spirit Wolves appear.
+
+Silver wind.
+
+Celestial choir.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# HUD
+
+Use ONLY our custom Moon Shrine HUD.
+
+TOP LEFT
+
+❤️ Lives
+
+TOP CENTER
+
+🔥 Combo
+
+TOP RIGHT
+
+🏆 Score
+
+BOTTOM LEFT
+
+🌙 Spirit Meter
+
+BOTTOM CENTER
+
+Survival Stats
+
+• Fruits Sliced
+
+• Accuracy
+
+• Highest Combo
+
+• Eclipse Orbs Hit
+
+• Survival Time
+
+BOTTOM RIGHT
+
+Pause
+
+Restart
+
+Settings
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# COLLISION
+
+Use sword trail collision.
+
+Never single-point collision.
+
+Every fruit can only be sliced once.
+
+Split fruits naturally.
+
+Collision must feel generous and responsive.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# PHYSICS
+
+Natural gravity.
+
+Smooth rotations.
+
+Realistic momentum.
+
+Fruit halves rotate independently.
+
+Juice particles follow velocity.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# PARTICLES
+
+Generate continuously:
+
+Moon Dust
+
+Tiny Stars
+
+White Feathers
+
+Spirit Butterflies
+
+Silver Sparkles
+
+Blue Spirit Flames
+
+Celestial Mist
+
+Keep particle count optimized.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# AUDIO
+
+Loop
+
+Xiao Flute
+
+Soft Piano
+
+Waterfall
+
+Night Wind
+
+Owls
+
+Temple Bells
+
+Spirit Whispers
+
+Ambient Choir
+
+━━━━━━━━━━━━━━━━━━
+
+Slice
+
+Elegant Katana Swish
+
+━━━━━━━━━━━━━━━━━━
+
+Perfect Combo
+
+Crystal Bell
+
+━━━━━━━━━━━━━━━━━━
+
+Moon Blessing
+
+Celestial Choir
+
+━━━━━━━━━━━━━━━━━━
+
+Lose Life
+
+Deep Shrine Gong
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# LIGHTING
+
+Premium cinematic lighting.
+
+Moon glow.
+
+Blue reflections.
+
+Soft bloom.
+
+Volumetric fog.
+
+Silver rim lighting.
+
+Moonlight reflections on fruits.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# GAME OVER
+
+After all 3 lives are lost.
+
+Freeze gameplay.
+
+Fade environment.
+
+Lanterns dim.
+
+Moonlight softens.
+
+Display our custom Results Scroll.
+
+━━━━━━━━━━━━━━━━━━
+
+🌙 MOON SHRINE RESULTS
+
+━━━━━━━━━━━━━━━━━━
+
+Final Score
+
+Survival Time
+
+Highest Combo
+
+Fruits Sliced
+
+Accuracy
+
+Perfect Slices
+
+Eclipse Orbs Hit
+
+Moon Blessings Activated
+
+━━━━━━━━━━━━━━━━━━
+
+RANKS
+
+⭐ Moon Wanderer
+
+🌙 Shrine Disciple
+
+🦉 Spirit Guardian
+
+💎 Celestial Master
+
+👑 Moon Oracle
+
+━━━━━━━━━━━━━━━━━━
+
+Celebrate with:
+
+Moon Dust
+
+White Petals
+
+Silver Light
+
+Spirit Butterflies
+
+Tiny Stars
+
+No fireworks.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# PERFORMANCE
+
+Maintain stable 60 FPS.
+
+React
+
+TypeScript
+
+MediaPipe Hands
+
+GSAP
+
+PixiJS
+
+requestAnimationFrame
+
+GPU acceleration only.
+
+Optimize particle counts.
+
+Lazy-load textures.
+
+Avoid layout reflows.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# FINAL EXPERIENCE
+
+The player should feel like the Guardian of an ancient Moon Shrine defending a sacred celestial realm beneath an eternal full moon. The Moonlight Katana should feel powerful, responsive, and elegant, effortlessly slicing large celestial fruits with brilliant crescent slashes, moon dust, and silver feathers. As the survival challenge intensifies, more fruits fill the screen, Eclipse Orbs become increasingly threatening, and every successful combo builds toward the spectacular Moon Blessing. The overall experience should feel like a polished AAA fantasy game, with every custom asset, animation, visual effect, sound, and gameplay mechanic working together seamlessly.
