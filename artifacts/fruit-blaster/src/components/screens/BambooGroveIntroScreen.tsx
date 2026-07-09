@@ -10,7 +10,7 @@
  * copy the final vx/vy, then paste them back to hard-code.
  */
 
-import { useEffect, useRef, useState, useReducer } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useGameStore } from '../../store/gameStore';
 
@@ -22,7 +22,8 @@ const VID_H = 720;
 // Adjust via debug drag — these are a best-guess start position
 let BTN_VX = 640;   // centre X
 let BTN_VY = 620;   // centre Y
-let BTN_VR = 140;   // radius (wide to cover the full button text area)
+let BTN_VW = 340;   // width  of the rectangle
+let BTN_VH = 90;    // height of the rectangle
 
 /* ─── Cover-layout helpers ───────────────────────────────────────────── */
 interface CoverLayout { scale: number; offsetX: number; offsetY: number; }
@@ -117,12 +118,13 @@ export default function BambooGroveIntroScreen() {
   const base   = toScreen(BTN_VX, BTN_VY, layout);
   const sx     = base.x + offset.dx;
   const sy     = base.y + offset.dy;
-  const sr     = BTN_VR * layout.scale;
+  const sw     = BTN_VW * layout.scale;   // screen width
+  const sh     = BTN_VH * layout.scale;   // screen height
   const live   = toNative(sx, sy, layout);
 
   /* ── Copy calibration output ── */
   const copy = () => {
-    const code = `// Paste these into BambooGroveIntroScreen.tsx:\nlet BTN_VX = ${live.vx};\nlet BTN_VY = ${live.vy};\nlet BTN_VR = ${Math.round(BTN_VR)};`;
+    const code = `// Paste these into BambooGroveIntroScreen.tsx:\nlet BTN_VX = ${live.vx};\nlet BTN_VY = ${live.vy};\nlet BTN_VW = ${Math.round(BTN_VW)};\nlet BTN_VH = ${Math.round(BTN_VH)};`;
     navigator.clipboard.writeText(code).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
@@ -166,23 +168,24 @@ export default function BambooGroveIntroScreen() {
               style={{
                 position: 'absolute',
                 left: sx, top: sy,
-                width: sr * 2, height: sr * 2,
+                width: sw, height: sh,
                 transform: 'translate(-50%,-50%)',
                 cursor: debug ? 'grab' : 'pointer',
                 pointerEvents: 'auto',
                 zIndex: 50,
+                borderRadius: 8,
               }}
             >
-              {/* Hover glow ring (production only) */}
+              {/* Hover glow (production only) */}
               {!debug && hovered && (
                 <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
+                  initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   style={{
-                    position: 'absolute', inset: -12,
-                    borderRadius: '50%',
+                    position: 'absolute', inset: -10,
+                    borderRadius: 12,
                     border: '2px solid rgba(120,220,80,0.6)',
-                    boxShadow: '0 0 32px 10px rgba(80,200,60,0.35)',
+                    boxShadow: '0 0 28px 8px rgba(80,200,60,0.35)',
                     pointerEvents: 'none',
                   }}
                 />
@@ -193,7 +196,7 @@ export default function BambooGroveIntroScreen() {
                 <>
                   <div style={{
                     position: 'absolute', inset: 0,
-                    borderRadius: '50%',
+                    borderRadius: 8,
                     background: 'rgba(255,30,30,0.28)',
                     border: '2px dashed rgba(255,80,80,0.7)',
                   }} />
@@ -204,10 +207,11 @@ export default function BambooGroveIntroScreen() {
                     color: '#fff', textAlign: 'center',
                     textShadow: '0 0 4px #000,0 0 4px #000',
                     pointerEvents: 'none',
+                    whiteSpace: 'nowrap',
                   }}>
                     <div style={{ fontWeight: 700 }}>Enter the Grove</div>
                     <div>vx:{live.vx} vy:{live.vy}</div>
-                    <div>r:{Math.round(sr)}px</div>
+                    <div>{Math.round(sw)}×{Math.round(sh)}px</div>
                   </div>
                 </>
               )}
@@ -254,7 +258,7 @@ export default function BambooGroveIntroScreen() {
             </button>
           </div>
           <div style={{ marginTop: 10, color: 'rgba(255,255,255,0.35)', fontSize: 10, lineHeight: 1.5 }}>
-            Drag red circle over the<br />video button, then copy.
+            Drag red rectangle over the<br />video button, then copy.
           </div>
         </div>
       )}
