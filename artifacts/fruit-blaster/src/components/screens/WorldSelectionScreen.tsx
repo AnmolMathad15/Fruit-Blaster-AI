@@ -37,11 +37,11 @@ interface DestDef {
 const DESTINATIONS: DestDef[] = [
   {
     id: 'classic',   name: 'Dojo Gate',       sub: '3 lives · bombs · escalating danger',
-    icon: '⚔️',  vx: 449,  vy: 338, vr: 156, hue: 18,  lives: 3,
+    icon: '⚔️',  vx: 405,  vy: 338, vr: 156, hue: 18,  lives: 3,
   },
   {
     id: 'zen',       name: 'Moon Shrine',      sub: 'No bombs · unlimited lives · pure bliss',
-    icon: '🌸',  vx: 1171, vy: 338, vr: 156, hue: 155, lives: 99,
+    icon: '🌸',  vx: 1125, vy: 338, vr: 156, hue: 155, lives: 99,
   },
   {
     id: 'arcade',    name: 'Bamboo Grove',     sub: 'Endless waves · fast & furious',
@@ -49,11 +49,11 @@ const DESTINATIONS: DestDef[] = [
   },
   {
     id: 'challenge', name: 'Crimson Temple',   sub: '60 seconds · maximise your score',
-    icon: '⏱️', vx: 377,  vy: 812, vr: 156, hue: 0,   lives: 3,
+    icon: '⏱️', vx: 377,  vy: 723, vr: 156, hue: 0,   lives: 3,
   },
   {
     id: 'survival',  name: 'Imperial Palace',  sub: '1 life · high bombs · survive!',
-    icon: '💀',  vx: 1292, vy: 812, vr: 156, hue: 45,  lives: 1,
+    icon: '💀',  vx: 1292, vy: 723, vr: 156, hue: 45,  lives: 1,
   },
 ];
 
