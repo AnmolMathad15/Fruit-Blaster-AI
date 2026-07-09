@@ -1,5 +1,7 @@
 import { ReactNode } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTheme } from '../../core/ThemeUIManager';
+import type { ThemeConfig } from '../../core/ThemeRegistry';
 
 interface GlassPanelProps {
   children: ReactNode;
@@ -64,5 +66,49 @@ export function Button({
       <div className="absolute inset-0 bg-white/20 translate-y-full hover:translate-y-0 transition-transform duration-300 ease-out" />
       <span className="relative z-10">{children}</span>
     </button>
+  );
+}
+
+export type ThemedButtonKind = keyof ThemeConfig['assets']['buttons'];
+
+/**
+ * A button skinned entirely from the active theme's sliced UI-kit art.
+ * Gameplay/menu code should prefer this over the generic `Button` for any
+ * action that maps to one of the ten standard kinds (play, pause, resume,
+ * retry, settings, home, next, back, confirm, cancel) so every theme reuses
+ * the same interaction pattern with only the artwork swapped.
+ */
+export function ThemedButton({
+  kind,
+  onClick,
+  label,
+  className = '',
+  disabled = false,
+}: {
+  kind: ThemedButtonKind;
+  onClick: () => void;
+  label?: ReactNode;
+  className?: string;
+  disabled?: boolean;
+}) {
+  const theme = useTheme();
+  const src = theme.assets.buttons[kind];
+  return (
+    <motion.button
+      onClick={onClick}
+      disabled={disabled}
+      whileTap={{ scale: 0.94 }}
+      className={`relative flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed drop-shadow-lg ${className}`}
+    >
+      <img src={src} alt={label ? String(label) : kind} draggable={false} className="w-full h-full object-contain select-none pointer-events-none" />
+      {label !== undefined && (
+        <span
+          className="absolute inset-0 flex items-center justify-center font-orbitron font-bold uppercase tracking-wider text-sm md:text-base pointer-events-none"
+          style={{ color: theme.accentSoft, textShadow: '0 1px 3px rgba(0,0,0,0.6)' }}
+        >
+          {label}
+        </span>
+      )}
+    </motion.button>
   );
 }
