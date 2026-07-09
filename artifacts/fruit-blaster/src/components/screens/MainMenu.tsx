@@ -29,26 +29,43 @@ const STYLES = `
   0%,100% { box-shadow: 0 0 8px rgba(200,140,20,.25); }
   50%     { box-shadow: 0 0 16px rgba(255,200,60,.50); }
 }
+@keyframes btn-float {
+  0%,100% { transform: translateY(0px);  }
+  50%     { transform: translateY(-8px); }
+}
+@keyframes btn-glow-pulse {
+  0%,100% { box-shadow: 0 0 20px 6px rgba(255,190,40,.55), 0 0 60px 14px rgba(220,130,10,.28), inset 0 0 12px rgba(255,210,80,.15); }
+  50%     { box-shadow: 0 0 38px 12px rgba(255,220,60,.80), 0 0 90px 26px rgba(240,160,20,.45), inset 0 0 22px rgba(255,230,100,.28); }
+}
+@keyframes btn-shine {
+  0%   { transform: translateX(-140%) skewX(-18deg); opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { transform: translateX(340%)  skewX(-18deg); opacity: 0; }
+}
+@keyframes sword-idle {
+  0%,100% { transform: rotate(-8deg) scale(1);    }
+  50%     { transform: rotate(-5deg) scale(1.04); }
+}
 `;
 
 /* ─────────────────────────────────────────────
-   Spawn helper – scatters across full screen
-   on init, top-edge on respawn
+   Spawn helper
 ───────────────────────────────────────────── */
 function spawnPetal(W: number, scatterY = false): Petal {
   return {
-    x:         Math.random() * W,
-    y:         scatterY ? Math.random() * window.innerHeight : -18,
-    size:      3 + Math.random() * 9,
-    vx:        (Math.random() - 0.5) * 0.7,
-    vy:        0.55 + Math.random() * 1.4,
-    rot:       Math.random() * Math.PI * 2,
-    rotV:      (Math.random() - 0.5) * 0.055,
-    opacity:   0.45 + Math.random() * 0.50,
-    phase:     Math.random() * Math.PI * 2,
-    phaseSpeed:0.012 + Math.random() * 0.022,
-    swayAmp:   0.4  + Math.random() * 1.0,
-    hue:       338  + Math.random() * 22,
+    x:          Math.random() * W,
+    y:          scatterY ? Math.random() * window.innerHeight : -18,
+    size:       3 + Math.random() * 9,
+    vx:         (Math.random() - 0.5) * 0.7,
+    vy:         0.55 + Math.random() * 1.4,
+    rot:        Math.random() * Math.PI * 2,
+    rotV:       (Math.random() - 0.5) * 0.055,
+    opacity:    0.45 + Math.random() * 0.50,
+    phase:      Math.random() * Math.PI * 2,
+    phaseSpeed: 0.012 + Math.random() * 0.022,
+    swayAmp:    0.4 + Math.random() * 1.0,
+    hue:        338 + Math.random() * 22,
   };
 }
 
@@ -61,21 +78,18 @@ function drawPetal(ctx: CanvasRenderingContext2D, p: Petal) {
   ctx.rotate(p.rot);
   const alpha = p.opacity * (0.65 + 0.35 * Math.sin(p.phase));
 
-  // Back lobe
   ctx.globalAlpha = alpha * 0.7;
   ctx.fillStyle = `hsl(${p.hue - 6},70%,80%)`;
   ctx.beginPath();
   ctx.ellipse(-p.size * 0.25, p.size * 0.1, p.size * 0.65, p.size * 0.38, -0.4, 0, Math.PI * 2);
   ctx.fill();
 
-  // Main body
   ctx.globalAlpha = alpha;
   ctx.fillStyle = `hsl(${p.hue},72%,74%)`;
   ctx.beginPath();
   ctx.ellipse(0, 0, p.size, p.size * 0.52, 0, 0, Math.PI * 2);
   ctx.fill();
 
-  // Front highlight lobe
   ctx.globalAlpha = alpha * 0.85;
   ctx.fillStyle = `hsl(${p.hue + 8},60%,84%)`;
   ctx.beginPath();
@@ -120,7 +134,7 @@ export default function MainMenu() {
     return () => window.removeEventListener('resize', resizeCanvas);
   }, []);
 
-  /* ── RAF loop: sakura petals only ── */
+  /* ── RAF loop: 200 sakura petals ── */
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -136,14 +150,9 @@ export default function MainMenu() {
         p.y     += p.vy;
         p.rot   += p.rotV;
 
-        // Wrap x
-        if (p.x < -20)  p.x = W + 10;
+        if (p.x < -20)    p.x = W + 10;
         if (p.x > W + 20) p.x = -10;
-
-        // Respawn from top when off bottom
-        if (p.y > H + 20) {
-          Object.assign(p, spawnPetal(W, false));
-        }
+        if (p.y > H + 20) Object.assign(p, spawnPetal(W, false));
 
         drawPetal(ctx, p);
       }
@@ -155,24 +164,33 @@ export default function MainMenu() {
     return () => cancelAnimationFrame(rafRef.current);
   }, []);
 
-  /* ── Music: start on first user interaction ── */
+  /* ── Music: try autoplay, fall back to first tap ── */
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
     audio.volume = 0.65;
     audio.muted  = false;
 
-    const startOnInteraction = () => {
-      if (musicReady.current) return;
-      audio.play().then(() => { musicReady.current = true; }).catch(() => {});
-      document.removeEventListener('pointerdown', startOnInteraction);
-    };
+    let fallback: (() => void) | null = null;
 
-    document.addEventListener('pointerdown', startOnInteraction);
-    return () => document.removeEventListener('pointerdown', startOnInteraction);
+    audio.play()
+      .then(() => { musicReady.current = true; })
+      .catch(() => {
+        fallback = () => {
+          if (musicReady.current) return;
+          audio.play().then(() => { musicReady.current = true; }).catch(() => {});
+          document.removeEventListener('pointerdown', fallback!);
+          fallback = null;
+        };
+        document.addEventListener('pointerdown', fallback);
+      });
+
+    return () => {
+      if (fallback) document.removeEventListener('pointerdown', fallback);
+    };
   }, []);
 
-  /* ── Video autoplay (muted so browser allows it) ── */
+  /* ── Video autoplay (always muted so browser permits it) ── */
   useEffect(() => {
     const v = videoRef.current;
     if (!v) return;
@@ -198,13 +216,12 @@ export default function MainMenu() {
 
   return (
     <div
-      className="w-full h-full relative overflow-hidden select-none cursor-pointer"
+      className="w-full h-full relative overflow-hidden select-none"
       style={{ background: '#060208' }}
-      onClick={handlePlay}
     >
       <style>{STYLES}</style>
 
-      {/* ── 0. Silent preload of page-2 cinematic (zero bytes downloaded until needed) ── */}
+      {/* ── 0. Silent preload of page-2 cinematic ── */}
       <video
         src={`${import.meta.env.BASE_URL}page2-cinematic.mp4`}
         preload="auto"
@@ -225,7 +242,7 @@ export default function MainMenu() {
         style={{ objectFit: 'cover', objectPosition: 'center' }}
       />
 
-      {/* ── 2. Subtle vignette so UI reads against bright video ── */}
+      {/* ── 2. Subtle vignette ── */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
@@ -241,7 +258,76 @@ export default function MainMenu() {
         style={{ mixBlendMode: 'screen' }}
       />
 
-      {/* ── 4. Music ── */}
+      {/* ── 4. PLAY NOW button ── */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.82 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 0.6, duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+        style={{
+          position: 'absolute',
+          left: '50%',
+          top: '72%',
+          transform: 'translateX(-50%)',
+          zIndex: 30,
+        }}
+      >
+        <button
+          onClick={handlePlay}
+          aria-label="Play Now"
+          style={{
+            animation: 'btn-float 3.8s ease-in-out infinite, btn-glow-pulse 2.4s ease-in-out infinite',
+            cursor: 'pointer',
+            background: 'linear-gradient(180deg, #f5d97a 0%, #d4a520 35%, #b8840e 65%, #e8c54a 100%)',
+            border: '3px solid rgba(255,220,80,0.70)',
+            borderRadius: 6,
+            padding: '0 48px',
+            height: 62,
+            minWidth: 260,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 14,
+            outline: 'none',
+            overflow: 'hidden',
+            position: 'relative',
+          }}
+        >
+          {/* Shimmer sweep */}
+          <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', borderRadius: 6, pointerEvents: 'none' }}>
+            <div style={{
+              position: 'absolute', top: 0, left: 0,
+              width: '32%', height: '100%',
+              background: 'linear-gradient(90deg, transparent, rgba(255,245,180,0.55), transparent)',
+              animation: 'btn-shine 2.8s ease-in-out 1.2s infinite',
+            }}/>
+          </div>
+
+          {/* Sword icon */}
+          <span style={{
+            fontSize: 26, lineHeight: 1,
+            animation: 'sword-idle 3s ease-in-out infinite',
+            display: 'inline-block',
+            filter: 'drop-shadow(0 0 4px rgba(255,200,80,0.8))',
+          }}>
+            ⚔️
+          </span>
+
+          {/* Label */}
+          <span style={{
+            fontFamily: '"Cinzel Decorative", "Palatino Linotype", Georgia, serif',
+            fontSize: 22,
+            fontWeight: 700,
+            letterSpacing: '0.12em',
+            color: '#3a1a00',
+            textShadow: '0 1px 0 rgba(255,240,140,0.60), 0 -1px 0 rgba(0,0,0,0.30)',
+            textTransform: 'uppercase',
+          }}>
+            Play Now
+          </span>
+        </button>
+      </motion.div>
+
+      {/* ── 5. Music ── */}
       <audio
         ref={audioRef}
         src={`${import.meta.env.BASE_URL}landing-music.mp3`}
