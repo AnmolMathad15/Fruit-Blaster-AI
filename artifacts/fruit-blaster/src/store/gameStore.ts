@@ -24,7 +24,13 @@ interface GameState {
   
   isPaused: boolean;
   setPaused: (paused: boolean) => void;
-  
+
+  /** When true, the world-selection screen skips its intro cinematic and
+   *  jumps straight to its last frame with hotspots already interactive —
+   *  used when returning Home from a Game Over screen. */
+  skipWorldIntro: boolean;
+  setSkipWorldIntro: (skip: boolean) => void;
+
   resetGame: () => void;
 }
 
@@ -49,6 +55,9 @@ export const useGameStore = create<GameState>((set) => ({
   
   isPaused: false,
   setPaused: (paused) => set({ isPaused: paused }),
-  
+
+  skipWorldIntro: false,
+  setSkipWorldIntro: (skip) => set({ skipWorldIntro: skip }),
+
   resetGame: () => set({ score: 0, lives: 3, combo: 0, timeLeft: 60, isPaused: false })
 }));

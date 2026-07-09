@@ -8,7 +8,7 @@ import { useSoundManager } from '../../hooks/useSoundManager';
 import { useEffect } from 'react';
 
 export default function GameOver() {
-  const { score, mode, setScreen, resetGame } = useGameStore();
+  const { score, mode, setScreen, resetGame, setSkipWorldIntro } = useGameStore();
   const { addGamesPlayed, updateBestScore, addLeaderboardEntry } = useStatsStore();
   const moonStats = useMoonStore();
   const { playGameOver, playClick } = useSoundManager();
@@ -46,7 +46,10 @@ export default function GameOver() {
 
   const handleHome = () => {
     playClick();
-    setScreen('menu');
+    // Return to the world-selection cinematic already parked on its last frame
+    // with hotspots live, instead of replaying the intro from the start.
+    setSkipWorldIntro(true);
+    setScreen('modes');
   };
 
   return (

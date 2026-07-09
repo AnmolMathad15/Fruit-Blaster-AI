@@ -406,7 +406,7 @@ function CalibPanel({
 type Phase = 'playing' | 'interactive' | 'selecting' | 'exiting';
 
 export default function WorldSelectionScreen() {
-  const { setScreen, setMode, setLives, resetGame } = useGameStore();
+  const { setScreen, setMode, setLives, resetGame, skipWorldIntro, setSkipWorldIntro } = useGameStore();
   const { playClick }   = useSoundManager();
   const { soundVolume } = useSettingsStore();
 
@@ -414,7 +414,7 @@ export default function WorldSelectionScreen() {
   const videoRef     = useRef<HTMLVideoElement>(null);
   const audioCtxRef  = useRef<AudioContext | null>(null);
 
-  const [phase,  setPhase]  = useState<Phase>('playing');
+  const [phase,  setPhase]  = useState<Phase>(skipWorldIntro ? 'interactive' : 'playing');
   const [chosen, setChosen] = useState<GameMode | null>(null);
   const [debug,  setDebug]  = useState(false);
   const [offsets, dispatch] = useReducer(offsetReducer, undefined, initOffsets);
@@ -457,8 +457,26 @@ export default function WorldSelectionScreen() {
 
   useEffect(() => () => { audioCtxRef.current?.close(); audioCtxRef.current = null; }, []);
 
-  /* ── Video ── */
-  useEffect(() => { videoRef.current?.play().catch(() => {}); }, []);
+  /* ── Video ──
+   * Coming back Home from Game Over: skip the intro cinematic entirely and
+   * park the video on its final frame with hotspots already interactive,
+   * instead of replaying it from the start. */
+  useEffect(() => {
+    const vid = videoRef.current;
+    if (!vid) return;
+    if (skipWorldIntro) {
+      const seekToEnd = () => {
+        const dur = vid.duration;
+        if (dur && Number.isFinite(dur)) vid.currentTime = Math.max(0, dur - 0.05);
+        vid.pause();
+      };
+      if (vid.readyState >= 1) seekToEnd();
+      else vid.addEventListener('loadedmetadata', seekToEnd, { once: true });
+      setSkipWorldIntro(false);
+    } else {
+      vid.play().catch(() => {});
+    }
+  }, []);
   useEffect(() => {
     const vid = videoRef.current;
     if (!vid) return;
