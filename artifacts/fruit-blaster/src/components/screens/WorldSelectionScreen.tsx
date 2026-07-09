@@ -31,23 +31,23 @@ interface Destination {
 const DESTINATIONS: Destination[] = [
   {
     id: 'classic', name: 'Dojo Gate', sub: '3 lives · bombs · escalating danger',
-    icon: '⚔️',  cx: '32.3%', cy: '35.6%', radius: 105, hue: 18,  lives: 3,
+    icon: '⚔️',  cx: '31.3%', cy: '37.5%', radius: 130, hue: 18,  lives: 3,
   },
   {
     id: 'zen', name: 'Moon Shrine', sub: 'No bombs · unlimited lives · pure bliss',
-    icon: '🌸',  cx: '65.6%', cy: '36.1%', radius: 105, hue: 155, lives: 99,
+    icon: '🌸',  cx: '69.8%', cy: '38.0%', radius: 130, hue: 155, lives: 99,
   },
   {
     id: 'arcade', name: 'Bamboo Grove', sub: 'Endless waves · fast & furious',
-    icon: '⚡',  cx: '50.3%', cy: '70.8%', radius: 105, hue: 90,  lives: 3,
+    icon: '⚡',  cx: '51.3%', cy: '68.1%', radius: 130, hue: 90,  lives: 3,
   },
   {
     id: 'challenge', name: 'Crimson Temple', sub: '60 seconds · maximise your score',
-    icon: '⏱️', cx: '26.0%', cy: '82.9%', radius: 105, hue: 0,   lives: 3,
+    icon: '⏱️', cx: '26.3%', cy: '81.9%', radius: 130, hue: 0,   lives: 3,
   },
   {
     id: 'survival', name: 'Imperial Palace', sub: '1 life · high bombs · survive!',
-    icon: '💀',  cx: '75.8%', cy: '83.3%', radius: 105, hue: 45,  lives: 1,
+    icon: '💀',  cx: '76.3%', cy: '81.9%', radius: 130, hue: 45,  lives: 1,
   },
 ];
 
