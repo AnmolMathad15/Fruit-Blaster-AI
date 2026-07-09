@@ -187,10 +187,12 @@ export default function GuardianOathScreen() {
     });
   };
 
-  /* ── Skip hint: click to fast-forward to button appearance ── */
+  /* ── Skip: go directly to world selection, bypassing the video button ── */
   const handleSkip = () => {
-    const vid = videoRef.current;
-    if (vid) vid.currentTime = BTN_APPEAR_TIME;
+    if (hasActedRef.current) return;
+    hasActedRef.current = true;
+    setPhase('exiting');
+    setTimeout(() => setScreen('modes'), 800);
   };
 
   return (
