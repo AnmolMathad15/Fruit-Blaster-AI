@@ -1,12 +1,11 @@
 /**
  * WorldSelectionScreen — Page 3 Cinematic + Interactive World Map
  *
- * Flow:
- *   1. Video plays fullscreen, no interaction allowed
- *   2. Video reaches final frame → pauses on last frame
- *   3. Five circular hit-zones activate over the frozen frame at exact positions
- *   4. Hover → glow / ring / particles / tooltip / bell tone
- *   5. Click → vignette zoom → fade to black → game starts in chosen mode
+ * Hotspot alignment strategy:
+ *   The video renders with objectFit:"cover" inside the full-screen container.
+ *   We track the container size via ResizeObserver and compute the exact
+ *   object-fit:cover scale + offset so that each hotspot's centre maps
+ *   precisely to its pixel coordinate in the native 1920×1080 video frame.
  */
 
 import { useEffect, useRef, useState, useCallback } from 'react';
@@ -15,51 +14,80 @@ import { useGameStore, GameMode } from '../../store/gameStore';
 import { useSoundManager } from '../../hooks/useSoundManager';
 import { useSettingsStore } from '../../store/settingsStore';
 
-/* ─── Destination definitions — positions match the video frame exactly ─ */
-interface Destination {
+/* ─── Native video dimensions ───────────────────────────────────────── */
+const VID_W = 1920;
+const VID_H = 1080;
+
+/* ─── Destination definitions in native video pixel space ───────────── */
+interface DestDef {
   id: GameMode;
   name: string;
   sub: string;
   icon: string;
-  cx: string;   // % from left (matches video)
-  cy: string;   // % from top  (matches video)
-  radius: number; // px — clickable circle radius
+  /** X coordinate in native 1920×1080 video frame */
+  vx: number;
+  /** Y coordinate in native 1920×1080 video frame */
+  vy: number;
+  /** Radius in native video pixels */
+  vr: number;
   hue: number;
-  lives: number;  // lives to set for this mode
+  lives: number;
 }
 
-const DESTINATIONS: Destination[] = [
+const DESTINATIONS: DestDef[] = [
   {
-    id: 'classic', name: 'Dojo Gate', sub: '3 lives · bombs · escalating danger',
-    icon: '⚔️',  cx: '31.3%', cy: '37.5%', radius: 130, hue: 18,  lives: 3,
+    id: 'classic',   name: 'Dojo Gate',       sub: '3 lives · bombs · escalating danger',
+    icon: '⚔️',  vx: 610,  vy: 338, vr: 130, hue: 18,  lives: 3,
   },
   {
-    id: 'zen', name: 'Moon Shrine', sub: 'No bombs · unlimited lives · pure bliss',
-    icon: '🌸',  cx: '69.8%', cy: '38.0%', radius: 130, hue: 155, lives: 99,
+    id: 'zen',       name: 'Moon Shrine',      sub: 'No bombs · unlimited lives · pure bliss',
+    icon: '🌸',  vx: 1330, vy: 338, vr: 130, hue: 155, lives: 99,
   },
   {
-    id: 'arcade', name: 'Bamboo Grove', sub: 'Endless waves · fast & furious',
-    icon: '⚡',  cx: '51.3%', cy: '68.1%', radius: 130, hue: 90,  lives: 3,
+    id: 'arcade',    name: 'Bamboo Grove',     sub: 'Endless waves · fast & furious',
+    icon: '⚡',  vx: 970,  vy: 690, vr: 130, hue: 90,  lives: 3,
   },
   {
-    id: 'challenge', name: 'Crimson Temple', sub: '60 seconds · maximise your score',
-    icon: '⏱️', cx: '26.3%', cy: '81.9%', radius: 130, hue: 0,   lives: 3,
+    id: 'challenge', name: 'Crimson Temple',   sub: '60 seconds · maximise your score',
+    icon: '⏱️', vx: 540,  vy: 810, vr: 130, hue: 0,   lives: 3,
   },
   {
-    id: 'survival', name: 'Imperial Palace', sub: '1 life · high bombs · survive!',
-    icon: '💀',  cx: '76.3%', cy: '81.9%', radius: 130, hue: 45,  lives: 1,
+    id: 'survival',  name: 'Imperial Palace',  sub: '1 life · high bombs · survive!',
+    icon: '💀',  vx: 1450, vy: 810, vr: 130, hue: 45,  lives: 1,
   },
 ];
+
+/* ─── Compute object-fit:cover layout ───────────────────────────────── */
+interface CoverLayout {
+  scale: number;
+  offsetX: number;  // px left edge of rendered video inside container
+  offsetY: number;  // px top edge
+}
+
+function computeCoverLayout(cw: number, ch: number): CoverLayout {
+  const scale  = Math.max(cw / VID_W, ch / VID_H);
+  const rw     = VID_W * scale;
+  const rh     = VID_H * scale;
+  return { scale, offsetX: (cw - rw) / 2, offsetY: (ch - rh) / 2 };
+}
+
+/** Map a native video point → container pixel position */
+function toContainer(vx: number, vy: number, layout: CoverLayout) {
+  return {
+    x: layout.offsetX + vx * layout.scale,
+    y: layout.offsetY + vy * layout.scale,
+  };
+}
 
 /* ─── Orbiting particles ─────────────────────────────────────────────── */
 function Particles({ hue, active }: { hue: number; active: boolean }) {
   return (
     <>
       {Array.from({ length: 12 }, (_, i) => {
-        const angle  = (i / 12) * 360;
-        const r      = 68 + (i % 3) * 14;
-        const sz     = 3 + (i % 3);
-        const dur    = 2.8 + (i % 4) * 0.5;
+        const angle = (i / 12) * 360;
+        const r     = 68 + (i % 3) * 14;
+        const sz    = 3 + (i % 3);
+        const dur   = 2.8 + (i % 4) * 0.5;
         return (
           <motion.div
             key={i}
@@ -84,11 +112,13 @@ function Particles({ hue, active }: { hue: number; active: boolean }) {
   );
 }
 
-/* ─── Single destination ─────────────────────────────────────────────── */
-function DestCircle({
-  dest, disabled, selected, faded, onHover, onLeave, onClick,
+/* ─── Single hotspot ─────────────────────────────────────────────────── */
+function Hotspot({
+  dest, layout, debug, disabled, selected, faded, onHover, onLeave, onClick,
 }: {
-  dest: Destination;
+  dest: DestDef;
+  layout: CoverLayout;
+  debug: boolean;
   disabled: boolean;
   selected: boolean;
   faded: boolean;
@@ -98,7 +128,10 @@ function DestCircle({
 }) {
   const [hovered, setHovered] = useState(false);
   const glow = hovered || selected;
-  const d = dest.radius * 2; // diameter px
+
+  const { x, y } = toContainer(dest.vx, dest.vy, layout);
+  const r = dest.vr * layout.scale;   // radius scaled to match rendered video
+  const d = r * 2;
 
   const handleEnter = () => { if (!disabled) { setHovered(true);  onHover(); } };
   const handleLeave = () => { if (!disabled) { setHovered(false); onLeave(); } };
@@ -109,8 +142,9 @@ function DestCircle({
       transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
       style={{
         position: 'absolute',
-        left: dest.cx,
-        top:  dest.cy,
+        /* centre exactly on the portal */
+        left: x,
+        top:  y,
         width:  d,
         height: d,
         transform: 'translate(-50%, -50%)',
@@ -133,20 +167,41 @@ function DestCircle({
           inset: glow ? -16 : -8,
           borderRadius: '50%',
           border: `2px solid hsl(${dest.hue},80%,65%)`,
-          boxShadow: glow ? `0 0 28px 10px hsl(${dest.hue},75%,30%), 0 0 56px 20px hsl(${dest.hue},70%,15%)` : 'none',
+          boxShadow: glow
+            ? `0 0 28px 10px hsl(${dest.hue},75%,30%), 0 0 56px 20px hsl(${dest.hue},70%,15%)`
+            : 'none',
           pointerEvents: 'none',
           transition: 'inset 0.3s ease, box-shadow 0.35s ease',
         }}
       />
 
-      {/* Fully transparent click area — the video IS the visual */}
+      {/* Click area — transparent in production, red-tinted in debug */}
       <div style={{
         position: 'absolute', inset: 0,
         borderRadius: '50%',
-        background: 'transparent',
-        /* Debug outline — remove once positions confirmed */
-        outline: glow ? `2px solid hsla(${dest.hue},90%,65%,0.6)` : 'none',
+        background: debug ? 'rgba(255,0,0,0.28)' : 'transparent',
+        outline: (debug || glow) ? `2px solid hsla(${dest.hue},90%,65%,0.6)` : 'none',
       }} />
+
+      {/* Debug label */}
+      {debug && (
+        <div style={{
+          position: 'absolute',
+          top: '50%', left: '50%',
+          transform: 'translate(-50%, -50%)',
+          pointerEvents: 'none',
+          textAlign: 'center',
+          fontFamily: 'monospace',
+          fontSize: 10,
+          color: '#fff',
+          textShadow: '0 0 4px #000, 0 0 4px #000',
+          lineHeight: 1.4,
+        }}>
+          <div style={{ fontWeight: 700 }}>{dest.name}</div>
+          <div>x:{Math.round(x)} y:{Math.round(y)}</div>
+          <div>r:{Math.round(r)}px</div>
+        </div>
+      )}
 
       {/* Particles */}
       <Particles hue={dest.hue} active={glow} />
@@ -202,11 +257,26 @@ export default function WorldSelectionScreen() {
   const { playClick }   = useSoundManager();
   const { soundVolume } = useSettingsStore();
 
-  const videoRef    = useRef<HTMLVideoElement>(null);
-  const audioCtxRef = useRef<AudioContext | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const videoRef     = useRef<HTMLVideoElement>(null);
+  const audioCtxRef  = useRef<AudioContext | null>(null);
 
   const [phase,  setPhase]  = useState<Phase>('playing');
   const [chosen, setChosen] = useState<GameMode | null>(null);
+  const [debug,  setDebug]  = useState(false);
+
+  /* ── Track container size → cover layout ── */
+  const [layout, setLayout] = useState<CoverLayout>({ scale: 1, offsetX: 0, offsetY: 0 });
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const update = () => setLayout(computeCoverLayout(el.clientWidth, el.clientHeight));
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
   /* ── Temple bell chord ── */
   const playBell = useCallback(() => {
@@ -220,7 +290,7 @@ export default function WorldSelectionScreen() {
     if (!ctx) return;
     if (ctx.state === 'suspended') ctx.resume();
     [523, 659, 784].forEach((freq, i) => {
-      const osc = ctx.createOscillator();
+      const osc  = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.connect(gain); gain.connect(ctx.destination);
       osc.type = 'sine';
@@ -248,7 +318,7 @@ export default function WorldSelectionScreen() {
   }, []);
 
   /* ── Destination selected ── */
-  const handleSelect = useCallback((dest: Destination) => {
+  const handleSelect = useCallback((dest: DestDef) => {
     if (phase !== 'interactive') return;
     playClick();
     setChosen(dest.id);
@@ -258,16 +328,28 @@ export default function WorldSelectionScreen() {
       setTimeout(() => {
         setMode(dest.id);
         resetGame();
-        setLives(dest.lives);   // apply mode-specific lives AFTER resetGame
+        setLives(dest.lives);
         setScreen('game');
       }, 700);
     }, 800);
   }, [phase, playClick, setMode, resetGame, setLives, setScreen]);
 
-  return (
-    <div style={{ width: '100%', height: '100%', position: 'relative', overflow: 'hidden', background: '#000' }}>
+  /* Vignette origin for selected destination */
+  const vignettePos = (() => {
+    if (!chosen) return '50% 50%';
+    const d = DESTINATIONS.find(x => x.id === chosen)!;
+    const { x, y } = toContainer(d.vx, d.vy, layout);
+    const cw = containerRef.current?.clientWidth  || 1;
+    const ch = containerRef.current?.clientHeight || 1;
+    return `${(x / cw * 100).toFixed(1)}% ${(y / ch * 100).toFixed(1)}%`;
+  })();
 
-      {/* ══ 1. Video — stays as frozen last frame after ended ══════════ */}
+  return (
+    <div
+      ref={containerRef}
+      style={{ width: '100%', height: '100%', position: 'relative', overflow: 'hidden', background: '#000' }}
+    >
+      {/* ══ 1. Video ══════════════════════════════════════════════════ */}
       <video
         ref={videoRef}
         src={`${import.meta.env.BASE_URL}page3-cinematic.mp4`}
@@ -285,7 +367,7 @@ export default function WorldSelectionScreen() {
         onContextMenu={e => e.preventDefault()}
       />
 
-      {/* ══ 2. Destination circles ════════════════════════════════════ */}
+      {/* ══ 2. Hotspots — aligned to computed cover layout ════════════ */}
       <AnimatePresence>
         {phase !== 'playing' && (
           <motion.div
@@ -300,9 +382,11 @@ export default function WorldSelectionScreen() {
             }}
           >
             {DESTINATIONS.map(dest => (
-              <DestCircle
+              <Hotspot
                 key={dest.id}
                 dest={dest}
+                layout={layout}
+                debug={debug}
                 disabled={phase !== 'interactive'}
                 selected={chosen === dest.id}
                 faded={chosen !== null && chosen !== dest.id}
@@ -340,26 +424,42 @@ export default function WorldSelectionScreen() {
         )}
       </AnimatePresence>
 
-      {/* ══ 4. Directional vignette on selection ══════════════════════ */}
+      {/* ══ 4. Debug toggle ═══════════════════════════════════════════ */}
+      <button
+        onClick={() => setDebug(v => !v)}
+        style={{
+          position: 'absolute', top: 12, right: 12, zIndex: 100,
+          padding: '5px 12px',
+          fontFamily: 'monospace', fontSize: 11,
+          background: debug ? 'rgba(255,60,60,0.85)' : 'rgba(0,0,0,0.55)',
+          color: '#fff',
+          border: `1px solid ${debug ? '#ff4444' : 'rgba(255,255,255,0.2)'}`,
+          borderRadius: 6,
+          cursor: 'pointer',
+          backdropFilter: 'blur(4px)',
+          transition: 'all 0.2s',
+        }}
+      >
+        {debug ? '🔴 Debug ON' : '⚫ Debug OFF'}
+      </button>
+
+      {/* ══ 5. Directional vignette on selection ══════════════════════ */}
       <AnimatePresence>
-        {phase === 'selecting' && chosen && (() => {
-          const d = DESTINATIONS.find(x => x.id === chosen)!;
-          return (
-            <motion.div
-              key="vignette"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              style={{
-                position: 'absolute', inset: 0, zIndex: 20,
-                background: `radial-gradient(ellipse 50% 50% at ${d.cx} ${d.cy}, transparent 5%, rgba(0,0,0,0.8) 100%)`,
-                pointerEvents: 'none',
-              }}
-            />
-          );
-        })()}
+        {phase === 'selecting' && chosen && (
+          <motion.div
+            key="vignette"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            style={{
+              position: 'absolute', inset: 0, zIndex: 20,
+              background: `radial-gradient(ellipse 50% 50% at ${vignettePos}, transparent 5%, rgba(0,0,0,0.8) 100%)`,
+              pointerEvents: 'none',
+            }}
+          />
+        )}
       </AnimatePresence>
 
-      {/* ══ 5. Fade to black ══════════════════════════════════════════ */}
+      {/* ══ 6. Fade to black ══════════════════════════════════════════ */}
       <AnimatePresence>
         {phase === 'exiting' && (
           <motion.div
