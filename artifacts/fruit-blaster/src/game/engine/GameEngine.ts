@@ -78,7 +78,7 @@ export class GameEngine {
     } else if (mode === 'bamboo') {
       // Bamboo Grove — Zen Mode: calm, balanced, no escalating difficulty.
       this.bombChance = 0.1;
-      this.spawnRate = 50;
+      this.spawnRate = 28;
     } else if (mode === 'moon') {
       // Moon Shrine — Survival Mode: starts calm, ramps up every 30s, maxes at 5min.
       this.bombChance = 0.14;
@@ -475,7 +475,7 @@ export class GameEngine {
       const swordImg = getBambooImage('bamboo-sword.png');
       if (swordImg) {
         const angle = Math.atan2(tip.y - prev.y, tip.x - prev.x) + Math.PI / 4;
-        const h = 130;
+        const h = 210;
         const w = h * (swordImg.naturalWidth / swordImg.naturalHeight);
         ctx.save();
         ctx.translate(tip.x, tip.y);
