@@ -78,7 +78,7 @@ export function drawImperialSprite(ctx: CanvasRenderingContext2D, type: string, 
   ctx.imageSmoothingEnabled = true;
   ctx.imageSmoothingQuality = 'high';
 
-  const targetH = r * 2.9;
+  const targetH = r * 2.7;
   const targetW = targetH * (img.naturalWidth / img.naturalHeight);
   ctx.drawImage(img, -targetW / 2, -targetH / 2, targetW, targetH);
   ctx.restore();
