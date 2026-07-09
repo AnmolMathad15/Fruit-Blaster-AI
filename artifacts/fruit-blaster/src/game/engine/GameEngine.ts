@@ -81,10 +81,10 @@ export class GameEngine {
       this.spawnRate = 50;
     } else if (mode === 'moon') {
       // Moon Shrine — Survival Mode: starts calm, ramps up every 30s, maxes at 5min.
-      this.bombChance = 0.06;
+      this.bombChance = 0.14;
       this.spawnRate = 45;
       this.speedMultiplier = 1;
-      this.baseBombChance = 0.06;
+      this.baseBombChance = 0.14;
       this.baseSpawnRate = 45;
       this.baseSpeedMultiplier = 1;
     } else {
@@ -99,7 +99,7 @@ export class GameEngine {
     const tier = Math.min(10, Math.floor(this.survivalSeconds / 30)); // 0..10, maxed at 300s
     this.speedMultiplier = this.baseSpeedMultiplier + tier * 0.12;
     this.spawnRate = Math.max(14, this.baseSpawnRate - tier * 3);
-    this.bombChance = Math.min(0.32, this.baseBombChance + tier * 0.02);
+    this.bombChance = Math.min(0.4, this.baseBombChance + tier * 0.02);
   }
   
   resize(w: number, h: number) {
@@ -494,7 +494,7 @@ export class GameEngine {
       const swordImg = getMoonImage('moon-katana.png');
       if (swordImg) {
         const angle = Math.atan2(tip.y - prev.y, tip.x - prev.x) + Math.PI / 4;
-        const h = (200 / 1080) * this.height * 1.2; // scale with canvas, ~180-220px reference
+        const h = (200 / 1080) * this.height * 1.9; // scale with canvas, enlarged Moonlight Katana
         const w = h * (swordImg.naturalWidth / swordImg.naturalHeight);
         ctx.save();
         ctx.translate(tip.x, tip.y);
