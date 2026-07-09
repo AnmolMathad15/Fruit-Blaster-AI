@@ -4,8 +4,8 @@ A gesture-controlled browser game where players slice falling fruits with their 
 
 ## Run & Operate
 
-- **Fruit Blaster game** runs via the "Fruit Blaster" workflow (`PORT=5173 BASE_PATH=/ pnpm --filter @workspace/fruit-blaster run dev`)
-- `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000, unused by game)
+- **Fruit Blaster game** runs via the managed artifact workflow `artifacts/fruit-blaster: web` (`pnpm --filter @workspace/fruit-blaster run dev`), served at `/`. Restart with the `WorkflowsRestart` tool using that exact name.
+- **API server** runs via the managed artifact workflow `artifacts/api-server: API Server`, served at `/api`.
 - `pnpm run typecheck` — full typecheck across all packages
 - `pnpm run build` — typecheck + build all packages
 - `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
