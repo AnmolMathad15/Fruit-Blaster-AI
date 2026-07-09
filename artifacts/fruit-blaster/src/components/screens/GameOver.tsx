@@ -3,9 +3,8 @@ import { useGameStore } from '../../store/gameStore';
 import { useStatsStore } from '../../store/statsStore';
 import { useMoonStore } from '../../store/moonStore';
 import { getRankForScore, getMoonRank } from '../../utils/mathUtils';
-import { ThemedButton } from '../ui/UIComponents';
+import { GlassPanel, Button } from '../ui/UIComponents';
 import { useSoundManager } from '../../hooks/useSoundManager';
-import { useTheme } from '../../core/ThemeUIManager';
 import { useEffect } from 'react';
 
 export default function GameOver() {
@@ -13,7 +12,6 @@ export default function GameOver() {
   const { addGamesPlayed, updateBestScore, addLeaderboardEntry } = useStatsStore();
   const moonStats = useMoonStore();
   const { playGameOver, playClick } = useSoundManager();
-  const theme = useTheme();
 
   const isMoon = mode === 'moon';
   const rank = isMoon ? getMoonRank(score) : getRankForScore(score);
@@ -61,15 +59,9 @@ export default function GameOver() {
         {/* Simple CSS confetti simulation could go here, or handled by particle engine */}
       </div>
 
-      <div
-        className="relative w-full max-w-2xl bg-no-repeat bg-contain bg-center p-8 md:p-12 flex flex-col items-center gap-6 z-10 text-center"
-        style={{ backgroundImage: `url(${theme.assets.result})`, aspectRatio: '335 / 200', minHeight: 480 }}
-      >
-        <h2
-          className="text-4xl md:text-5xl font-black font-orbitron drop-shadow-[0_2px_6px_rgba(0,0,0,0.6)]"
-          style={{ color: theme.accentSoft }}
-        >
-          {theme.gameOverTitle}
+      <GlassPanel className={`w-full max-w-2xl p-8 md:p-12 flex flex-col items-center gap-8 z-10 text-center ${isMoon ? 'border-blue-300/20' : ''}`}>
+        <h2 className={`text-5xl md:text-6xl font-black font-orbitron drop-shadow-[0_0_20px_rgba(255,0,0,0.5)] ${isMoon ? 'text-blue-100 drop-shadow-[0_0_20px_rgba(140,180,255,0.5)]' : 'text-destructive'}`}>
+          {isMoon ? 'THE SHRINE FADES' : 'GAME OVER'}
         </h2>
         
         <div className="flex flex-col items-center">
@@ -119,11 +111,15 @@ export default function GameOver() {
           </motion.div>
         )}
 
-        <div className="flex gap-4 w-full mt-4 justify-center">
-          <ThemedButton kind="home" onClick={handleHome} className="w-32 h-14" />
-          <ThemedButton kind="retry" onClick={handleReplay} className="w-32 h-14" />
+        <div className="flex gap-4 w-full mt-4">
+          <Button onClick={handleHome} variant="secondary" className="flex-1">
+            Home
+          </Button>
+          <Button onClick={handleReplay} variant="primary" className="flex-1">
+            Play Again
+          </Button>
         </div>
-      </div>
+      </GlassPanel>
     </div>
   );
 }

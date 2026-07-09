@@ -8,8 +8,7 @@ import { GameEngine } from '../../game/engine/GameEngine';
 import { getSwordSkinColors } from '../../utils/mathUtils';
 import { useMoonStore } from '../../store/moonStore';
 import HUD from './HUD';
-import { GlassPanel, ThemedButton } from '../ui/UIComponents';
-import { useTheme } from '../../core/ThemeUIManager';
+import { GlassPanel, Button } from '../ui/UIComponents';
 
 export default function GameScreen() {
   const canvasRef   = useRef<HTMLCanvasElement>(null);
@@ -21,7 +20,6 @@ export default function GameScreen() {
   const lastTimeRef = useRef<number>(performance.now());
 
   const { setScreen, mode, setScore, setLives, score, combo, setCombo, isPaused, setPaused, timeLeft, setTimeLeft } = useGameStore();
-  const pauseTheme = useTheme();
   const { webcamMirror, swordSkin } = useSettingsStore();
   const { addSwing, updateBestCombo } = useStatsStore();
   const {
@@ -399,14 +397,11 @@ export default function GameScreen() {
 
       {isPaused && !(mode === 'moon' && handLost) && (
         <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
-          <div
-            className="bg-no-repeat bg-contain bg-center p-10 flex flex-col items-center justify-center gap-4"
-            style={{ backgroundImage: `url(${pauseTheme.assets.pause})`, width: 340, height: 340 }}
-          >
-            <h2 className="text-3xl font-orbitron font-bold mb-2" style={{ color: pauseTheme.accentSoft, textShadow: '0 2px 6px rgba(0,0,0,0.6)' }}>PAUSED</h2>
-            <ThemedButton kind="resume" onClick={() => setPaused(false)} className="w-40 h-14" />
-            <ThemedButton kind="home" onClick={() => setScreen('menu')} className="w-40 h-14" />
-          </div>
+          <GlassPanel className="p-8 flex flex-col items-center gap-4">
+            <h2 className="text-4xl font-orbitron font-bold text-white mb-4">PAUSED</h2>
+            <Button onClick={() => setPaused(false)} variant="primary" className="w-full">RESUME</Button>
+            <Button onClick={() => setScreen('menu')} variant="secondary" className="w-full">QUIT</Button>
+          </GlassPanel>
         </div>
       )}
     </div>

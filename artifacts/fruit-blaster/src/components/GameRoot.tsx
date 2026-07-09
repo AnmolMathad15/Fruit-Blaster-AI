@@ -16,7 +16,6 @@ import Achievements from './screens/Achievements';
 import Statistics from './screens/Statistics';
 import { useGameStore } from '../store/gameStore';
 import { ScreenTransition } from './ui/UIComponents';
-import { ThemeUIProvider } from '../core/ThemeUIManager';
 
 export default function GameRoot() {
   const { screen } = useGameStore();
@@ -43,12 +42,10 @@ export default function GameRoot() {
   };
 
   return (
-    <ThemeUIProvider>
-      <div className="w-screen h-[100dvh] overflow-hidden bg-background text-foreground font-sans">
-        <ScreenTransition keyName={screen}>
-          {renderScreen()}
-        </ScreenTransition>
-      </div>
-    </ThemeUIProvider>
+    <div className="w-screen h-[100dvh] overflow-hidden bg-background text-foreground font-sans">
+      <ScreenTransition keyName={screen}>
+        {renderScreen()}
+      </ScreenTransition>
+    </div>
   );
 }
