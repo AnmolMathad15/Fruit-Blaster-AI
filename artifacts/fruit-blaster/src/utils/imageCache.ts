@@ -41,3 +41,7 @@ export function getCrimsonImage(fileName: string): HTMLImageElement | null {
 export function getImperialImage(fileName: string): HTMLImageElement | null {
   return getSpriteImage('imperial', fileName);
 }
+
+export function getDojoImage(fileName: string): HTMLImageElement | null {
+  return getSpriteImage('dojo', fileName);
+}

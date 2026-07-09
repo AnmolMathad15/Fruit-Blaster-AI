@@ -1,0 +1,374 @@
+# 🏯 DOJO GATE — COMPLETE GAME ZONE DESIGN & GAMEPLAY PROMPT
+
+## OBJECTIVE
+
+Create an ultra-premium **Dojo Gate** game zone inspired by ancient Japanese martial arts temples. This level should feel like the sacred training ground of legendary samurai masters where discipline, precision, honor, and balance are more important than brute strength.
+
+The experience must be calm, elegant, and immersive while remaining extremely exciting and satisfying to play. Every slice should feel clean, precise, and rewarding.
+
+This is a premium Fruit Ninja–style experience with AAA-quality visuals, smooth gameplay, and polished animations.
+
+---
+
+# OVERALL ATMOSPHERE
+
+The player has entered an ancient mountain dojo hidden above the clouds.
+
+Massive wooden gates open into a peaceful martial arts academy where generations of sword masters perfected their techniques.
+
+The environment should create feelings of:
+
+• Peace
+• Focus
+• Discipline
+• Precision
+• Harmony
+• Ancient Japanese culture
+• Zen philosophy
+• Master swordsmanship
+
+Everything should feel handcrafted and luxurious.
+
+---
+
+# ENVIRONMENT
+
+Include:
+
+• Giant traditional Torii Gate
+• Ancient wooden dojo
+• Wooden training platform
+• Zen rock garden
+• Stone pathways
+• Cherry blossom trees
+• Japanese maple trees
+• Bamboo fencing
+• Stone lanterns
+• Paper lanterns
+• Sacred temple bells
+• Hanging prayer plaques
+• Small koi pond
+• Wooden bridge
+• Flowing mountain stream
+• Moss-covered stones
+• Pine forest
+• Mountain cliffs
+• Morning mist
+• Warm sunrise
+
+The center gameplay area must remain open and uncluttered.
+
+---
+
+# LIGHTING
+
+Soft early morning sunlight.
+
+Warm golden lighting.
+
+Natural shadows.
+
+Premium reflections.
+
+Gentle atmospheric fog.
+
+Floating cherry blossom petals.
+
+Occasional maple leaves drifting through the air.
+
+---
+
+# GAMEPLAY AREA
+
+The center of the screen must remain completely clear.
+
+Background objects should never interfere with:
+
+• Fruits
+• Sword
+• Slash effects
+• Combo visibility
+• Bomb visibility
+
+Gameplay clarity is the highest priority.
+
+---
+
+# GRANDMASTER KATANA
+
+The player uses the legendary Grandmaster's Bell Katana.
+
+Requirements:
+
+• Premium Japanese katana
+• Long elegant blade
+• Mirror-polished steel
+• White ray-skin handle
+• Black silk wrapping
+• Antique gold guard
+• Sacred bronze Suzu bell attached to the handle with a crimson braided cord
+• Bell swings naturally during movement
+• Thin white wind trails
+• Cherry blossom petals following each slash
+• Extremely smooth animations
+• Razor-sharp cutting feel
+
+### Sword Size
+
+The sword must be approximately **20–25% larger** than a traditional Fruit Ninja blade so it feels premium and powerful.
+
+It must remain:
+
+• Clearly visible
+• Easy to control
+• Comfortable for swipe gameplay
+• Never cover the entire screen
+• Balanced for mobile devices
+
+The sword should always remain responsive with high swipe accuracy.
+
+---
+
+# FRUITS
+
+Use only these Dojo Gate fruits:
+
+🍑 Celestial Peach
+
+🍊 Celestial Mikan
+
+🍐 Celestial Nashi Pear
+
+🍋 Celestial Yuzu
+
+🍇 Celestial Kyoho Grapes
+
+🍉 Celestial Watermelon
+
+🟠 Celestial Persimmon
+
+🟣 Celestial Japanese Plum
+
+❤️ Celestial Pomegranate
+
+🥑 Celestial Avocado
+
+🩷 Celestial Dragon Fruit
+
+Each fruit should have:
+
+• Premium 3D appearance
+• Highly detailed textures
+• Realistic interiors
+• Fresh glossy finish
+• Rich colors
+• Beautiful reflections
+• Juicy slicing effects
+
+---
+
+# FRUIT SIZE
+
+Every fruit should be approximately **25–35% larger** than standard Fruit Ninja fruits.
+
+Large fruits make slicing:
+
+• More satisfying
+• Easier
+• More visually rewarding
+
+Each fruit should occupy roughly **8–12% of the gameplay width**, depending on the fruit type.
+
+Watermelon and Pomegranate should be among the largest.
+
+Dragon Fruit and Avocado should appear thick and premium.
+
+Grapes should have large individual berries.
+
+---
+
+# FRUIT SPAWN
+
+Gameplay should feel exciting and nonstop.
+
+Spawn fruits frequently.
+
+Recommended spawning:
+
+• 4–8 fruits simultaneously
+• Frequent combo opportunities
+• Continuous wave generation
+• Very little empty screen time
+• Randomized fruit combinations
+• Dynamic trajectories
+• Smooth difficulty scaling
+
+The player should always have fruits available to slice.
+
+---
+
+# HAZARD
+
+Hazard:
+
+👹 Cursed Oni Mask
+
+This replaces the traditional bomb.
+
+It is an ancient sealed demon relic.
+
+Never use modern explosives.
+
+When hit:
+
+• Dark spiritual burst
+• Black smoke
+• Crimson energy
+• Torn talisman fragments
+• Short shockwave
+• Immediate round failure
+
+---
+
+# HAZARD SPAWN
+
+The Oni Mask should appear regularly enough to keep players alert.
+
+Recommended frequency:
+
+• Approximately **1 Oni Mask every 8–15 fruit waves**
+• Never more than **1 Oni Mask on screen at the same time**
+• Occasionally appear alongside multiple fruits to test precision
+• Spawn unpredictably but fairly
+• Never create impossible situations
+
+The goal is to reward disciplined, accurate slicing—not random luck.
+
+---
+
+# SLICE EFFECTS
+
+Every slash should produce:
+
+• Thin white wind trails
+• Elegant silver slash arcs
+• Cherry blossom petals
+• Tiny maple leaves
+• Soft motion blur
+• Fresh juice splashes
+• Smooth fruit particles
+
+No fire.
+
+No lightning.
+
+No magical explosions.
+
+Everything should feel elegant and refined.
+
+---
+
+# AUDIO
+
+Background music:
+
+• Japanese bamboo flute
+• Soft koto
+• Gentle taiko drums
+• Temple bells
+• Wind chimes
+• Flowing water
+• Birds
+
+Sword sounds:
+
+• Crisp katana unsheathing
+• Sharp clean slices
+• Soft bell chime from the Suzu bell
+• Fresh juicy fruit cuts
+
+---
+
+# PERFORMANCE
+
+Gameplay must always remain:
+
+• 60 FPS
+• Extremely smooth
+• Responsive
+• Optimized for mobile
+• Fast loading
+• Low latency
+
+---
+
+# DOJO GATE RULES
+
+## Objective
+
+Slice as many sacred fruits as possible while demonstrating the precision and discipline of a true samurai.
+
+---
+
+### Scoring
+
+• Slice 1 fruit = +1 point
+• Combo of 3 fruits = Bonus points
+• Combo of 5+ fruits = Higher bonus
+• Perfect combo without misses = Precision Bonus
+• Consecutive successful slices increase combo multiplier
+
+---
+
+### Avoid the Cursed Oni Mask
+
+Never slice the Cursed Oni Mask.
+
+If the Oni Mask is hit:
+
+• The demon seal breaks.
+• The round ends immediately.
+• The player loses the current run.
+
+---
+
+### Miss Limit
+
+Players may miss **up to 3 fruits**.
+
+Missing a **4th fruit** ends the game.
+
+---
+
+### Combo Rewards
+
+Reward players for precision:
+
+• x2 Combo
+• x3 Combo
+• x5 Combo
+• Master Combo
+• Grandmaster Combo
+• Zen Master Combo
+
+Higher combos grant more points and satisfying visual feedback.
+
+---
+
+### Gameplay Philosophy
+
+Victory is achieved through:
+
+• Precision
+• Patience
+• Timing
+• Discipline
+• Focus
+
+Wild or careless swiping should be less effective than controlled, deliberate cuts.
+
+---
+
+# FINAL FEELING
+
+The Dojo Gate should feel like the sacred training grounds of history's greatest samurai masters. Every fruit should appear abundant, vibrant, and satisfying to slice. The Grandmaster's Bell Katana should feel perfectly balanced, responsive, and elegant. The Cursed Oni Mask should add tension without feeling unfair. The result should be a premium, polished, AAA-quality Fruit Ninja experience where every swipe embodies discipline, precision, and the timeless spirit of the dojo.

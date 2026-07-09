@@ -55,6 +55,17 @@ export const FRUIT_DATA: Record<FruitType, { color: string; colorInner: string; 
   'Imperial Sugarcane':  { color: '#c8d8a0', colorInner: '#f4f8e8', score: 15, radius: 88, probability: 11, image: 'imperial-sugarcane.png' },
   'Imperial Jackfruit':  { color: '#c8a838', colorInner: '#fff0c0', score: 30, radius: 100, probability: 8, image: 'imperial-jackfruit.png' },
   'Imperial Durian':     { color: '#88a848', colorInner: '#f0f4d0', score: 35, radius: 98, probability: 6, image: 'imperial-durian.png' },
+
+  // ── Dojo Gate (Classic Mode) — serene celestial dojo fruits ──
+  'Celestial Peach':        { color: '#f0b090', colorInner: '#fff0e0', score: 10, radius: 88, probability: 16, image: 'dojo-peach.png' },
+  'Celestial Yuzu':         { color: '#e8d040', colorInner: '#fff8d0', score: 10, radius: 76, probability: 15, image: 'dojo-yuzu.png' },
+  'Celestial Kyoho Grapes': { color: '#4a2050', colorInner: '#c8a0e0', score: 15, radius: 80, probability: 15, image: 'dojo-grapes.png' },
+  'Celestial Watermelon':   { color: '#2a7a3a', colorInner: '#ff5050', score: 20, radius: 100, probability: 10, image: 'dojo-watermelon.png' },
+  'Celestial Persimmon':    { color: '#e07020', colorInner: '#ffd8a0', score: 15, radius: 82, probability: 14, image: 'dojo-persimmon.png' },
+  'Celestial Japanese Plum':{ color: '#5a2050', colorInner: '#e8b8d0', score: 15, radius: 78, probability: 14, image: 'dojo-plum.png' },
+  'Celestial Pomegranate':  { color: '#a01818', colorInner: '#ff6060', score: 20, radius: 90, probability: 11, image: 'dojo-pomegranate.png' },
+  'Celestial Avocado':      { color: '#2a4a20', colorInner: '#c8e090', score: 15, radius: 84, probability: 12, image: 'dojo-avocado.png' },
+  'Celestial Dragon Fruit': { color: '#c81858', colorInner: '#fff0f0', score: 25, radius: 86, probability: 9, image: 'dojo-dragonfruit.png' },
 };
 
 export const BOMB_DATA: Record<BombType, { color: string; fuseColor: string; radius: number; probability: number; effect: string; image?: string }> = {
@@ -66,6 +77,7 @@ export const BOMB_DATA: Record<BombType, { color: string; fuseColor: string; rad
   'Cursed Eclipse Orb': { color: '#120a1e', fuseColor: '#B87CF0', radius: 74, probability: 100, effect: 'lose_life', image: 'cursed-eclipse-orb.png' },
   'Infernal Dragon Core': { color: '#1a0806', fuseColor: '#FF5522', radius: 78, probability: 100, effect: 'lose_life', image: 'infernal-dragon-core.png' },
   "Emperor's Judgment Orb": { color: '#f0ead0', fuseColor: '#FFD700', radius: 82, probability: 100, effect: 'lose_life', image: 'emperors-judgment-orb.png' },
+  'Cursed Oni Mask': { color: '#3a0a0a', fuseColor: '#ff2020', radius: 80, probability: 100, effect: 'lose_life', image: 'cursed-oni-mask.png' },
 };
 
 // Fruit pool spawned exclusively inside the Bamboo Grove Zen world.
@@ -94,6 +106,13 @@ export const IMPERIAL_FRUIT_TYPES: FruitType[] = [
   'Imperial Gooseberry', 'Imperial Grapefruit', 'Imperial Sugarcane', 'Imperial Jackfruit', 'Imperial Durian',
 ];
 export const IMPERIAL_ASSET_BASE = 'imperial/';
+
+// Fruit pool spawned exclusively inside the Dojo Gate (Classic Mode).
+export const DOJO_FRUIT_TYPES: FruitType[] = [
+  'Celestial Peach', 'Celestial Yuzu', 'Celestial Kyoho Grapes', 'Celestial Watermelon',
+  'Celestial Persimmon', 'Celestial Japanese Plum', 'Celestial Pomegranate', 'Celestial Avocado', 'Celestial Dragon Fruit',
+];
+export const DOJO_ASSET_BASE = 'dojo/';
 
 export const generateLevels = (): LevelConfig[] => {
   const levels: LevelConfig[] = [];

@@ -3,8 +3,8 @@
  * All drawing is relative to origin (0,0); caller must translate+rotate first.
  */
 
-import { FRUIT_DATA, BOMB_DATA, MOON_FRUIT_TYPES, CRIMSON_FRUIT_TYPES, IMPERIAL_FRUIT_TYPES } from '../../constants/GameData';
-import { getBambooImage, getMoonImage, getCrimsonImage, getImperialImage } from '../../utils/imageCache';
+import { FRUIT_DATA, BOMB_DATA, MOON_FRUIT_TYPES, CRIMSON_FRUIT_TYPES, IMPERIAL_FRUIT_TYPES, DOJO_FRUIT_TYPES } from '../../constants/GameData';
+import { getBambooImage, getMoonImage, getCrimsonImage, getImperialImage, getDojoImage } from '../../utils/imageCache';
 
 /** True for any type that belongs to the Moon Shrine's custom celestial asset set. */
 function isMoonType(type: string): boolean {
@@ -21,9 +21,20 @@ function isImperialType(type: string): boolean {
   return IMPERIAL_FRUIT_TYPES.includes(type as any) || type === "Emperor's Judgment Orb";
 }
 
+/** True for any type that belongs to the Dojo Gate's custom celestial-fruit asset set. */
+function isDojoType(type: string): boolean {
+  return DOJO_FRUIT_TYPES.includes(type as any) || type === 'Cursed Oni Mask';
+}
+
 /** Fruit/hazard types rendered from our hand-painted Bamboo Grove sprites instead of vector art. */
 function bambooImageFor(type: string): string | undefined {
-  if (isMoonType(type) || isCrimsonType(type) || isImperialType(type)) return undefined;
+  if (isMoonType(type) || isCrimsonType(type) || isImperialType(type) || isDojoType(type)) return undefined;
+  return (FRUIT_DATA as any)[type]?.image ?? (BOMB_DATA as any)[type]?.image;
+}
+
+/** Dojo Gate sprites (celestial fruits, Cursed Oni Mask) — loaded from public/dojo/. */
+function dojoImageFor(type: string): string | undefined {
+  if (!isDojoType(type)) return undefined;
   return (FRUIT_DATA as any)[type]?.image ?? (BOMB_DATA as any)[type]?.image;
 }
 
@@ -79,6 +90,26 @@ export function drawImperialSprite(ctx: CanvasRenderingContext2D, type: string, 
   ctx.imageSmoothingQuality = 'high';
 
   const targetH = r * 2.7;
+  const targetW = targetH * (img.naturalWidth / img.naturalHeight);
+  ctx.drawImage(img, -targetW / 2, -targetH / 2, targetW, targetH);
+  ctx.restore();
+  return true;
+}
+
+/** Same contract as drawBambooSprite, but reads from the Dojo Gate asset folder. Fruits render 25-35% larger (2.5x radius) per the zone's "premium, large, satisfying" design goal. */
+export function drawDojoSprite(ctx: CanvasRenderingContext2D, type: string, r: number): boolean {
+  const file = dojoImageFor(type);
+  if (!file) return false;
+  const img = getDojoImage(file);
+  if (!img) return false;
+
+  ctx.save();
+  ctx.globalAlpha = 1;
+  ctx.globalCompositeOperation = 'source-over';
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
+
+  const targetH = r * 2.5;
   const targetW = targetH * (img.naturalWidth / img.naturalHeight);
   ctx.drawImage(img, -targetW / 2, -targetH / 2, targetW, targetH);
   ctx.restore();
@@ -154,6 +185,12 @@ function drawLeaf(ctx: CanvasRenderingContext2D, r: number, color = '#4CAF50') {
 }
 
 export function drawFruit(ctx: CanvasRenderingContext2D, type: string, r: number) {
+  if (dojoImageFor(type)) {
+    // Dojo Gate sprites: skip drawing entirely until the real asset is
+    // loaded rather than flashing generic vector art as a placeholder.
+    drawDojoSprite(ctx, type, r);
+    return;
+  }
   if (imperialImageFor(type)) {
     // Imperial Heaven Palace sprites: skip drawing entirely until the real asset
     // is loaded rather than flashing generic vector art as a placeholder.
@@ -232,6 +269,9 @@ function getFruitInnerColor(type: string): string {
     'Imperial Apple': '#ffe8b8', 'Imperial Banana': '#fff8e0', 'Imperial Cherry': '#ffd8d8',
     'Imperial Raspberry': '#ffd0e0', 'Imperial Gooseberry': '#f0f8c8', 'Imperial Grapefruit': '#ffe0d0',
     'Imperial Sugarcane': '#f4f8e8', 'Imperial Jackfruit': '#fff0c0', 'Imperial Durian': '#f0f4d0',
+    'Celestial Peach': '#fff0e0', 'Celestial Yuzu': '#fff8d0', 'Celestial Kyoho Grapes': '#c8a0e0',
+    'Celestial Watermelon': '#ff5050', 'Celestial Persimmon': '#ffd8a0', 'Celestial Japanese Plum': '#e8b8d0',
+    'Celestial Pomegranate': '#ff6060', 'Celestial Avocado': '#c8e090', 'Celestial Dragon Fruit': '#fff0f0',
   };
   return map[type] || '#ffffff';
 }

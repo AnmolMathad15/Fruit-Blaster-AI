@@ -1,0 +1,324 @@
+# LIVES SYSTEM
+
+The Dojo Gate values discipline over recklessness.
+
+Players begin each game with **3 Samurai Crests** displayed at the top of the screen instead of traditional hearts.
+
+Each Samurai Crest represents the player's honor and focus.
+
+Life Rules:
+
+• Start every game with 3 Samurai Crests.
+• Missing 1 fruit loses 1 Samurai Crest.
+• Missing 3 fruits results in Game Over.
+• The loss of a life should trigger:
+  • Small screen shake
+  • Brief red flash
+  • Wooden strike sound
+  • One Samurai Crest breaking into particles
+
+The Samurai Crest UI should match the ancient Japanese dojo aesthetic using gold, bronze, and black accents.
+
+---
+
+# CURSED ONI MASK RULE
+
+The Cursed Oni Mask is NOT a normal bomb.
+
+It contains sealed demonic energy.
+
+If the player slices the Oni Mask:
+
+• The demon seal instantly breaks.
+• Dark spiritual energy erupts.
+• Black smoke fills the screen.
+• Crimson spirit particles explode outward.
+• The game immediately ends regardless of remaining lives.
+• No second chances.
+• No shield can block it.
+
+This rule emphasizes precision and discipline.
+
+---
+
+# COMBO SYSTEM
+
+Reward skilled swordsmanship.
+
+Combo Levels:
+
+3 Fruits
+→ Precision Combo
+
+5 Fruits
+→ Samurai Combo
+
+8 Fruits
+→ Master Combo
+
+12 Fruits
+→ Grandmaster Combo
+
+15+ Fruits
+→ Zen Master Combo
+
+20+ Fruits
+→ Sword Saint Combo
+
+25+ Fruits
+→ Legendary Dojo Master
+
+Each combo should have:
+
+• Beautiful Japanese calligraphy animation
+• Golden glowing text
+• Cherry blossom particle burst
+• Elegant sound effect
+• Increasing score multiplier
+
+---
+
+# SCORE MULTIPLIERS
+
+Reward consistency.
+
+Normal Slice
+×1
+
+Precision Combo
+×2
+
+Samurai Combo
+×3
+
+Master Combo
+×4
+
+Grandmaster Combo
+×5
+
+Zen Master Combo
+×6
+
+Sword Saint Combo
+×7
+
+Legendary Dojo Master
+×10
+
+Perfect runs should achieve the highest multiplier.
+
+---
+
+# DIFFICULTY PROGRESSION
+
+The challenge should increase naturally.
+
+Early Game
+
+• Slower fruit speed
+• Lower launch height
+• 3–5 fruits
+
+Mid Game
+
+• Faster launches
+• More simultaneous fruits
+• Higher combo opportunities
+
+Late Game
+
+• 6–8 fruits simultaneously
+• Faster trajectories
+• Mixed fruit patterns
+• Higher precision required
+
+The game should never feel unfair.
+
+Difficulty should reward skill rather than randomness.
+
+---
+
+# POWER-UPS
+
+Occasionally spawn legendary dojo relics.
+
+🌸 Zen Focus
+
+• Slows time for 7 seconds.
+• Fruits move slower.
+• Sword remains full speed.
+
+---
+
+⚔️ Blade Mastery
+
+• Increases sword slash width by 20%.
+• Improves slice accuracy.
+• Lasts 10 seconds.
+
+---
+
+🌺 Cherry Blossom Fury
+
+• One successful slash automatically slices every fruit currently on screen.
+• Beautiful cherry blossom explosion.
+• Oni Mask is NOT affected.
+
+---
+
+🔔 Grandmaster's Bell
+
+• Protects against ONE missed fruit.
+• Does NOT protect against the Oni Mask.
+• Bell disappears after activation.
+
+Power-up spawn chance:
+
+Approximately once every 45–60 seconds.
+
+Never spawn multiple power-ups simultaneously.
+
+---
+
+# UI DESIGN
+
+Premium ancient Japanese interface.
+
+Include:
+
+• Wooden UI panels
+• Gold decorative borders
+• Traditional Japanese patterns
+• Samurai-inspired typography
+• Elegant score counter
+• Combo indicator
+• High score display
+• Pause button designed as a temple bell
+• 3 Samurai Crests representing lives
+
+Everything should feel handcrafted.
+
+---
+
+# ENVIRONMENT ANIMATIONS
+
+The Dojo should feel alive.
+
+Include:
+
+• Constant falling cherry blossom petals
+• Floating maple leaves
+• Gentle bamboo movement
+• Swaying temple bells
+• Flowing water
+• Koi swimming
+• Flickering paper lanterns
+• Light morning mist drifting
+• Birds flying occasionally
+
+Animations should remain subtle and never distract gameplay.
+
+---
+
+# GAME FEEL
+
+Every slice should feel incredibly satisfying.
+
+Include:
+
+• High-precision swipe detection
+• Extremely low input latency
+• Smooth fruit physics
+• Natural fruit spinning
+• Responsive sword movement
+• Dynamic juice splashes
+• Clean slice trails
+• Premium impact sounds
+• Beautiful combo feedback
+
+Players should feel like a true Samurai Grandmaster.
+
+---
+
+# END GAME RANKS
+
+At the end of every run, award a rank.
+
+Below 100 Points
+
+Novice Student
+
+100–250 Points
+
+Dojo Disciple
+
+250–500 Points
+
+Elite Samurai
+
+500–800 Points
+
+Master Swordsman
+
+800–1200 Points
+
+Grandmaster
+
+1200–1800 Points
+
+Zen Master
+
+1800–2500 Points
+
+Sword Saint
+
+2500+ Points
+
+Legendary Dojo Master
+
+Each rank should have:
+
+• Unique badge
+• Elegant Japanese-inspired design
+• Gold animation
+• Premium sound effect
+
+---
+
+# ACHIEVEMENT SYSTEM
+
+Reward mastery.
+
+Examples:
+
+• First Blood
+Slice your first fruit.
+
+• Precision Apprentice
+Achieve a 10-fruit combo.
+
+• Samurai Spirit
+Complete a game without missing a fruit.
+
+• Zen Focus
+Reach a 25-fruit combo.
+
+• Grandmaster's Path
+Score over 1000 points.
+
+• Sword Saint
+Reach 2500 points.
+
+• Flawless Victory
+Complete an entire game without missing a fruit and without touching the Oni Mask.
+
+Achievements should unlock premium badges and encourage replayability.
+
+---
+
+# FINAL EXPERIENCE
+
+The Dojo Gate should be the most refined and disciplined game zone in the entire game.
+
+Every element—from the Grandmaster's Bell Katana and sacred fruits to the Cursed Oni Mask and serene environment—should embody precision, patience, and mastery. Gameplay should be fast, fluid, and highly rewarding, with large, vibrant fruits, responsive controls, elegant visual effects, and balanced difficulty that makes players feel like they are training in a legendary samurai dojo.

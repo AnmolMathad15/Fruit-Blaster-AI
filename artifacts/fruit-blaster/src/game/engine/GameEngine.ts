@@ -1,8 +1,8 @@
 import { Fruit, Bomb, FruitHalf, Particle } from '../entities/Entities';
 import { FruitType, BombType } from '../../types/GameTypes';
-import { FRUIT_DATA, BOMB_DATA, BAMBOO_FRUIT_TYPES, MOON_FRUIT_TYPES, CRIMSON_FRUIT_TYPES, IMPERIAL_FRUIT_TYPES } from '../../constants/GameData';
-import { drawFruit, drawFruitHalf, drawBambooSprite, drawMoonSprite, drawCrimsonSprite, drawImperialSprite } from './FruitRenderer';
-import { getBambooImage, getMoonImage, getCrimsonImage, getImperialImage } from '../../utils/imageCache';
+import { FRUIT_DATA, BOMB_DATA, BAMBOO_FRUIT_TYPES, MOON_FRUIT_TYPES, CRIMSON_FRUIT_TYPES, IMPERIAL_FRUIT_TYPES, DOJO_FRUIT_TYPES } from '../../constants/GameData';
+import { drawFruit, drawFruitHalf, drawBambooSprite, drawMoonSprite, drawCrimsonSprite, drawImperialSprite, drawDojoSprite } from './FruitRenderer';
+import { getBambooImage, getMoonImage, getCrimsonImage, getImperialImage, getDojoImage } from '../../utils/imageCache';
 
 export class GameEngine {
   canvas: HTMLCanvasElement;
@@ -81,6 +81,14 @@ export class GameEngine {
       this.baseBombChance = 0.5;
       this.baseSpawnRate = 26;
       this.baseSpeedMultiplier = 1.25;
+    } else if (mode === 'classic') {
+      // Dojo Gate — the game's default/classic zone: fast, generous fruit
+      // waves (4-8 fruits) with the Cursed Oni Mask appearing far less often
+      // than other worlds' hazards (~1 in 8-15 waves) per the zone's
+      // discipline-over-recklessness design brief.
+      this.bombChance = 0.09;
+      this.spawnRate = 24;
+      this.speedMultiplier = 1.05;
     } else if (mode === 'bamboo') {
       // Bamboo Grove — Zen Mode: calm, balanced, no escalating difficulty.
       this.bombChance = 0.1;
@@ -221,7 +229,11 @@ export class GameEngine {
   }
   
   spawnEntity() {
-    const isBomb = Math.random() < this.bombChance;
+    // Dojo Gate: never allow more than one Cursed Oni Mask on screen at once,
+    // per the zone's "never create impossible situations" fairness rule.
+    const isBomb = this.mode === 'classic'
+      ? (this.bombs.length === 0 && Math.random() < this.bombChance)
+      : Math.random() < this.bombChance;
     const startX = this.width * 0.2 + Math.random() * (this.width * 0.6);
     const startY = this.height + 50;
     
@@ -239,6 +251,7 @@ export class GameEngine {
         : this.mode === 'moon' ? 'Cursed Eclipse Orb'
         : this.mode === 'challenge' ? 'Infernal Dragon Core'
         : this.mode === 'survival' ? "Emperor's Judgment Orb"
+        : this.mode === 'classic' ? 'Cursed Oni Mask'
         : 'Normal';
       // Crimson Temple / Imperial Palace: bombs frequently arrive in bursts of
       // 2-3 (Imperial even reaching double/triple Judgment Orb waves) rather
@@ -292,6 +305,26 @@ export class GameEngine {
         const jitterVx = vx + (Math.random() - 0.5) * 2;
         this.fruits.push(new Fruit(jitterX, startY, jitterVx, vy, type));
       }
+    } else if (this.mode === 'classic') {
+      // Dojo Gate spawns exclusively from our nine celestial fruits, weighted by
+      // probability, in generous waves (4-8 fruits) with almost no idle time,
+      // per the zone's "nonstop, rewarding" design brief.
+      const pool = DOJO_FRUIT_TYPES.map(t => [t, FRUIT_DATA[t]] as const);
+      const totalProb = pool.reduce((sum, [, v]) => sum + v.probability, 0);
+      const roll = Math.random();
+      const waveSize = roll < 0.15 ? 8 : roll < 0.35 ? 6 : roll < 0.6 ? 5 : roll < 0.85 ? 4 : 3;
+      for (let i = 0; i < waveSize; i++) {
+        const rand = Math.random() * totalProb;
+        let cumProb = 0;
+        let type: FruitType = DOJO_FRUIT_TYPES[0];
+        for (const [k, v] of pool) {
+          cumProb += v.probability;
+          if (rand <= cumProb) { type = k; break; }
+        }
+        const jitterX = startX + (Math.random() - 0.5) * 130 * i;
+        const jitterVx = vx + (Math.random() - 0.5) * 2;
+        this.fruits.push(new Fruit(jitterX, startY, jitterVx, vy, type));
+      }
     } else if (this.mode === 'bamboo') {
       // Bamboo Grove spawns exclusively from our seven custom fruits.
       const type = BAMBOO_FRUIT_TYPES[Math.floor(Math.random() * BAMBOO_FRUIT_TYPES.length)];
@@ -310,7 +343,7 @@ export class GameEngine {
       this.fruits.push(new Fruit(startX, startY, vx, vy, type));
     } else {
       // Pick fruit type by probability
-      const pool = Object.entries(FRUIT_DATA).filter(([k]) => !BAMBOO_FRUIT_TYPES.includes(k as FruitType) && !MOON_FRUIT_TYPES.includes(k as FruitType) && !CRIMSON_FRUIT_TYPES.includes(k as FruitType) && !IMPERIAL_FRUIT_TYPES.includes(k as FruitType) && k !== 'Lunar Kiwi');
+      const pool = Object.entries(FRUIT_DATA).filter(([k]) => !BAMBOO_FRUIT_TYPES.includes(k as FruitType) && !MOON_FRUIT_TYPES.includes(k as FruitType) && !CRIMSON_FRUIT_TYPES.includes(k as FruitType) && !IMPERIAL_FRUIT_TYPES.includes(k as FruitType) && !DOJO_FRUIT_TYPES.includes(k as FruitType) && k !== 'Lunar Kiwi');
       const totalProb = pool.reduce((sum, [, v]) => sum + v.probability, 0);
       const rand = Math.random() * totalProb;
       let cumProb = 0;
