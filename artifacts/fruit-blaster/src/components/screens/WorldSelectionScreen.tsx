@@ -485,6 +485,8 @@ export default function WorldSelectionScreen() {
           setScreen('crimson-intro');
         } else if (dest.id === 'survival') {
           setScreen('imperial-intro');
+        } else if (dest.id === 'zen') {
+          setScreen('moon-intro');
         } else {
           setMode(dest.id);
           resetGame();

@@ -7,6 +7,7 @@ import DojoGateIntroScreen from './screens/DojoGateIntroScreen';
 import BambooGroveIntroScreen from './screens/BambooGroveIntroScreen';
 import CrimsonTempleIntroScreen from './screens/CrimsonTempleIntroScreen';
 import ImperialPalaceIntroScreen from './screens/ImperialPalaceIntroScreen';
+import MoonShrineIntroScreen from './screens/MoonShrineIntroScreen';
 import GameScreen from './game/GameCanvas';
 import GameOver from './screens/GameOver';
 import Settings from './screens/Settings';
@@ -28,6 +29,7 @@ export default function GameRoot() {
       case 'dojo-intro': return <DojoGateIntroScreen />;
       case 'bamboo-intro': return <BambooGroveIntroScreen />;
       case 'imperial-intro': return <ImperialPalaceIntroScreen />;
+      case 'moon-intro': return <MoonShrineIntroScreen />;
       case 'crimson-intro': return <CrimsonTempleIntroScreen />;
       case 'game': return <GameScreen />;
       case 'gameover': return <GameOver />;
