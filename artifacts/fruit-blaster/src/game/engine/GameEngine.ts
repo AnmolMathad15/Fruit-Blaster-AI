@@ -1,8 +1,8 @@
 import { Fruit, Bomb, FruitHalf, Particle } from '../entities/Entities';
 import { FruitType, BombType } from '../../types/GameTypes';
-import { FRUIT_DATA, BOMB_DATA, BAMBOO_FRUIT_TYPES } from '../../constants/GameData';
-import { drawFruit, drawFruitHalf, drawBambooSprite } from './FruitRenderer';
-import { getBambooImage } from '../../utils/imageCache';
+import { FRUIT_DATA, BOMB_DATA, BAMBOO_FRUIT_TYPES, MOON_FRUIT_TYPES } from '../../constants/GameData';
+import { drawFruit, drawFruitHalf, drawBambooSprite, drawMoonSprite } from './FruitRenderer';
+import { getBambooImage, getMoonImage } from '../../utils/imageCache';
 
 export class GameEngine {
   canvas: HTMLCanvasElement;
@@ -27,19 +27,26 @@ export class GameEngine {
   speedMultiplier: number = 1;
   bombChance: number = 0;
   
-  onScore: (pts: number, x: number, y: number) => void;
+  onScore: (pts: number, x: number, y: number, perfect: boolean) => void;
   onMiss: () => void;
   onBombHit: () => void;
   playSlice: () => void;
   playBomb: () => void;
   
   lastFingerPos: {x: number, y: number} | null = null;
+
+  // Moon Shrine — Survival Mode: difficulty escalates every 30s, maxing at 5min.
+  survivalSeconds: number = 0;
+  moonBlessingActive: boolean = false;
+  baseSpawnRate: number = 60;
+  baseBombChance: number = 0;
+  baseSpeedMultiplier: number = 1;
   
   constructor(
     canvas: HTMLCanvasElement, 
     mode: string, 
     callbacks: {
-      onScore: (pts: number, x: number, y: number) => void,
+      onScore: (pts: number, x: number, y: number, perfect: boolean) => void,
       onMiss: () => void,
       onBombHit: () => void,
       playSlice: () => void,
@@ -72,10 +79,27 @@ export class GameEngine {
       // Bamboo Grove — Zen Mode: calm, balanced, no escalating difficulty.
       this.bombChance = 0.1;
       this.spawnRate = 50;
+    } else if (mode === 'moon') {
+      // Moon Shrine — Survival Mode: starts calm, ramps up every 30s, maxes at 5min.
+      this.bombChance = 0.06;
+      this.spawnRate = 45;
+      this.speedMultiplier = 1;
+      this.baseBombChance = 0.06;
+      this.baseSpawnRate = 45;
+      this.baseSpeedMultiplier = 1;
     } else {
       this.bombChance = 0.2;
       this.spawnRate = 60;
     }
+  }
+
+  /** Moon Shrine difficulty ramp: every 30s raise speed/spawn/bomb frequency, capped at 5 minutes. */
+  updateMoonDifficulty(dt: number) {
+    this.survivalSeconds += dt / 60;
+    const tier = Math.min(10, Math.floor(this.survivalSeconds / 30)); // 0..10, maxed at 300s
+    this.speedMultiplier = this.baseSpeedMultiplier + tier * 0.12;
+    this.spawnRate = Math.max(14, this.baseSpawnRate - tier * 3);
+    this.bombChance = Math.min(0.32, this.baseBombChance + tier * 0.02);
   }
   
   resize(w: number, h: number) {
@@ -87,6 +111,8 @@ export class GameEngine {
 
   update(dt: number = 1, fingerPos: {x: number, y: number, isPresent: boolean}) {
     // dt represents multiplier for 60fps
+
+    if (this.mode === 'moon') this.updateMoonDifficulty(dt);
     
     // Spawn logic
     this.spawnTimer -= dt;
@@ -187,15 +213,29 @@ export class GameEngine {
     const vx = (targetX - startX) / timeToPeak;
     
     if (isBomb) {
-      const type: BombType = this.mode === 'bamboo' ? 'Cursed Bamboo Seed' : 'Normal';
+      const type: BombType = this.mode === 'bamboo' ? 'Cursed Bamboo Seed'
+        : this.mode === 'moon' ? 'Cursed Eclipse Orb'
+        : 'Normal';
       this.bombs.push(new Bomb(startX, startY, vx, vy, type));
     } else if (this.mode === 'bamboo') {
       // Bamboo Grove spawns exclusively from our seven custom fruits.
       const type = BAMBOO_FRUIT_TYPES[Math.floor(Math.random() * BAMBOO_FRUIT_TYPES.length)];
       this.fruits.push(new Fruit(startX, startY, vx, vy, type));
+    } else if (this.mode === 'moon') {
+      // Moon Shrine spawns exclusively from our celestial fruits (weighted by probability).
+      const pool = MOON_FRUIT_TYPES.map(t => [t, FRUIT_DATA[t]] as const);
+      const totalProb = pool.reduce((sum, [, v]) => sum + v.probability, 0);
+      const rand = Math.random() * totalProb;
+      let cumProb = 0;
+      let type: FruitType = MOON_FRUIT_TYPES[0];
+      for (const [k, v] of pool) {
+        cumProb += v.probability;
+        if (rand <= cumProb) { type = k; break; }
+      }
+      this.fruits.push(new Fruit(startX, startY, vx, vy, type));
     } else {
       // Pick fruit type by probability
-      const pool = Object.entries(FRUIT_DATA).filter(([k]) => !BAMBOO_FRUIT_TYPES.includes(k as FruitType));
+      const pool = Object.entries(FRUIT_DATA).filter(([k]) => !BAMBOO_FRUIT_TYPES.includes(k as FruitType) && !MOON_FRUIT_TYPES.includes(k as FruitType) && k !== 'Lunar Kiwi');
       const totalProb = pool.reduce((sum, [, v]) => sum + v.probability, 0);
       const rand = Math.random() * totalProb;
       let cumProb = 0;
@@ -214,13 +254,33 @@ export class GameEngine {
   sliceFruit(f: Fruit) {
     f.sliced = true;
     this.playSlice();
-    this.onScore(f.score, f.pos.x, f.pos.y);
-    
+
     // Create halves
     const spread = 2;
     this.halves.push(new FruitHalf(f.pos.x - 10, f.pos.y, f.vel.x - spread, f.vel.y, f.type, true));
     this.halves.push(new FruitHalf(f.pos.x + 10, f.pos.y, f.vel.x + spread, f.vel.y, f.type, false));
-    
+
+    if (this.mode === 'moon') {
+      // "Clean" / "Perfect" is based on how fast the actual sword slash moved through
+      // this point (swordTrail = recent fingertip history), not the fruit's own velocity.
+      let slashSpeed = 0;
+      if (this.swordTrail.length > 1) {
+        const tip = this.swordTrail[0];
+        const prev = this.swordTrail[Math.min(4, this.swordTrail.length - 1)];
+        const frames = Math.max(1, Math.min(4, this.swordTrail.length - 1));
+        slashSpeed = Math.hypot(tip.x - prev.x, tip.y - prev.y) / frames;
+      }
+      const isClean = slashSpeed > 8;
+      const isPerfect = slashSpeed > 20;
+      const base = isPerfect ? 50 : isClean ? 20 : 10;
+      const pts = this.moonBlessingActive ? base * 2 : base;
+      this.onScore(pts, f.pos.x, f.pos.y, isPerfect);
+      this.spawnMoonSliceEffects(f.pos.x, f.pos.y, isPerfect);
+      return;
+    }
+
+    this.onScore(f.score, f.pos.x, f.pos.y, false);
+
     // Create particles
     for (let i = 0; i < 15; i++) {
       this.particles.push(new Particle({
@@ -235,12 +295,53 @@ export class GameEngine {
       }));
     }
   }
+
+  /** Moon Shrine slash: crescent moon dust, silver sparkles, stars, feathers — bigger burst on Perfect Slice. */
+  spawnMoonSliceEffects(x: number, y: number, perfect: boolean) {
+    const dustCount = perfect ? 26 : 14;
+    for (let i = 0; i < dustCount; i++) {
+      const a = Math.random() * Math.PI * 2;
+      const speed = 2 + Math.random() * 5;
+      this.particles.push(new Particle({
+        x, y,
+        vx: Math.cos(a) * speed, vy: Math.sin(a) * speed - 1,
+        life: 30 + Math.random() * 30, maxLife: 60,
+        color: 'rgba(220,230,255,0.9)',
+        size: 1.5 + Math.random() * 3,
+        type: 'sparkle',
+      }));
+    }
+    const starCount = perfect ? 14 : 6;
+    for (let i = 0; i < starCount; i++) {
+      const a = Math.random() * Math.PI * 2;
+      const speed = 1 + Math.random() * 3;
+      this.particles.push(new Particle({
+        x, y,
+        vx: Math.cos(a) * speed, vy: Math.sin(a) * speed,
+        life: 25 + Math.random() * 25, maxLife: 50,
+        color: '#e8f0ff',
+        size: 3 + Math.random() * 3,
+        type: 'star',
+      }));
+    }
+    // White feathers — drift, don't fall
+    for (let i = 0; i < (perfect ? 8 : 4); i++) {
+      this.particles.push(new Particle({
+        x, y,
+        vx: (Math.random() - 0.5) * 3, vy: -1 - Math.random() * 1.5,
+        life: 50 + Math.random() * 30, maxLife: 80,
+        color: 'rgba(255,255,255,0.85)',
+        size: 4 + Math.random() * 3,
+        type: 'confetti',
+      }));
+    }
+  }
   
   hitBomb(b: Bomb) {
     this.playBomb();
     this.onBombHit();
     
-    const palette = b.type === 'Cursed Bamboo Seed'
+    const palette = b.type === 'Cursed Bamboo Seed' || b.type === 'Cursed Eclipse Orb'
       ? ['#3D1E52', '#8E5AC2', '#B87CF0', '#1A0E24']
       : ['#ff0000', '#ff8800', '#444444', '#000000'];
     for (let i = 0; i < 30; i++) {
@@ -313,7 +414,7 @@ export class GameEngine {
       ctx.translate(b.pos.x, b.pos.y);
       ctx.rotate(b.rotation);
 
-      if (drawBambooSprite(ctx, b.type, b.radius)) {
+      if (drawMoonSprite(ctx, b.type, b.radius) || drawBambooSprite(ctx, b.type, b.radius)) {
         ctx.restore();
         return;
       }
@@ -350,7 +451,7 @@ export class GameEngine {
       ctx.translate(p.pos.x, p.pos.y);
       ctx.rotate(p.rotation);
       
-      if (p.type === 'juice' || p.type === 'smoke') {
+      if (p.type === 'juice' || p.type === 'smoke' || p.type === 'sparkle') {
         ctx.fillStyle = p.color as string;
         ctx.beginPath();
         ctx.arc(0, 0, p.size, 0, Math.PI * 2);
@@ -358,6 +459,11 @@ export class GameEngine {
       } else if (p.type === 'confetti') {
         ctx.fillStyle = p.color as string;
         ctx.fillRect(-p.size/2, -p.size, p.size, p.size*2);
+      } else if (p.type === 'star') {
+        ctx.fillStyle = p.color as string;
+        ctx.shadowBlur = 6;
+        ctx.shadowColor = p.color as string;
+        drawFourPointStar(ctx, p.size);
       }
       ctx.restore();
     });
@@ -376,6 +482,25 @@ export class GameEngine {
         ctx.rotate(angle);
         ctx.shadowBlur = 18;
         ctx.shadowColor = 'rgba(120,255,140,0.65)';
+        ctx.drawImage(swordImg, -w * 0.15, -h * 0.85, w, h);
+        ctx.restore();
+      }
+    }
+
+    // Moon Shrine: the Moonlight Katana follows the fingertip (~180-220px on a 1080p canvas).
+    if (this.mode === 'moon' && this.swordTrail.length > 0) {
+      const tip = this.swordTrail[0];
+      const prev = this.swordTrail[Math.min(3, this.swordTrail.length - 1)];
+      const swordImg = getMoonImage('moon-katana.png');
+      if (swordImg) {
+        const angle = Math.atan2(tip.y - prev.y, tip.x - prev.x) + Math.PI / 4;
+        const h = (200 / 1080) * this.height * 1.2; // scale with canvas, ~180-220px reference
+        const w = h * (swordImg.naturalWidth / swordImg.naturalHeight);
+        ctx.save();
+        ctx.translate(tip.x, tip.y);
+        ctx.rotate(angle);
+        ctx.shadowBlur = this.moonBlessingActive ? 30 : 20;
+        ctx.shadowColor = this.moonBlessingActive ? 'rgba(140,190,255,0.95)' : 'rgba(200,220,255,0.75)';
         ctx.drawImage(swordImg, -w * 0.15, -h * 0.85, w, h);
         ctx.restore();
       }
@@ -411,8 +536,10 @@ export class GameEngine {
       // Core — in Bamboo Grove the sacred sword sprite is the cursor, so the
       // trail stays a soft emerald slash streak instead of a plain white cursor line.
       ctx.shadowBlur = 0;
-      ctx.strokeStyle = this.mode === 'bamboo' ? 'rgba(180,255,180,0.55)' : '#ffffff';
-      ctx.lineWidth = this.mode === 'bamboo' ? 2 : 3;
+      ctx.strokeStyle = this.mode === 'bamboo' ? 'rgba(180,255,180,0.55)'
+        : this.mode === 'moon' ? 'rgba(190,215,255,0.6)'
+        : '#ffffff';
+      ctx.lineWidth = (this.mode === 'bamboo' || this.mode === 'moon') ? 2 : 3;
       ctx.stroke();
       
       ctx.restore();
@@ -433,4 +560,16 @@ export class GameEngine {
       }
     }
   }
+}
+
+/** Small 4-point sparkle/star, drawn centered at the current transform origin. */
+function drawFourPointStar(ctx: CanvasRenderingContext2D, size: number) {
+  ctx.beginPath();
+  ctx.moveTo(0, -size * 2);
+  ctx.quadraticCurveTo(size * 0.3, -size * 0.3, size * 2, 0);
+  ctx.quadraticCurveTo(size * 0.3, size * 0.3, 0, size * 2);
+  ctx.quadraticCurveTo(-size * 0.3, size * 0.3, -size * 2, 0);
+  ctx.quadraticCurveTo(-size * 0.3, -size * 0.3, 0, -size * 2);
+  ctx.closePath();
+  ctx.fill();
 }

@@ -17,8 +17,9 @@ export interface Circle {
 }
 
 export type FruitType = 'Apple' | 'Orange' | 'Banana' | 'Watermelon' | 'Kiwi' | 'Pineapple' | 'Pear' | 'Dragon Fruit' | 'Strawberry' | 'Blueberry' | 'Golden Apple' | 'Rainbow Mango'
-  | 'Jade Apple' | 'Bamboo Pear' | 'Emerald Kiwi' | 'Lotus Peach' | 'Zen Melon' | 'Sacred Plum' | 'Forest Lime';
-export type BombType = 'Normal' | 'Golden' | 'Frozen' | 'Explosive' | 'Cursed Bamboo Seed';
+  | 'Jade Apple' | 'Bamboo Pear' | 'Emerald Kiwi' | 'Lotus Peach' | 'Zen Melon' | 'Sacred Plum' | 'Forest Lime'
+  | 'Celestial Apple' | 'Spirit Pear' | 'Lunar Kiwi' | 'Moon Peach' | 'Moon Mandarin' | 'Silver Melon' | 'Luna Plum' | 'Moon Lime';
+export type BombType = 'Normal' | 'Golden' | 'Frozen' | 'Explosive' | 'Cursed Bamboo Seed' | 'Cursed Eclipse Orb';
 
 export interface ParticleConfig {
   x: number;

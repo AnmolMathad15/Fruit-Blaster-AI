@@ -3,12 +3,44 @@
  * All drawing is relative to origin (0,0); caller must translate+rotate first.
  */
 
-import { FRUIT_DATA, BOMB_DATA } from '../../constants/GameData';
-import { getBambooImage } from '../../utils/imageCache';
+import { FRUIT_DATA, BOMB_DATA, MOON_FRUIT_TYPES } from '../../constants/GameData';
+import { getBambooImage, getMoonImage } from '../../utils/imageCache';
+
+/** True for any type that belongs to the Moon Shrine's custom celestial asset set. */
+function isMoonType(type: string): boolean {
+  return MOON_FRUIT_TYPES.includes(type as any) || type === 'Lunar Kiwi' || type === 'Cursed Eclipse Orb';
+}
 
 /** Fruit/hazard types rendered from our hand-painted Bamboo Grove sprites instead of vector art. */
 function bambooImageFor(type: string): string | undefined {
+  if (isMoonType(type)) return undefined;
   return (FRUIT_DATA as any)[type]?.image ?? (BOMB_DATA as any)[type]?.image;
+}
+
+/** Moon Shrine sprites (celestial fruits, Cursed Eclipse Orb) — loaded from public/moon/. */
+function moonImageFor(type: string): string | undefined {
+  if (!isMoonType(type)) return undefined;
+  return (FRUIT_DATA as any)[type]?.image ?? (BOMB_DATA as any)[type]?.image;
+}
+
+/** Same contract as drawBambooSprite, but reads from the Moon Shrine asset folder. */
+export function drawMoonSprite(ctx: CanvasRenderingContext2D, type: string, r: number): boolean {
+  const file = moonImageFor(type);
+  if (!file) return false;
+  const img = getMoonImage(file);
+  if (!img) return false;
+
+  ctx.save();
+  ctx.globalAlpha = 1;
+  ctx.globalCompositeOperation = 'source-over';
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
+
+  const targetH = r * 2.1;
+  const targetW = targetH * (img.naturalWidth / img.naturalHeight);
+  ctx.drawImage(img, -targetW / 2, -targetH / 2, targetW, targetH);
+  ctx.restore();
+  return true;
 }
 
 /**
@@ -60,6 +92,12 @@ function drawLeaf(ctx: CanvasRenderingContext2D, r: number, color = '#4CAF50') {
 }
 
 export function drawFruit(ctx: CanvasRenderingContext2D, type: string, r: number) {
+  if (moonImageFor(type)) {
+    // Moon Shrine sprites: skip drawing entirely until the real asset is
+    // loaded rather than flashing generic vector art as a placeholder.
+    drawMoonSprite(ctx, type, r);
+    return;
+  }
   if (bambooImageFor(type)) {
     // Bamboo Grove sprites: skip drawing entirely until the real asset is
     // loaded rather than flashing generic vector art as a placeholder.
@@ -111,6 +149,9 @@ function getFruitInnerColor(type: string): string {
     Strawberry: '#FF8A80', Blueberry: '#9575CD', 'Golden Apple': '#FFFF88', 'Rainbow Mango': '#FFD54F',
     'Jade Apple': '#E8F7D8', 'Bamboo Pear': '#F1F8DC', 'Emerald Kiwi': '#C7E8A8', 'Lotus Peach': '#FFF3EE',
     'Zen Melon': '#DFF3C4', 'Sacred Plum': '#E2CBF2', 'Forest Lime': '#EEF7CF',
+    'Celestial Apple': '#e8e6ff', 'Spirit Pear': '#ffffff', 'Lunar Kiwi': '#ffffff',
+    'Moon Peach': '#fff5f8', 'Moon Mandarin': '#ffffff', 'Silver Melon': '#ffffff',
+    'Luna Plum': '#c9b3e8', 'Moon Lime': '#f5f8d8',
   };
   return map[type] || '#ffffff';
 }

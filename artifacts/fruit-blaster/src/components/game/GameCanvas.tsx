@@ -6,6 +6,7 @@ import { useHandTracker } from '../../hooks/useHandTracker';
 import { useSoundManager } from '../../hooks/useSoundManager';
 import { GameEngine } from '../../game/engine/GameEngine';
 import { getSwordSkinColors } from '../../utils/mathUtils';
+import { useMoonStore } from '../../store/moonStore';
 import HUD from './HUD';
 import { GlassPanel, Button } from '../ui/UIComponents';
 
@@ -22,10 +23,17 @@ export default function GameScreen() {
   const { webcamMirror, swordSkin } = useSettingsStore();
   const { addSwing, updateBestCombo } = useStatsStore();
   const {
+    addSpiritEnergy, activateBlessing, tickBlessing, moonBlessingActive,
+    addFruitSliced, addEclipseOrbHit, updateHighestCombo, tickSurvival,
+  } = useMoonStore();
+  const {
     startTracking, stopTracking,
     fingertip, fingertipRef,
     isTracking, initStatus, initError,
   } = useHandTracker();
+
+  // "Hand Lost" — once tracking has begun, losing the hand pauses gameplay in Moon Shrine.
+  const [handLost, setHandLost] = useState(false);
 
   const isTrackingRef = useRef(isTracking);
   useEffect(() => { isTrackingRef.current = isTracking; }, [isTracking]);
@@ -119,10 +127,17 @@ export default function GameScreen() {
     canvas.height = window.innerHeight;
 
     engineRef.current = new GameEngine(canvas, mode, {
-      onScore: (pts: number, _x: number, _y: number) => {
+      onScore: (pts: number, _x: number, _y: number, perfect: boolean) => {
         setScore((s: number) => s + pts);
-        setCombo(comboRef.current + 1);
+        const nextCombo = comboRef.current + 1;
+        setCombo(nextCombo);
         addSwing(true);
+        if (mode === 'moon') {
+          addFruitSliced(perfect);
+          updateHighestCombo(nextCombo);
+          // Spirit Energy fills faster on clean/perfect slices and long combos.
+          addSpiritEnergy(perfect ? 12 : pts >= 20 ? 8 : 5 + Math.min(nextCombo, 10) * 0.5);
+        }
       },
       onMiss: () => {
         setCombo(0);
@@ -137,7 +152,8 @@ export default function GameScreen() {
       },
       onBombHit: () => {
         setCombo(0);
-        if (mode === 'classic' || mode === 'arcade') {
+        if (mode === 'classic' || mode === 'arcade' || mode === 'moon') {
+          if (mode === 'moon') addEclipseOrbHit();
           setLives((l: number) => {
             if (l <= 1) { setTimeout(() => setScreen('gameover'), 100); return 0; }
             return l - 1;
@@ -231,6 +247,14 @@ export default function GameScreen() {
 
         engine.update(dt, controlPos);
 
+        if (mode === 'moon') {
+          tickSurvival(dt);
+          tickBlessing(dt);
+          const state = useMoonStore.getState();
+          if (state.spiritEnergy >= 100 && !state.moonBlessingActive) activateBlessing();
+          engine.moonBlessingActive = state.moonBlessingActive;
+        }
+
         // ── Draw ────────────────────────────────────────────────────────────
         const ctx = engine.ctx;
         ctx.clearRect(0, 0, cw, ch);
@@ -274,6 +298,20 @@ export default function GameScreen() {
     return () => cancelAnimationFrame(reqRef.current);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode]);
+
+  // ─── Moon Shrine: pause gameplay while the hand is lost mid-tracking ───────
+  const autoPausedRef = useRef(false);
+  useEffect(() => {
+    if (mode !== 'moon' || !isTracking) return;
+    if (!fingertip.isPresent) {
+      if (!isPaused) { setPaused(true); autoPausedRef.current = true; }
+      setHandLost(true);
+    } else if (autoPausedRef.current) {
+      setPaused(false);
+      autoPausedRef.current = false;
+      setHandLost(false);
+    }
+  }, [mode, isTracking, fingertip.isPresent, isPaused, setPaused]);
 
   // ─── Challenge mode timer ──────────────────────────────────────────────────
   useEffect(() => {
@@ -327,7 +365,17 @@ export default function GameScreen() {
         )}
       </div>
 
-      {isPaused && (
+      {isPaused && mode === 'moon' && handLost && (
+        <div className="absolute inset-0 bg-[#0a0a1a]/70 backdrop-blur-sm flex items-center justify-center z-50 pointer-events-none">
+          <GlassPanel className="p-8 flex flex-col items-center gap-2">
+            <span className="text-5xl">🌙</span>
+            <h2 className="text-3xl font-orbitron font-bold text-blue-100">Hand Lost</h2>
+            <p className="text-blue-200/70 text-sm">Show your hand to resume the shrine</p>
+          </GlassPanel>
+        </div>
+      )}
+
+      {isPaused && !(mode === 'moon' && handLost) && (
         <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
           <GlassPanel className="p-8 flex flex-col items-center gap-4">
             <h2 className="text-4xl font-orbitron font-bold text-white mb-4">PAUSED</h2>

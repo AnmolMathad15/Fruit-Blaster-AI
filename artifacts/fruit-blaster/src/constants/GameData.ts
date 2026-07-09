@@ -22,6 +22,18 @@ export const FRUIT_DATA: Record<FruitType, { color: string; colorInner: string; 
   'Zen Melon':     { color: '#4E9A5A', colorInner: '#DFF3C4', score: 20, radius: 48, probability: 12, image: 'zen-melon.png' },
   'Sacred Plum':   { color: '#8E5AC2', colorInner: '#E2CBF2', score: 30, radius: 38, probability: 10, image: 'sacred-plum.png' },
   'Forest Lime':   { color: '#9ACD4A', colorInner: '#EEF7CF', score: 15, radius: 34, probability: 14, image: 'forest-lime.png' },
+
+  // ── Moon Shrine (Survival Mode) — custom celestial assets ──
+  // Lunar Kiwi has no custom art yet — it's wired here but left out of
+  // MOON_FRUIT_TYPES so it never spawns until its sprite is supplied.
+  'Celestial Apple': { color: '#3a2a5c', colorInner: '#e8e6ff', score: 10, radius: 70, probability: 16, image: 'celestial-apple.png' },
+  'Spirit Pear':      { color: '#e9edf5', colorInner: '#ffffff', score: 10, radius: 70, probability: 16, image: 'spirit-pear.png' },
+  'Lunar Kiwi':        { color: '#c9d6e8', colorInner: '#ffffff', score: 10, radius: 70, probability: 0, image: 'lunar-kiwi.png' },
+  'Moon Peach':        { color: '#f0d3e0', colorInner: '#fff5f8', score: 10, radius: 70, probability: 16, image: 'moon-peach.png' },
+  'Moon Mandarin':     { color: '#e8dfe8', colorInner: '#ffffff', score: 10, radius: 70, probability: 14, image: 'moon-mandarin.png' },
+  'Silver Melon':      { color: '#e6e9f2', colorInner: '#ffffff', score: 10, radius: 76, probability: 12, image: 'silver-melon.png' },
+  'Luna Plum':         { color: '#4a3568', colorInner: '#c9b3e8', score: 10, radius: 68, probability: 14, image: 'luna-plum.png' },
+  'Moon Lime':         { color: '#d8e070', colorInner: '#f5f8d8', score: 10, radius: 68, probability: 12, image: 'moon-lime.png' },
 };
 
 export const BOMB_DATA: Record<BombType, { color: string; fuseColor: string; radius: number; probability: number; effect: string; image?: string }> = {
@@ -30,6 +42,7 @@ export const BOMB_DATA: Record<BombType, { color: string; fuseColor: string; rad
   'Frozen': { color: '#4A90E2', fuseColor: '#88CCFF', radius: 35, probability: 10, effect: 'slow_time' },
   'Explosive': { color: '#FF5500', fuseColor: '#FFDD00', radius: 40, probability: 5, effect: 'large_explosion' },
   'Cursed Bamboo Seed': { color: '#3D1E52', fuseColor: '#B87CF0', radius: 42, probability: 100, effect: 'lose_life', image: 'cursed-bamboo-seed.png' },
+  'Cursed Eclipse Orb': { color: '#120a1e', fuseColor: '#B87CF0', radius: 74, probability: 100, effect: 'lose_life', image: 'cursed-eclipse-orb.png' },
 };
 
 // Fruit pool spawned exclusively inside the Bamboo Grove Zen world.
@@ -37,6 +50,13 @@ export const BAMBOO_FRUIT_TYPES: FruitType[] = [
   'Jade Apple', 'Bamboo Pear', 'Emerald Kiwi', 'Lotus Peach', 'Zen Melon', 'Sacred Plum', 'Forest Lime',
 ];
 export const BAMBOO_ASSET_BASE = 'bamboo/';
+
+// Fruit pool spawned exclusively inside the Moon Shrine Survival world.
+// Lunar Kiwi is intentionally excluded until its custom sprite is supplied.
+export const MOON_FRUIT_TYPES: FruitType[] = [
+  'Celestial Apple', 'Spirit Pear', 'Moon Peach', 'Moon Mandarin', 'Silver Melon', 'Luna Plum', 'Moon Lime',
+];
+export const MOON_ASSET_BASE = 'moon/';
 
 export const generateLevels = (): LevelConfig[] => {
   const levels: LevelConfig[] = [];

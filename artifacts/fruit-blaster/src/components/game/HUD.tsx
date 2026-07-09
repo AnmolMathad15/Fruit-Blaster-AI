@@ -1,8 +1,10 @@
 import { useGameStore } from '../../store/gameStore';
+import { useMoonStore } from '../../store/moonStore';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function HUD() {
   const { score, lives, combo, mode, timeLeft, setPaused } = useGameStore();
+  const { spiritEnergy, moonBlessingActive, fruitsSliced, eclipseOrbsHit, survivalSeconds } = useMoonStore();
 
   return (
     <div className="absolute inset-0 pointer-events-none z-10 p-6 flex justify-between items-start">
@@ -66,7 +68,7 @@ export default function HUD() {
           </div>
         </button>
 
-        {(mode === 'classic' || mode === 'arcade') && (
+        {(mode === 'classic' || mode === 'arcade' || mode === 'moon') && (
           <div className="flex gap-2 mt-2">
             {[...Array(3)].map((_, i) => (
               <motion.div 
@@ -79,12 +81,55 @@ export default function HUD() {
                 }}
                 className="text-3xl drop-shadow-lg"
               >
-                ❤️
+                {mode === 'moon' ? '🌙' : '❤️'}
               </motion.div>
             ))}
           </div>
         )}
       </div>
+
+      {/* Moon Shrine: Spirit Energy meter + survival stats */}
+      {mode === 'moon' && (
+        <>
+          <div className="absolute bottom-6 left-6 flex flex-col items-start gap-1 pointer-events-none">
+            <span className="text-blue-200/60 text-xs font-orbitron uppercase tracking-widest">Spirit Energy</span>
+            <div className="w-48 h-3 rounded-full bg-black/50 border border-blue-300/20 overflow-hidden">
+              <motion.div
+                className={`h-full rounded-full ${moonBlessingActive ? 'bg-gradient-to-r from-indigo-300 via-blue-200 to-white' : 'bg-gradient-to-r from-indigo-500 to-blue-300'}`}
+                animate={{ width: `${spiritEnergy}%` }}
+                transition={{ ease: 'easeOut', duration: 0.2 }}
+              />
+            </div>
+            <AnimatePresence>
+              {moonBlessingActive && (
+                <motion.span
+                  initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                  className="text-xs font-bold text-blue-100 tracking-widest uppercase mt-0.5"
+                >
+                  ✨ Moon Blessing Active
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </div>
+
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-6 text-center pointer-events-none">
+            <div>
+              <div className="text-white text-lg font-bold font-orbitron">{fruitsSliced}</div>
+              <div className="text-white/40 text-[10px] uppercase tracking-widest">Sliced</div>
+            </div>
+            <div>
+              <div className="text-white text-lg font-bold font-orbitron">{eclipseOrbsHit}</div>
+              <div className="text-white/40 text-[10px] uppercase tracking-widest">Orbs Hit</div>
+            </div>
+            <div>
+              <div className="text-white text-lg font-bold font-orbitron">
+                {Math.floor(survivalSeconds / 60)}:{(Math.floor(survivalSeconds) % 60).toString().padStart(2, '0')}
+              </div>
+              <div className="text-white/40 text-[10px] uppercase tracking-widest">Survived</div>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }

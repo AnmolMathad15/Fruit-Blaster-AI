@@ -19,6 +19,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useGameStore } from '../../store/gameStore';
+import { useMoonStore } from '../../store/moonStore';
 
 /* ─── Native video dimensions (1280×720) ───────────────────────────── */
 const VID_W = 1280;
@@ -52,6 +53,7 @@ function toNative(sx: number, sy: number, l: CoverLayout) {
 ═══════════════════════════════════════════════════════════════════════ */
 export default function MoonShrineIntroScreen() {
   const { setScreen, setMode, setLives, resetGame } = useGameStore();
+  const { reset: resetMoon } = useMoonStore();
 
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef     = useRef<HTMLVideoElement>(null);
@@ -83,17 +85,18 @@ export default function MoonShrineIntroScreen() {
     return () => vid.removeEventListener('ended', onEnded);
   }, []);
 
-  /* ── Navigate to game (zen / Moon Shrine — unlimited lives) ── */
+  /* ── Navigate to game (Moon Shrine — Survival Mode: 3 lives) ── */
   const enterShrine = useCallback(() => {
     if (phase !== 'ready') return;
     setPhase('exiting');
     setTimeout(() => {
-      setMode('zen');
+      setMode('moon');
       resetGame();
-      setLives(99);
+      resetMoon();
+      setLives(3);
       setScreen('game');
     }, 700);
-  }, [phase, setMode, resetGame, setLives, setScreen]);
+  }, [phase, setMode, resetGame, resetMoon, setLives, setScreen]);
 
   /* ── Compute screen-space button rect ── */
   const btnBase = toScreen(BTN_VX, BTN_VY, layout);

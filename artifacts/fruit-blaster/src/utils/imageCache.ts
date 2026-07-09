@@ -8,15 +8,28 @@ const cache = new Map<string, HTMLImageElement>();
 const loading = new Set<string>();
 
 export function getBambooImage(fileName: string): HTMLImageElement | null {
-  const existing = cache.get(fileName);
+  return getSpriteImage('bamboo', fileName);
+}
+
+/**
+ * Same lazy-loading cache, generalized to any asset folder (used by the
+ * Moon Shrine world for its custom celestial fruit/hazard/weapon sprites).
+ */
+export function getSpriteImage(folder: string, fileName: string): HTMLImageElement | null {
+  const key = `${folder}/${fileName}`;
+  const existing = cache.get(key);
   if (existing && existing.complete && existing.naturalWidth > 0) return existing;
   if (existing) return null; // still loading
 
-  if (!loading.has(fileName)) {
-    loading.add(fileName);
+  if (!loading.has(key)) {
+    loading.add(key);
     const img = new Image();
-    img.src = `${import.meta.env.BASE_URL}bamboo/${fileName}`;
-    cache.set(fileName, img);
+    img.src = `${import.meta.env.BASE_URL}${folder}/${fileName}`;
+    cache.set(key, img);
   }
   return null;
+}
+
+export function getMoonImage(fileName: string): HTMLImageElement | null {
+  return getSpriteImage('moon', fileName);
 }

@@ -1,2 +1,4 @@
 - [MediaPipe WASM headers](mediapipe-wasm-headers.md) — hand tracking needs COOP/COEP headers in dev; production layer also needs them
-- [Artifact registration gap](artifact-registration.md) — project imported from GitHub; artifacts exist on disk but aren't registered; use verifyAndReplaceArtifactToml to trigger registration
+- [Artifact registration gap](artifact-registration.md) — listArtifacts()=[] despite artifact.toml on disk; fix by round-tripping through verifyAndReplaceArtifactToml (no createArtifact needed)
+- [Particle type rendering gap](particle-type-rendering.md) — Particle.type union in GameTypes.ts is decoupled from GameEngine.draw()'s render cases; new types are silently invisible until drawn
+- [Moon Shrine slash quality](moon-shrine-slash-quality.md) — "clean/perfect" slice detection must use sword-trail speed, not fruit velocity, or scoring/buffs desync from actual player input

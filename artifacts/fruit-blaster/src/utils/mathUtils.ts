@@ -9,6 +9,15 @@ export const getRankForScore = (score: number) => {
   return { cat: '👑', title: 'FRUIT GOD' };
 };
 
+/** Moon Shrine Results Scroll rank, per the survival-mode spec. */
+export const getMoonRank = (score: number) => {
+  if (score <= 100) return { icon: '🌑', title: 'Moon Wanderer' };
+  if (score <= 300) return { icon: '🌒', title: 'Shrine Disciple' };
+  if (score <= 600) return { icon: '🌓', title: 'Spirit Guardian' };
+  if (score <= 1000) return { icon: '🌔', title: 'Celestial Master' };
+  return { icon: '🌕', title: 'Moon Oracle' };
+};
+
 export const getSwordSkinColors = (skin: string): { base: string; tip: string; particleType: 'sparkle' | 'ember' | 'frost' | 'star' | 'smoke' } => {
   switch (skin) {
     case 'Fire Blade': return { base: '#FF2200', tip: '#FF8800', particleType: 'ember' };
