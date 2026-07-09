@@ -656,6 +656,26 @@ export class GameEngine {
       }
     }
 
+    // Dojo Gate: the Grandmaster's Bell Katana follows the fingertip — ~20-25%
+    // larger than a standard blade per the zone's premium/powerful design goal.
+    if (this.mode === 'classic' && this.swordTrail.length > 0) {
+      const tip = this.swordTrail[0];
+      const prev = this.swordTrail[Math.min(3, this.swordTrail.length - 1)];
+      const swordImg = getDojoImage('grandmaster-bell-katana.png');
+      if (swordImg) {
+        const angle = Math.atan2(tip.y - prev.y, tip.x - prev.x) + Math.PI / 4;
+        const h = (200 / 1080) * this.height * 1.9 * 1.22;
+        const w = h * (swordImg.naturalWidth / swordImg.naturalHeight);
+        ctx.save();
+        ctx.translate(tip.x, tip.y);
+        ctx.rotate(angle);
+        ctx.shadowBlur = 22;
+        ctx.shadowColor = 'rgba(255,215,160,0.8)';
+        ctx.drawImage(swordImg, -w * 0.15, -h * 0.85, w, h);
+        ctx.restore();
+      }
+    }
+
     // Draw Sword Trail
     if (this.swordTrail.length > 1) {
       ctx.save();
@@ -690,8 +710,9 @@ export class GameEngine {
         : this.mode === 'moon' ? 'rgba(190,215,255,0.6)'
         : this.mode === 'challenge' ? 'rgba(255,120,60,0.6)'
         : this.mode === 'survival' ? 'rgba(255,225,150,0.65)'
+        : this.mode === 'classic' ? 'rgba(255,215,160,0.6)'
         : '#ffffff';
-      ctx.lineWidth = (this.mode === 'bamboo' || this.mode === 'moon' || this.mode === 'challenge' || this.mode === 'survival') ? 2 : 3;
+      ctx.lineWidth = (this.mode === 'bamboo' || this.mode === 'moon' || this.mode === 'challenge' || this.mode === 'survival' || this.mode === 'classic') ? 2 : 3;
       ctx.stroke();
       
       ctx.restore();
