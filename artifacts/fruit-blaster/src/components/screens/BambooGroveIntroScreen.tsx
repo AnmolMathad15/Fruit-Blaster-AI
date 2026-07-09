@@ -20,9 +20,9 @@ const VID_H = 720;
 
 /* ─── "Enter the Grove" button position in native video pixels ──────── */
 // Adjust via debug drag — these are a best-guess start position
-let BTN_VX = 640;   // centre X
-let BTN_VY = 620;   // centre Y
-let BTN_VW = 340;   // width  of the rectangle
+let BTN_VX = 636;   // centre X
+let BTN_VY = 637;   // centre Y
+let BTN_VW = 350;   // width  of the rectangle
 let BTN_VH = 90;    // height of the rectangle
 
 /* ─── Cover-layout helpers ───────────────────────────────────────────── */
