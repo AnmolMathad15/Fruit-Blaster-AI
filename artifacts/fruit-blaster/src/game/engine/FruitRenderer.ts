@@ -11,15 +11,30 @@ function bambooImageFor(type: string): string | undefined {
   return (FRUIT_DATA as any)[type]?.image ?? (BOMB_DATA as any)[type]?.image;
 }
 
-/** Draws a sprite centered at origin, preserving aspect ratio, sized to ~2r tall. Returns true if drawn. */
+/**
+ * Draws a transparent-PNG sprite centered at the origin (anchor 0.5, 0.5),
+ * preserving aspect ratio and alpha. Caller must have already translated to
+ * the entity position and rotated around Z only — this never touches X/Y tilt.
+ * Returns true if the sprite was drawn, false if the asset isn't loaded yet
+ * (callers must skip the frame rather than fall back to placeholder art).
+ */
 export function drawBambooSprite(ctx: CanvasRenderingContext2D, type: string, r: number): boolean {
   const file = bambooImageFor(type);
   if (!file) return false;
   const img = getBambooImage(file);
   if (!img) return false;
+
+  ctx.save();
+  ctx.globalAlpha = 1; // constant opacity until sliced — never fade the live sprite
+  ctx.globalCompositeOperation = 'source-over'; // straight alpha-over compositing, no white-halo blending
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
+
   const targetH = r * 2.1;
   const targetW = targetH * (img.naturalWidth / img.naturalHeight);
+  // Centered anchor: draw offset by exactly half the sprite's box.
   ctx.drawImage(img, -targetW / 2, -targetH / 2, targetW, targetH);
+  ctx.restore();
   return true;
 }
 
