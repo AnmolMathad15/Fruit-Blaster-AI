@@ -63,6 +63,10 @@ export class GameEngine {
       this.bombChance = 0.15;
       this.spawnRate = 30;
       this.speedMultiplier = 1.2;
+    } else if (mode === 'survival') {
+      this.bombChance = 0.30;
+      this.spawnRate = 25;
+      this.speedMultiplier = 1.5;
     } else {
       this.bombChance = 0.2;
       this.spawnRate = 60;
