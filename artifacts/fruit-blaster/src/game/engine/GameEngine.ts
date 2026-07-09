@@ -57,18 +57,13 @@ export class GameEngine {
     this.playBomb = callbacks.playBomb;
     
     if (mode === 'zen') {
-      this.bombChance = 0.04;   // very few bombs
-      this.spawnRate = 55;      // calm, rhythmic pace
+      this.bombChance = 0;
+      this.spawnRate = 45;
     } else if (mode === 'arcade') {
-      this.bombChance = 0.18;   // frequent bombs
-      this.spawnRate = 28;      // rapid spawns
-      this.speedMultiplier = 1.3;
-    } else if (mode === 'survival') {
-      this.bombChance = 0.08;   // starts light, escalates each wave
-      this.spawnRate = 52;
-      this.speedMultiplier = 1.0;
+      this.bombChance = 0.15;
+      this.spawnRate = 30;
+      this.speedMultiplier = 1.2;
     } else {
-      // classic / challenge
       this.bombChance = 0.2;
       this.spawnRate = 60;
     }

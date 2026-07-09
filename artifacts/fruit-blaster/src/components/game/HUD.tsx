@@ -64,7 +64,7 @@ export default function HUD() {
           </div>
         </button>
 
-        {(mode === 'classic' || mode === 'arcade' || mode === 'survival') && (
+        {(mode === 'classic' || mode === 'arcade') && (
           <div className="flex gap-2 mt-2">
             {[...Array(3)].map((_, i) => (
               <motion.div 
