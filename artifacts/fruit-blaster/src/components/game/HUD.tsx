@@ -49,7 +49,9 @@ export default function HUD() {
                 {combo}x
               </div>
               <div className="text-xl font-bold text-white uppercase tracking-widest mt-1 drop-shadow-md">
-                {combo >= 20 ? 'LEGENDARY!' : combo >= 10 ? 'UNSTOPPABLE!' : combo >= 5 ? 'AWESOME!' : 'GOOD!'}
+                {mode === 'survival'
+                  ? (combo >= 20 ? 'CELESTIAL MASTER COMBO!' : combo >= 15 ? 'IMPERIAL COMBO!' : combo >= 10 ? 'HEAVENLY COMBO!' : combo >= 7 ? 'PHOENIX COMBO!' : combo >= 5 ? 'DRAGON COMBO!' : 'GOLDEN COMBO!')
+                  : (combo >= 20 ? 'LEGENDARY!' : combo >= 10 ? 'UNSTOPPABLE!' : combo >= 5 ? 'AWESOME!' : 'GOOD!')}
               </div>
             </motion.div>
           )}
@@ -68,7 +70,7 @@ export default function HUD() {
           </div>
         </button>
 
-        {(mode === 'classic' || mode === 'arcade' || mode === 'moon') && (
+        {(mode === 'classic' || mode === 'arcade' || mode === 'moon' || mode === 'survival') && (
           <div className="flex gap-2 mt-2">
             {[...Array(3)].map((_, i) => (
               <motion.div 
@@ -81,7 +83,7 @@ export default function HUD() {
                 }}
                 className="text-3xl drop-shadow-lg"
               >
-                {mode === 'moon' ? '🌙' : '❤️'}
+                {mode === 'moon' ? '🌙' : mode === 'survival' ? '👑' : '❤️'}
               </motion.div>
             ))}
           </div>

@@ -128,8 +128,19 @@ export default function GameScreen() {
 
     engineRef.current = new GameEngine(canvas, mode, {
       onScore: (pts: number, _x: number, _y: number, perfect: boolean) => {
-        setScore((s: number) => s + pts);
+        // Multiple fruits can be sliced within the same engine update (common
+        // in Imperial Heaven Palace's dense waves), so comboRef — only synced
+        // via useEffect after render — is too stale to increment from safely.
+        // Bump it in place here so every hit in the same tick sees the latest count.
         const nextCombo = comboRef.current + 1;
+        comboRef.current = nextCombo;
+        // Imperial Heaven Palace: long combo chains multiply score — the same
+        // tiers that name the on-screen combo callout (Golden/Dragon/Phoenix/
+        // Heavenly/Imperial/Celestial Master).
+        const comboMultiplier = mode === 'survival'
+          ? (nextCombo >= 20 ? 3 : nextCombo >= 15 ? 2.5 : nextCombo >= 10 ? 2 : nextCombo >= 7 ? 1.75 : nextCombo >= 5 ? 1.5 : nextCombo >= 3 ? 1.25 : 1)
+          : 1;
+        setScore((s: number) => s + Math.round(pts * comboMultiplier));
         setCombo(nextCombo);
         addSwing(true);
         if (mode === 'moon') {
@@ -140,9 +151,12 @@ export default function GameScreen() {
         }
       },
       onMiss: () => {
+        comboRef.current = 0;
         setCombo(0);
         addSwing(false);
-        if (mode === 'classic') {
+        // Imperial Heaven Palace: missing an Imperial Fruit costs a life, same as Classic.
+        // A bomb falling off-screen unsliced never counts as a miss (checked in GameEngine).
+        if (mode === 'classic' || mode === 'survival') {
           playMiss();
           setLives((l: number) => {
             if (l <= 1) { setTimeout(() => setScreen('gameover'), 100); return 0; }
@@ -151,8 +165,14 @@ export default function GameScreen() {
         }
       },
       onBombHit: () => {
+        comboRef.current = 0;
         setCombo(0);
-        if (mode === 'classic' || mode === 'arcade' || mode === 'moon') {
+        // Imperial Heaven Palace: slicing the Emperor's Judgment Orb is an
+        // immediate Game Over, regardless of remaining lives.
+        if (mode === 'survival') {
+          setLives(0);
+          setTimeout(() => setScreen('gameover'), 100);
+        } else if (mode === 'classic' || mode === 'arcade' || mode === 'moon') {
           if (mode === 'moon') addEclipseOrbHit();
           setLives((l: number) => {
             if (l <= 1) { setTimeout(() => setScreen('gameover'), 100); return 0; }

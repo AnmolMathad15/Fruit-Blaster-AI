@@ -1,0 +1,337 @@
+# 👑 IMPERIAL HEAVEN PALACE — GAMEPLAY IMPLEMENTATION REQUIREMENTS
+
+Implement the Imperial Heaven Palace as the FINAL and most advanced game mode in Fruit Blaster.
+
+This world should feel faster, smoother, more rewarding, and more visually spectacular than Moon Shrine and Crimson Temple while maintaining perfect gameplay fairness.
+
+The focus is precision, responsiveness, and satisfying combo gameplay.
+
+---
+
+# GAME OBJECTIVE
+
+The player must:
+
+• Slice every Imperial Fruit.
+• Avoid slicing the Emperor's Judgment Orb.
+• Build long combo chains.
+• Achieve the highest score possible.
+• Survive until all lives are lost or a bomb is sliced.
+
+---
+
+# LIVES
+
+Player starts with:
+
+3 Lives
+
+Rules:
+
+• Missing one fruit = Lose 1 Life.
+• Bomb falling off-screen = No penalty.
+• Slicing Emperor's Judgment Orb = Immediate Game Over.
+
+Display remaining lives at all times.
+
+---
+
+# SWORD IMPLEMENTATION
+
+Use the Imperial Heaven Blade.
+
+Requirements:
+
+• Increase sword length by approximately 25%.
+• Increase sword width by approximately 20%.
+• Maintain elegant proportions.
+• Do not make the sword oversized enough to block gameplay.
+
+The sword should feel premium and powerful.
+
+---
+
+# SWORD TRACKING
+
+Sword must follow the mouse with:
+
+Zero noticeable input delay.
+
+Very smooth interpolation.
+
+High responsiveness.
+
+No jitter.
+
+No skipped movement.
+
+No lag.
+
+The sword should feel like a direct extension of the player's hand.
+
+---
+
+# COLLISION DETECTION
+
+Collision detection is extremely important.
+
+Requirements:
+
+• Every valid swipe should register.
+• No missed slices.
+• High-speed mouse movement must still detect collisions.
+• Collision checks should occur continuously while the sword moves.
+• Increase collision accuracy compared to previous worlds.
+
+The player should never feel that a correct slice was ignored.
+
+---
+
+# UNIQUE SWORD SLASHES
+
+Each slash randomly selects one of several animations.
+
+Examples:
+
+Golden Dragon Slash
+
+Phoenix Wing Slash
+
+Celestial Arc
+
+Imperial Crescent
+
+Heaven Light Slash
+
+Each slash creates:
+
+• Golden trail
+• White divine glow
+• Floating feathers
+• Golden sparkles
+• Light ribbons
+• Soft cloud particles
+
+Effects should disappear quickly.
+
+Never block gameplay.
+
+---
+
+# FRUIT SIZE
+
+Increase fruit size by approximately 15–20%.
+
+Reasons:
+
+Better visibility.
+
+More satisfying slicing.
+
+Improved collision accuracy.
+
+Better gameplay readability.
+
+Small fruits like Cherry and Raspberry must remain easy to hit.
+
+---
+
+# FRUIT SPAWNING
+
+Increase fruit frequency significantly.
+
+Target:
+
+40–50% more fruits than Crimson Temple.
+
+Almost no idle time.
+
+Spawn continuously.
+
+Use random wave generation.
+
+Possible waves:
+
+2 Fruits
+
+3 Fruits
+
+4 Fruits
+
+5 Fruits
+
+6 Fruits
+
+7 Fruits
+
+Rare 8–10 fruit Heavenly Storms.
+
+Gameplay should constantly feel active.
+
+Never allow long pauses.
+
+---
+
+# FRUIT MOVEMENT
+
+Fruits should:
+
+Launch naturally.
+
+Rotate smoothly.
+
+Use different trajectories.
+
+Use different heights.
+
+Use different speeds.
+
+Never overlap unfairly.
+
+Always provide slicing opportunities.
+
+---
+
+# BOMB IMPLEMENTATION
+
+Use Emperor's Judgment Orb only.
+
+Never use modern bombs.
+
+Increase bomb frequency compared to Crimson Temple.
+
+Patterns:
+
+Bomb
+
+Bomb + 2 Fruits
+
+Bomb + 3 Fruits
+
+Double Bomb
+
+Triple Bomb (late game only)
+
+Bombs must always remain visible.
+
+Never hide bombs behind fruits.
+
+Always leave a safe swipe path.
+
+Never create impossible situations.
+
+---
+
+# COMBO SYSTEM
+
+Reward continuous slicing.
+
+Examples:
+
+3 Fruits = Golden Combo
+
+5 Fruits = Dragon Combo
+
+7 Fruits = Phoenix Combo
+
+10 Fruits = Heavenly Combo
+
+15 Fruits = Imperial Combo
+
+20+ Fruits = Celestial Master Combo
+
+Higher combos should:
+
+Increase score multiplier.
+
+Trigger unique visual effects.
+
+Play premium sound effects.
+
+Reward skilled players.
+
+---
+
+# SCORING
+
+Award points instantly after slicing.
+
+Large fruits:
+
+Durian
+
+Jackfruit
+
+Pumpkin
+
+Sugarcane
+
+should award higher base points.
+
+Long combo chains should produce significantly higher multipliers.
+
+---
+
+# DIFFICULTY SCALING
+
+Every 30–45 seconds:
+
+Increase fruit speed.
+
+Increase fruit count.
+
+Increase bomb frequency.
+
+Increase combo opportunities.
+
+The game should become more challenging while remaining fair.
+
+---
+
+# PERFORMANCE
+
+Maintain:
+
+Stable 60 FPS
+
+Smooth animations
+
+Fast loading
+
+Responsive controls
+
+Optimized particle effects
+
+Low memory usage
+
+No frame drops
+
+---
+
+# GAMEPLAY FEEL
+
+The Imperial Heaven Palace should always feel:
+
+Fast.
+
+Fluid.
+
+Highly responsive.
+
+Rewarding.
+
+Elegant.
+
+Fair.
+
+Premium.
+
+The player should constantly have fruits to slice without ever feeling overwhelmed by unfair bomb placement.
+
+Every sword swing should feel powerful.
+
+Every combo should feel satisfying.
+
+Every successful slice should reinforce the feeling that the player has become the Celestial Emperor's legendary sword master.
+
+This world should represent the highest quality gameplay experience in the entire Fruit Blaster game.

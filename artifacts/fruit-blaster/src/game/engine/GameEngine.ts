@@ -150,7 +150,7 @@ export class GameEngine {
       const f = this.fruits[i];
       f.update(dt, this.gravity);
       if (f.pos.y > this.height + 100) {
-        if (!f.sliced && this.mode === 'classic') {
+        if (!f.sliced && (this.mode === 'classic' || this.mode === 'survival')) {
           this.onMiss();
         }
         this.fruits.splice(i, 1);
