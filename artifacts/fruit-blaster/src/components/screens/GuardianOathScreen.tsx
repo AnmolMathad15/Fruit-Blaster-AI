@@ -3,9 +3,9 @@
  *
  * Flow:
  *   1. Black → fade (0.5 s) → fullscreen video plays with sound
- *   2. At ~6.8 s: entire screen becomes tappable (matches in-video button appearance)
- *   3. Tap anywhere → petal burst → fade to black → 'modes'
- *   4. Video ends without tap → auto-navigate to 'modes'
+ *   2. At ~6.8 s: "Begin the Journey" button fades in
+ *   3. User clicks button → petal burst → fade to black → 'modes'
+ *   Video ending alone does NOT navigate — user must click the button.
  */
 
 import {
@@ -15,7 +15,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useGameStore } from '../../store/gameStore';
 import { useSoundManager } from '../../hooks/useSoundManager';
 
-/** Time (seconds) when the in-video button becomes visible */
+/** Time (seconds) when the "Begin the Journey" button appears */
 const BTN_APPEAR_TIME = 6.8;
 
 /* ─── Burst petals from tap point ───────────────────────────────────── */
@@ -57,28 +57,45 @@ function BurstPetals({ active, cx, cy }: { active: boolean; cx: number; cy: numb
 ═══════════════════════════════════════════════════════════════════════ */
 type Phase =
   | 'fadein'    // black → transparent
-  | 'playing'   // video playing, not yet tappable
-  | 'clickable' // full screen is tappable
-  | 'closing'   // tapped — video still playing, burst shown
+  | 'playing'   // video playing, button not yet visible
+  | 'clickable' // "Begin the Journey" button is visible
+  | 'closing'   // button clicked — burst shown, fading out
   | 'exiting';  // fade to black before navigating
 
 export default function GuardianOathScreen() {
   const { setScreen } = useGameStore();
   const { playClick } = useSoundManager();
 
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const videoRef    = useRef<HTMLVideoElement>(null);
+  const timersRef   = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const mountedRef  = useRef(true);
 
   const [phase, setPhase]         = useState<Phase>('fadein');
   const [showBurst, setShowBurst] = useState(false);
   const [tapPt, setTapPt]         = useState({ cx: 0, cy: 0 });
   const hasActedRef               = useRef(false);
 
+  /* Clear all pending timers and mark unmounted */
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+      timersRef.current.forEach(clearTimeout);
+    };
+  }, []);
+
+  const safeTimeout = useCallback((fn: () => void, ms: number) => {
+    const id = setTimeout(() => { if (mountedRef.current) fn(); }, ms);
+    timersRef.current.push(id);
+  }, []);
+
   const navigate = useCallback(() => {
     if (hasActedRef.current) return;
     hasActedRef.current = true;
+    if (!mountedRef.current) return;
     setPhase('exiting');
-    setTimeout(() => setScreen('modes'), 800);
-  }, [setScreen]);
+    safeTimeout(() => setScreen('modes'), 800);
+  }, [setScreen, safeTimeout]);
 
   /* ── Fade-in complete → start video ── */
   const handleFadeInDone = useCallback(() => {
@@ -86,7 +103,7 @@ export default function GuardianOathScreen() {
     videoRef.current?.play().catch(() => {});
   }, []);
 
-  /* ── timeupdate → unlock tap at BTN_APPEAR_TIME ── */
+  /* ── timeupdate → show button at BTN_APPEAR_TIME ── */
   useEffect(() => {
     const vid = videoRef.current;
     if (!vid) return;
@@ -99,38 +116,25 @@ export default function GuardianOathScreen() {
     return () => vid.removeEventListener('timeupdate', onTime);
   }, [phase]);
 
-  /* ── Video ended without tap → auto-navigate ── */
-  useEffect(() => {
-    const vid = videoRef.current;
-    if (!vid) return;
-    const onEnded = () => navigate();
-    vid.addEventListener('ended', onEnded);
-    return () => vid.removeEventListener('ended', onEnded);
-  }, [navigate]);
-
-  /* ── Full-screen tap handler ── */
-  const handleTap = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    if (phase !== 'clickable' || hasActedRef.current) return;
-    hasActedRef.current = true;
+  /* ── "Begin the Journey" button click ── */
+  const handleBegin = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+    if (hasActedRef.current) return;
+    hasActedRef.current = true;   // block any double-fire immediately
     playClick();
     setTapPt({ cx: e.clientX, cy: e.clientY });
     setShowBurst(true);
     setPhase('closing');
-    setTimeout(() => setShowBurst(false), 1400);
-    // Let video finish naturally; onEnded will navigate.
-    // Safety: if video somehow stalls, navigate after 2 s.
-    setTimeout(navigate, 2000);
-  }, [phase, playClick, navigate]);
+    safeTimeout(() => setShowBurst(false), 1400);
+    safeTimeout(navigate, 600);
+  }, [playClick, navigate, safeTimeout]);
 
   return (
     <div
-      onClick={handleTap}
       style={{
         width: '100%', height: '100%',
         position: 'relative', overflow: 'hidden',
         background: '#000',
         userSelect: 'none',
-        cursor: phase === 'clickable' ? 'pointer' : 'default',
       }}
     >
 
@@ -166,10 +170,62 @@ export default function GuardianOathScreen() {
         )}
       </AnimatePresence>
 
-      {/* ══ 3. Petal burst from tap point ═══════════════════════════════ */}
+      {/* ══ 3. "Begin the Journey" button ═══════════════════════════════ */}
+      <AnimatePresence>
+        {(phase === 'clickable' || phase === 'closing') && (
+          <motion.div
+            key="begin-btn"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+            transition={{ duration: 0.6, ease: 'easeOut' }}
+            style={{
+              position: 'absolute',
+              bottom: '12%',
+              left: 0,
+              right: 0,
+              display: 'flex',
+              justifyContent: 'center',
+              zIndex: 30,
+              pointerEvents: phase === 'clickable' ? 'auto' : 'none',
+            }}
+          >
+            <button
+              onClick={handleBegin}
+              style={{
+                padding: '14px 40px',
+                fontSize: '1.1rem',
+                fontWeight: 700,
+                letterSpacing: '0.12em',
+                textTransform: 'uppercase',
+                color: '#fff',
+                background: 'linear-gradient(135deg, rgba(180,40,60,0.85) 0%, rgba(120,20,40,0.95) 100%)',
+                border: '1.5px solid rgba(255,180,140,0.55)',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                boxShadow: '0 0 24px rgba(200,60,60,0.5), 0 4px 16px rgba(0,0,0,0.6)',
+                backdropFilter: 'blur(4px)',
+                transition: 'transform 0.12s, box-shadow 0.12s',
+              }}
+              onMouseEnter={e => {
+                (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1.04)';
+                (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 0 36px rgba(220,80,80,0.7), 0 4px 20px rgba(0,0,0,0.6)';
+              }}
+              onMouseLeave={e => {
+                (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1)';
+                (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 0 24px rgba(200,60,60,0.5), 0 4px 16px rgba(0,0,0,0.6)';
+              }}
+            >
+              ⚔️ &nbsp;Begin the Journey
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ══ 4. Petal burst ══════════════════════════════════════════════ */}
       <BurstPetals active={showBurst} cx={tapPt.cx} cy={tapPt.cy} />
 
-      {/* ══ 4. Fade-to-black exit ════════════════════════════════════════ */}
+      {/* ══ 5. Fade-to-black exit ════════════════════════════════════════ */}
       <AnimatePresence>
         {phase === 'exiting' && (
           <motion.div
