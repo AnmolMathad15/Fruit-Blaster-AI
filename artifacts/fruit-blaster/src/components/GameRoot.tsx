@@ -4,6 +4,7 @@ import MainMenu from './screens/MainMenu';
 import GuardianOathScreen from './screens/GuardianOathScreen';
 import WorldSelectionScreen from './screens/WorldSelectionScreen';
 import BambooGroveIntroScreen from './screens/BambooGroveIntroScreen';
+import CrimsonTempleIntroScreen from './screens/CrimsonTempleIntroScreen';
 import GameScreen from './game/GameCanvas';
 import GameOver from './screens/GameOver';
 import Settings from './screens/Settings';
@@ -23,6 +24,7 @@ export default function GameRoot() {
       case 'guardian': return <GuardianOathScreen />;
       case 'modes': return <WorldSelectionScreen />;
       case 'bamboo-intro': return <BambooGroveIntroScreen />;
+      case 'crimson-intro': return <CrimsonTempleIntroScreen />;
       case 'game': return <GameScreen />;
       case 'gameover': return <GameOver />;
       case 'settings': return <Settings />;

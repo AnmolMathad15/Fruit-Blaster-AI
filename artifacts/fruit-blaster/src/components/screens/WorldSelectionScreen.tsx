@@ -476,9 +476,11 @@ export default function WorldSelectionScreen() {
     setTimeout(() => {
       setPhase('exiting');
       setTimeout(() => {
-        // Bamboo Grove gets its own cinematic intro before the game
+        // Some worlds get their own cinematic intro before the game
         if (dest.id === 'arcade') {
           setScreen('bamboo-intro');
+        } else if (dest.id === 'challenge') {
+          setScreen('crimson-intro');
         } else {
           setMode(dest.id);
           resetGame();
