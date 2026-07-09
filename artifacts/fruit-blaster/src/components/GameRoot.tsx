@@ -3,6 +3,7 @@ import SplashScreen from './screens/SplashScreen';
 import MainMenu from './screens/MainMenu';
 import GuardianOathScreen from './screens/GuardianOathScreen';
 import WorldSelectionScreen from './screens/WorldSelectionScreen';
+import BambooGroveIntroScreen from './screens/BambooGroveIntroScreen';
 import GameScreen from './game/GameCanvas';
 import GameOver from './screens/GameOver';
 import Settings from './screens/Settings';
@@ -21,6 +22,7 @@ export default function GameRoot() {
       case 'menu': return <MainMenu />;
       case 'guardian': return <GuardianOathScreen />;
       case 'modes': return <WorldSelectionScreen />;
+      case 'bamboo-intro': return <BambooGroveIntroScreen />;
       case 'game': return <GameScreen />;
       case 'gameover': return <GameOver />;
       case 'settings': return <Settings />;

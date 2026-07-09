@@ -476,10 +476,15 @@ export default function WorldSelectionScreen() {
     setTimeout(() => {
       setPhase('exiting');
       setTimeout(() => {
-        setMode(dest.id);
-        resetGame();
-        setLives(dest.lives);
-        setScreen('game');
+        // Bamboo Grove gets its own cinematic intro before the game
+        if (dest.id === 'arcade') {
+          setScreen('bamboo-intro');
+        } else {
+          setMode(dest.id);
+          resetGame();
+          setLives(dest.lives);
+          setScreen('game');
+        }
       }, 700);
     }, 800);
   }, [phase, playClick, setMode, resetGame, setLives, setScreen]);
