@@ -1,7 +1,8 @@
 import { Fruit, Bomb, FruitHalf, Particle } from '../entities/Entities';
 import { FruitType, BombType } from '../../types/GameTypes';
-import { FRUIT_DATA, BOMB_DATA } from '../../constants/GameData';
-import { drawFruit, drawFruitHalf } from './FruitRenderer';
+import { FRUIT_DATA, BOMB_DATA, BAMBOO_FRUIT_TYPES } from '../../constants/GameData';
+import { drawFruit, drawFruitHalf, drawBambooSprite } from './FruitRenderer';
+import { getBambooImage } from '../../utils/imageCache';
 
 export class GameEngine {
   canvas: HTMLCanvasElement;
@@ -67,6 +68,10 @@ export class GameEngine {
       this.bombChance = 0.30;
       this.spawnRate = 25;
       this.speedMultiplier = 1.5;
+    } else if (mode === 'bamboo') {
+      // Bamboo Grove — Zen Mode: calm, balanced, no escalating difficulty.
+      this.bombChance = 0.1;
+      this.spawnRate = 50;
     } else {
       this.bombChance = 0.2;
       this.spawnRate = 60;
@@ -182,14 +187,20 @@ export class GameEngine {
     const vx = (targetX - startX) / timeToPeak;
     
     if (isBomb) {
-      const type = 'Normal'; // Could add weighted random for bomb types
+      const type: BombType = this.mode === 'bamboo' ? 'Cursed Bamboo Seed' : 'Normal';
       this.bombs.push(new Bomb(startX, startY, vx, vy, type));
+    } else if (this.mode === 'bamboo') {
+      // Bamboo Grove spawns exclusively from our seven custom fruits.
+      const type = BAMBOO_FRUIT_TYPES[Math.floor(Math.random() * BAMBOO_FRUIT_TYPES.length)];
+      this.fruits.push(new Fruit(startX, startY, vx, vy, type));
     } else {
       // Pick fruit type by probability
-      const rand = Math.random() * 100;
+      const pool = Object.entries(FRUIT_DATA).filter(([k]) => !BAMBOO_FRUIT_TYPES.includes(k as FruitType));
+      const totalProb = pool.reduce((sum, [, v]) => sum + v.probability, 0);
+      const rand = Math.random() * totalProb;
       let cumProb = 0;
       let type: FruitType = 'Apple';
-      for (const [k, v] of Object.entries(FRUIT_DATA)) {
+      for (const [k, v] of pool) {
         cumProb += v.probability;
         if (rand <= cumProb) {
           type = k as FruitType;
@@ -229,6 +240,9 @@ export class GameEngine {
     this.playBomb();
     this.onBombHit();
     
+    const palette = b.type === 'Cursed Bamboo Seed'
+      ? ['#3D1E52', '#8E5AC2', '#B87CF0', '#1A0E24']
+      : ['#ff0000', '#ff8800', '#444444', '#000000'];
     for (let i = 0; i < 30; i++) {
       this.particles.push(new Particle({
         x: b.pos.x, y: b.pos.y,
@@ -236,7 +250,7 @@ export class GameEngine {
         vy: (Math.random() - 0.5) * 15,
         life: 30 + Math.random() * 30,
         maxLife: 60,
-        color: ['#ff0000', '#ff8800', '#444444', '#000000'][Math.floor(Math.random()*4)],
+        color: palette[Math.floor(Math.random()*4)],
         size: 5 + Math.random() * 15,
         type: 'smoke'
       }));
@@ -298,6 +312,11 @@ export class GameEngine {
       ctx.save();
       ctx.translate(b.pos.x, b.pos.y);
       ctx.rotate(b.rotation);
+
+      if (drawBambooSprite(ctx, b.type, b.radius)) {
+        ctx.restore();
+        return;
+      }
       
       ctx.beginPath();
       ctx.arc(0, 0, b.radius, 0, Math.PI * 2);
@@ -343,6 +362,25 @@ export class GameEngine {
       ctx.restore();
     });
     
+    // Bamboo Grove: sacred bamboo sword follows the fingertip, replacing the cursor.
+    if (this.mode === 'bamboo' && this.swordTrail.length > 0) {
+      const tip = this.swordTrail[0];
+      const prev = this.swordTrail[Math.min(3, this.swordTrail.length - 1)];
+      const swordImg = getBambooImage('bamboo-sword.png');
+      if (swordImg) {
+        const angle = Math.atan2(tip.y - prev.y, tip.x - prev.x) + Math.PI / 4;
+        const h = 130;
+        const w = h * (swordImg.naturalWidth / swordImg.naturalHeight);
+        ctx.save();
+        ctx.translate(tip.x, tip.y);
+        ctx.rotate(angle);
+        ctx.shadowBlur = 18;
+        ctx.shadowColor = 'rgba(120,255,140,0.65)';
+        ctx.drawImage(swordImg, -w * 0.15, -h * 0.85, w, h);
+        ctx.restore();
+      }
+    }
+
     // Draw Sword Trail
     if (this.swordTrail.length > 1) {
       ctx.save();
@@ -370,10 +408,11 @@ export class GameEngine {
       ctx.lineWidth = 8;
       ctx.stroke();
       
-      // Core
+      // Core — in Bamboo Grove the sacred sword sprite is the cursor, so the
+      // trail stays a soft emerald slash streak instead of a plain white cursor line.
       ctx.shadowBlur = 0;
-      ctx.strokeStyle = '#ffffff';
-      ctx.lineWidth = 3;
+      ctx.strokeStyle = this.mode === 'bamboo' ? 'rgba(180,255,180,0.55)' : '#ffffff';
+      ctx.lineWidth = this.mode === 'bamboo' ? 2 : 3;
       ctx.stroke();
       
       ctx.restore();

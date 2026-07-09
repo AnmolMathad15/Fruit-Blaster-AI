@@ -142,6 +142,9 @@ export default function GameScreen() {
             if (l <= 1) { setTimeout(() => setScreen('gameover'), 100); return 0; }
             return l - 1;
           });
+        } else if (mode === 'bamboo') {
+          // Cursed Bamboo Seed penalty: lose harmony/score progress instead of a life.
+          setScore((s: number) => Math.max(0, s - 25));
         }
       },
       playSlice,
@@ -274,7 +277,7 @@ export default function GameScreen() {
 
   // ─── Challenge mode timer ──────────────────────────────────────────────────
   useEffect(() => {
-    if (mode !== 'challenge' || isPaused) return;
+    if ((mode !== 'challenge' && mode !== 'bamboo') || isPaused) return;
     const t = setInterval(() => {
       setTimeLeft((l: number) => {
         if (l <= 1) { clearInterval(t); setScreen('gameover'); return 0; }

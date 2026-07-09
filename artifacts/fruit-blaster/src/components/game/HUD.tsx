@@ -20,11 +20,13 @@ export default function HUD() {
           </motion.div>
         </div>
         
-        {mode === 'challenge' && (
+        {(mode === 'challenge' || mode === 'bamboo') && (
           <div className="bg-black/40 backdrop-blur-md rounded-2xl px-6 py-2 border border-white/10 mt-2">
-            <span className="text-white/50 text-xs font-orbitron uppercase tracking-widest block">TIME</span>
+            <span className="text-white/50 text-xs font-orbitron uppercase tracking-widest block">
+              {mode === 'bamboo' ? '🎋 Zen Time' : 'TIME'}
+            </span>
             <span className={`text-2xl font-bold font-orbitron ${timeLeft <= 10 ? 'text-red-500 animate-pulse' : 'text-white'}`}>
-              0:{timeLeft.toString().padStart(2, '0')}
+              {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}
             </span>
           </div>
         )}

@@ -3,6 +3,26 @@
  * All drawing is relative to origin (0,0); caller must translate+rotate first.
  */
 
+import { FRUIT_DATA, BOMB_DATA } from '../../constants/GameData';
+import { getBambooImage } from '../../utils/imageCache';
+
+/** Fruit/hazard types rendered from our hand-painted Bamboo Grove sprites instead of vector art. */
+function bambooImageFor(type: string): string | undefined {
+  return (FRUIT_DATA as any)[type]?.image ?? (BOMB_DATA as any)[type]?.image;
+}
+
+/** Draws a sprite centered at origin, preserving aspect ratio, sized to ~2r tall. Returns true if drawn. */
+export function drawBambooSprite(ctx: CanvasRenderingContext2D, type: string, r: number): boolean {
+  const file = bambooImageFor(type);
+  if (!file) return false;
+  const img = getBambooImage(file);
+  if (!img) return false;
+  const targetH = r * 2.1;
+  const targetW = targetH * (img.naturalWidth / img.naturalHeight);
+  ctx.drawImage(img, -targetW / 2, -targetH / 2, targetW, targetH);
+  return true;
+}
+
 function drawStem(ctx: CanvasRenderingContext2D, r: number, color = '#5C3D1E') {
   ctx.beginPath();
   ctx.moveTo(0, -r);
@@ -25,6 +45,12 @@ function drawLeaf(ctx: CanvasRenderingContext2D, r: number, color = '#4CAF50') {
 }
 
 export function drawFruit(ctx: CanvasRenderingContext2D, type: string, r: number) {
+  if (bambooImageFor(type)) {
+    // Bamboo Grove sprites: skip drawing entirely until the real asset is
+    // loaded rather than flashing generic vector art as a placeholder.
+    drawBambooSprite(ctx, type, r);
+    return;
+  }
   switch (type) {
     case 'Apple':      drawApple(ctx, r); break;
     case 'Orange':     drawOrange(ctx, r); break;
@@ -68,6 +94,8 @@ function getFruitInnerColor(type: string): string {
     Apple: '#FFFDE7', Orange: '#FFB74D', Banana: '#FFFDE7', Watermelon: '#FF4444',
     Kiwi: '#8BC34A', Pineapple: '#FFF9C4', Pear: '#F1F8E9', 'Dragon Fruit': '#F8F8F8',
     Strawberry: '#FF8A80', Blueberry: '#9575CD', 'Golden Apple': '#FFFF88', 'Rainbow Mango': '#FFD54F',
+    'Jade Apple': '#E8F7D8', 'Bamboo Pear': '#F1F8DC', 'Emerald Kiwi': '#C7E8A8', 'Lotus Peach': '#FFF3EE',
+    'Zen Melon': '#DFF3C4', 'Sacred Plum': '#E2CBF2', 'Forest Lime': '#EEF7CF',
   };
   return map[type] || '#ffffff';
 }

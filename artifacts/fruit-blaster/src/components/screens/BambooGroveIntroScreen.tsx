@@ -44,7 +44,7 @@ interface Offset { dx: number; dy: number; }
 const ZERO: Offset = { dx: 0, dy: 0 };
 
 export default function BambooGroveIntroScreen() {
-  const { setScreen, setMode, setLives, resetGame } = useGameStore();
+  const { setScreen, setMode, setLives, setTimeLeft, resetGame } = useGameStore();
 
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef     = useRef<HTMLVideoElement>(null);
@@ -85,9 +85,10 @@ export default function BambooGroveIntroScreen() {
     if (exiting || debug) return;
     setExiting(true);
     setTimeout(() => {
-      setMode('arcade');
+      setMode('bamboo');
       resetGame();
       setLives(3);
+      setTimeLeft(120); // Zen Mode — 2 minutes
       setScreen('game');
     }, 700);
   };

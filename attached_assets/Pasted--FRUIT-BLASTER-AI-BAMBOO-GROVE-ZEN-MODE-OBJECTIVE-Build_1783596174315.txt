@@ -1,0 +1,664 @@
+# 🎋 FRUIT BLASTER AI — BAMBOO GROVE (ZEN MODE)
+
+## OBJECTIVE
+
+Build the complete Bamboo Grove gameplay world for Fruit Blaster AI.
+
+This is a premium AAA-quality Computer Vision experience.
+
+Do NOT use placeholder assets.
+
+Do NOT generate generic fruits.
+
+Do NOT replace our artwork.
+
+Only use our custom Bamboo Grove assets.
+
+Preserve every asset exactly as designed.
+
+The gameplay should feel peaceful, immersive, elegant and handcrafted while maintaining stable 60 FPS.
+
+Inspired by:
+
+• Ghost of Tsushima
+• Black Myth: Wukong
+• Ancient Chinese Bamboo Forests
+• Zen Philosophy
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# OUR CUSTOM ASSETS
+
+Load ONLY our Bamboo Grove assets.
+
+Weapons
+
+• Sacred Bamboo Sword
+
+Fruits
+
+• Jade Apple
+
+• Bamboo Pear
+
+• Emerald Kiwi
+
+• Lotus Peach
+
+• Zen Melon
+
+• Sacred Plum
+
+• Forest Lime
+
+Hazard
+
+• Cursed Bamboo Seed
+
+UI
+
+• Bamboo Grove HUD
+
+• Harmony Meter
+
+• Bamboo Scoreboard
+
+• End Results Scroll
+
+Particles
+
+• Bamboo leaves
+
+• Emerald particles
+
+• Jade dust
+
+• Lotus petals
+
+• Fireflies
+
+• Green energy trails
+
+Never replace any asset.
+
+Maintain original colors.
+
+Maintain proportions.
+
+Maintain transparency.
+
+Maintain quality.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# ENVIRONMENT
+
+Create a living Sacred Bamboo Grove.
+
+Include:
+
+• Endless bamboo forest
+
+• Ancient stone pathway
+
+• Wooden bridge
+
+• Crystal streams
+
+• Small waterfalls
+
+• Moss-covered rocks
+
+• Stone lanterns
+
+• Ancient shrine
+
+• Lotus pond
+
+• Fireflies
+
+• Birds
+
+• Gentle mist
+
+• Sun rays
+
+• Floating bamboo leaves
+
+Everything continuously animates.
+
+Very subtle movement.
+
+Never distract gameplay.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# CAMERA
+
+The webcam becomes the gameplay window.
+
+Mirror naturally.
+
+Blend into the environment.
+
+Remove harsh borders.
+
+Feather edges softly.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# COMPUTER VISION
+
+Use MediaPipe Hands.
+
+Track ONE hand only.
+
+Track Landmark 8.
+
+(Index Finger Tip)
+
+Minimum Detection Confidence
+
+0.8
+
+Minimum Tracking Confidence
+
+0.8
+
+Smooth movement.
+
+Remove jitter.
+
+Stable 60 FPS.
+
+Ignore accidental shaking.
+
+If tracking disappears
+
+Pause gameplay.
+
+Display
+
+"Hand Lost"
+
+Resume automatically after hand returns.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# SACRED BAMBOO SWORD
+
+Load:
+
+Sacred Bamboo Sword
+
+The sword replaces the mouse cursor.
+
+The sword perfectly follows the index fingertip.
+
+Smooth interpolation.
+
+Zero lag.
+
+Never teleport.
+
+Maintain sword orientation naturally.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# SLASH EFFECTS
+
+Every slice creates
+
+• Emerald slash trail
+
+• Bamboo leaves
+
+• Jade particles
+
+• Wind streak
+
+• Lotus petals
+
+• Green glow
+
+Trail duration
+
+0.3 seconds
+
+Perfect slices generate brighter effects.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# FRUIT SPAWNING
+
+Spawn ONLY
+
+• Jade Apple
+
+• Bamboo Pear
+
+• Emerald Kiwi
+
+• Lotus Peach
+
+• Zen Melon
+
+• Sacred Plum
+
+• Forest Lime
+
+Do NOT spawn modern fruits.
+
+Fruits appear naturally.
+
+Some fall from bamboo.
+
+Some drift with wind.
+
+Some emerge from lotus pond.
+
+Some rise from forest mist.
+
+Movement feels alive.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# CURSED BAMBOO SEED
+
+Spawn occasionally.
+
+Never confuse with fruit.
+
+Always emit
+
+Purple smoke
+
+Dark particles
+
+Cursed runes
+
+Shadow aura
+
+If sliced
+
+Apply penalty immediately.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# GAME START
+
+Never start instantly.
+
+Sequence
+
+Preparing Sacred Vision...
+
+↓
+
+Camera starts
+
+↓
+
+Hand detected
+
+↓
+
+Display instructions
+
+Keep one hand visible.
+
+Use your index finger as the Sacred Bamboo Blade.
+
+Slice mystical fruits.
+
+Avoid Cursed Bamboo Seeds.
+
+↓
+
+READY
+
+↓
+
+3
+
+↓
+
+2
+
+↓
+
+1
+
+↓
+
+GO
+
+Only after GO
+
+Begin spawning fruits.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# GAME MODE
+
+ZEN MODE
+
+Duration
+
+2 Minutes
+
+No Lives
+
+No increasing difficulty.
+
+Calm balanced gameplay.
+
+Objective
+
+Achieve the highest score.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# SCORING
+
+Normal Slice
+
++10
+
+Clean Slice
+
++20
+
+Perfect Slice
+
++50
+
+Harmony Slice
+
++100
+
+Floating score numbers appear beside each slice.
+
+Animated in green brush-calligraphy.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# HARMONY METER
+
+Bottom Left
+
+Circular jade meter.
+
+Fill using successful slices.
+
+Perfect slices fill faster.
+
+When full
+
+Harmony Awakened
+
+Effects
+
+• Time slows
+
+• Double Score
+
+• Green wind
+
+• Emerald particles
+
+• Temple bell
+
+Duration
+
+5 Seconds
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# HUD
+
+Use ONLY our Bamboo Grove HUD.
+
+Do NOT redesign.
+
+TOP LEFT
+
+⏳ Timer
+
+02:00
+
+TOP CENTER
+
+🔥 Combo
+
+TOP RIGHT
+
+🏆 Score
+
+BOTTOM LEFT
+
+Harmony Meter
+
+BOTTOM CENTER
+
+Session Stats
+
+Fruits Sliced
+
+Accuracy
+
+Highest Combo
+
+Cursed Seeds Hit
+
+BOTTOM RIGHT
+
+Pause
+
+Restart
+
+Settings
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# COLLISION
+
+Slice detection must feel precise.
+
+Use the sword trail instead of a single point when detecting slices.
+
+Prevent double slicing.
+
+Every fruit can only be sliced once.
+
+Split fruit physics should feel natural.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# PHYSICS
+
+Fruit spins naturally.
+
+Gravity feels realistic.
+
+Fruit halves rotate independently.
+
+Juice particles follow momentum.
+
+Leaves react to sword movement.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# AUDIO
+
+Loop
+
+Bamboo flute
+
+Wind
+
+Birds
+
+Water stream
+
+Waterfall
+
+Leaves
+
+Wind chimes
+
+Soft insects
+
+Slice
+
+Elegant bamboo sword.
+
+Perfect combo
+
+Temple bell.
+
+Harmony
+
+Ancient Zen choir.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# LIGHTING
+
+Warm green sunlight.
+
+Volumetric rays.
+
+Leaf shadows.
+
+Water reflections.
+
+Soft bloom.
+
+Emerald glow.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# PARTICLES
+
+Generate continuously
+
+• Bamboo leaves
+
+• Fireflies
+
+• Lotus petals
+
+• Emerald dust
+
+• Jade particles
+
+• Floating pollen
+
+Keep density low.
+
+Premium quality.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# END OF GAME
+
+When timer reaches zero
+
+Freeze gameplay.
+
+Fade background slightly.
+
+Display our custom Bamboo Results Scroll.
+
+Show
+
+🏆 Bamboo Grove Results
+
+Final Score
+
+Highest Combo
+
+Fruits Sliced
+
+Accuracy
+
+Perfect Slices
+
+Cursed Seeds Hit
+
+Harmony Activations
+
+Time Played
+
+Zen Rank
+
+Ranks
+
+🌱 Bamboo Novice
+
+🍃 Forest Disciple
+
+🎋 Zen Guardian
+
+💎 Jade Master
+
+👑 Sacred Bamboo Sage
+
+Celebrate using
+
+Bamboo leaves
+
+Lotus petals
+
+Emerald light
+
+Fireflies
+
+No fireworks.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# BUTTONS
+
+Play Again
+
+Return to World Selection
+
+Next World
+
+Transitions remain cinematic.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# PERFORMANCE
+
+Maintain 60 FPS.
+
+React
+
+TypeScript
+
+MediaPipe Hands
+
+GSAP
+
+PixiJS
+
+Canvas particles
+
+requestAnimationFrame
+
+GPU transforms only.
+
+Optimize textures.
+
+Lazy-load assets.
+
+Avoid layout reflows.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# FINAL EXPERIENCE
+
+The player should feel like a legendary Bamboo Guardian training in a sacred forest. Their real index finger transforms into the Sacred Bamboo Sword, slicing mystical jade fruits with elegant emerald energy while surrounded by birds, waterfalls, drifting bamboo leaves, and calming music. Every asset, animation, sound, and interaction must preserve the handcrafted premium identity of the Bamboo Grove and never fall back to generic placeholder graphics or modern UI.

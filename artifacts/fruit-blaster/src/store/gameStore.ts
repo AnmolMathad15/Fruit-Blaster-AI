@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 
 export type GameScreen = 'splash' | 'menu' | 'guardian' | 'modes' | 'dojo-intro' | 'bamboo-intro' | 'crimson-intro' | 'imperial-intro' | 'moon-intro' | 'game' | 'pause' | 'gameover' | 'settings' | 'leaderboard' | 'achievements' | 'statistics';
-export type GameMode = 'classic' | 'arcade' | 'zen' | 'challenge' | 'survival';
+export type GameMode = 'classic' | 'arcade' | 'zen' | 'challenge' | 'survival' | 'bamboo';
 
 interface GameState {
   screen: GameScreen;
