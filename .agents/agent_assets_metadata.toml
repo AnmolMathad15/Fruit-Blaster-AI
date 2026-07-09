@@ -1,0 +1,8 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "shKU1gbGK0pw5uJqbmHuJ"
+uri = "file://attached_assets/dojo_sword_no_bg.png"
+type = "image"
+title = "Dojo sword — background removed"
