@@ -1,9 +1,9 @@
 /**
  * useHandTracker — complete MediaPipe Hand Landmarker pipeline.
  *
- * Key design decisions that fix the known bugs:
+ * Key design decisions:
  *
- * 1. startTracking() checks landmarkerRef.current (a ref) — NOT initStatus (state).
+ * 1. startTracking() reads landmarkerRef.current (a ref) — NOT initStatus (state).
  *    initStatus is React state; any function that closes over it captures a
  *    stale copy. Refs are always current.
  *
@@ -16,7 +16,15 @@
  * 4. detectForVideo is called every animation frame (not gated on currentTime
  *    diffing, which could stall if the browser pauses video decode).
  *
- * 5. All detection errors are logged — no silent swallowing.
+ * 5. EMA (exponential moving average) smoothing is applied to the raw MediaPipe
+ *    coordinates before publishing. This eliminates per-frame jitter without
+ *    adding noticeable latency. Alpha = 0.45 keeps tracking tight but smooth.
+ *    On first detection after a lost period, positions snap immediately so the
+ *    cursor never lags to catch up.
+ *
+ * 6. Lost-frame debouncing: 15 consecutive no-detection frames are required
+ *    before the hand is marked absent, absorbing occlusion / lighting flicker /
+ *    fast-movement misses without desensitising the tracker.
  */
 
 import { useState, useEffect, useRef, useCallback } from 'react';
@@ -30,6 +38,12 @@ export interface FingertipState {
   isPresent: boolean;
 }
 
+/** EMA smoothing factor: 0 = fully smoothed (laggy), 1 = raw (jittery). */
+const SMOOTH_ALPHA = 0.45;
+
+/** Frames without a detection before the hand is considered absent. */
+const LOST_FRAME_THRESHOLD = 15;
+
 export function useHandTracker() {
   const [initStatus, setInitStatus] = useState<InitStatus>('idle');
   const [initError, setInitError]   = useState<string | null>(null);
@@ -40,7 +54,12 @@ export function useHandTracker() {
   const isRunningRef     = useRef(false);
   const animFrameRef     = useRef<number>(0);
   const fingertipRef     = useRef<FingertipState>({ x: 0, y: 0, isPresent: false });
-  const lostFramesRef    = useRef(0);   // consecutive frames with no detection
+  const lostFramesRef    = useRef(0);
+
+  // EMA state: last published smoothed position, used as the "previous" value
+  // each frame. Reset to raw on first detection so the cursor snaps instantly.
+  const smoothedRef      = useRef<{ x: number; y: number } | null>(null);
+
   const [fingertip, setFingertip] = useState<FingertipState>({ x: 0, y: 0, isPresent: false });
 
   // ─── Model initialisation ──────────────────────────────────────────────────
@@ -67,6 +86,10 @@ export function useHandTracker() {
           },
           runningMode: 'VIDEO',
           numHands: 1,
+          // minHandDetectionConfidence: higher = fewer false positives, less jitter
+          minHandDetectionConfidence: 0.65,
+          minHandPresenceConfidence: 0.6,
+          minTrackingConfidence: 0.55,
         });
         if (cancelled) { landmarker.close(); return; }
 
@@ -92,64 +115,73 @@ export function useHandTracker() {
   }, []);
 
   // ─── startTracking ────────────────────────────────────────────────────────
-  // IMPORTANT: reads landmarkerRef.current (ref), NOT initStatus (state).
-  // Any function that closes over initStatus captures its value at definition
-  // time and will see 'idle' forever even after the model loads.
   const startTracking = useCallback(async (video: HTMLVideoElement): Promise<boolean> => {
-    // Guard against double-start (e.g. camera-ready path + initStatus effect both firing)
     if (isRunningRef.current) {
       console.log('[HandTracker] startTracking: already running, ignoring duplicate call');
       return true;
     }
-    // Wait for landmarker to be available (ref is always current — no stale closure)
     if (!landmarkerRef.current) {
       console.warn('[HandTracker] startTracking called but model not ready yet');
       return false;
     }
 
-    // Video must have dimensions before detectForVideo can run
     if (video.readyState < 2 || video.videoWidth === 0) {
       console.log('[HandTracker] Video not ready, waiting for loadedmetadata…');
       await new Promise<void>((resolve) => {
         const onMeta = () => { video.removeEventListener('loadedmetadata', onMeta); resolve(); };
         video.addEventListener('loadedmetadata', onMeta);
-        // Also resolve immediately if it fires synchronously
         if (video.readyState >= 2 && video.videoWidth > 0) { video.removeEventListener('loadedmetadata', onMeta); resolve(); }
       });
     }
 
-    // Ensure video is playing
     if (video.paused) {
       try { await video.play(); } catch (e) { console.warn('[HandTracker] video.play() failed:', e); }
     }
 
-    if (!landmarkerRef.current) return false; // could have been closed while we waited
+    if (!landmarkerRef.current) return false;
 
     console.log(`[HandTracker] Starting detection loop — videoSize: ${video.videoWidth}×${video.videoHeight}`);
     isRunningRef.current = true;
+    smoothedRef.current = null; // reset EMA on (re)start
     setIsTracking(true);
 
     const detect = () => {
       if (!isRunningRef.current || !landmarkerRef.current) return;
 
-      // video.readyState 4 = HAVE_ENOUGH_DATA (can draw frames)
       if (video.readyState >= 2 && video.videoWidth > 0) {
         try {
           const now = performance.now();
           const results = landmarkerRef.current.detectForVideo(video, now);
+
           if (results.landmarks?.length > 0) {
-            // Hand detected — reset the lost-frame counter immediately
             lostFramesRef.current = 0;
-            const pt = results.landmarks[0][8]; // index fingertip
-            const next: FingertipState = { x: pt.x, y: pt.y, isPresent: true };
+            const pt = results.landmarks[0][8]; // index fingertip (landmark 8)
+
+            // ── EMA smoothing ──────────────────────────────────────────────
+            // On first detection after a gap, snap directly to raw position so
+            // the cursor doesn't drift in from (0,0) or the last known location.
+            let sx: number;
+            let sy: number;
+            if (smoothedRef.current === null || !fingertipRef.current.isPresent) {
+              // First frame or hand just reappeared — snap, no interpolation
+              sx = pt.x;
+              sy = pt.y;
+            } else {
+              sx = SMOOTH_ALPHA * pt.x + (1 - SMOOTH_ALPHA) * smoothedRef.current.x;
+              sy = SMOOTH_ALPHA * pt.y + (1 - SMOOTH_ALPHA) * smoothedRef.current.y;
+            }
+            smoothedRef.current = { x: sx, y: sy };
+
+            const next: FingertipState = { x: sx, y: sy, isPresent: true };
             fingertipRef.current = next;
             setFingertip(next);
           } else {
-            // Require 10 consecutive frames with no detection before marking the
-            // hand as lost. This absorbs single-frame MediaPipe misses (occlusion,
-            // lighting flicker, fast movement) without desensitising the tracker.
+            // Debounce hand loss — require LOST_FRAME_THRESHOLD consecutive
+            // misses before marking absent. Absorbs single-frame MediaPipe
+            // dropout from occlusion, lighting, or fast movement.
             lostFramesRef.current += 1;
-            if (lostFramesRef.current >= 10 && fingertipRef.current.isPresent) {
+            if (lostFramesRef.current >= LOST_FRAME_THRESHOLD && fingertipRef.current.isPresent) {
+              smoothedRef.current = null; // reset EMA so next detection snaps
               const next: FingertipState = { ...fingertipRef.current, isPresent: false };
               fingertipRef.current = next;
               setFingertip(next);
@@ -165,13 +197,14 @@ export function useHandTracker() {
 
     detect();
     return true;
-  }, []); // no deps — all reads come from refs
+  }, []);
 
   // ─── stopTracking ─────────────────────────────────────────────────────────
   const stopTracking = useCallback(() => {
     isRunningRef.current = false;
     setIsTracking(false);
     cancelAnimationFrame(animFrameRef.current);
+    smoothedRef.current = null;
     const stopped: FingertipState = { x: 0, y: 0, isPresent: false };
     fingertipRef.current = stopped;
     setFingertip(stopped);

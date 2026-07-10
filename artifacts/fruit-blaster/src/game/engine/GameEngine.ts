@@ -107,12 +107,15 @@ export class GameEngine {
       this.spawnRate = 28;
     } else if (mode === 'moon') {
       // Moon Shrine — Survival Mode: starts calm, ramps up every 30s, maxes at 5min.
-      this.bombChance = 0.14;
-      this.spawnRate = 32;
-      this.speedMultiplier = 1;
-      this.baseBombChance = 0.14;
-      this.baseSpawnRate = 32;
-      this.baseSpeedMultiplier = 1;
+      // Gravity lowered to 0.18 (vs default 0.3) for long, floaty celestial arcs
+      // that feel weightless and give the player more time to react gracefully.
+      this.bombChance = 0.12;
+      this.spawnRate = 36;
+      this.speedMultiplier = 0.88;
+      this.gravity = 0.18;
+      this.baseBombChance = 0.12;
+      this.baseSpawnRate = 36;
+      this.baseSpeedMultiplier = 0.88;
     } else if (mode === 'challenge') {
       // Crimson Temple — Challenge Mode: high-intensity volcanic battlefield.
       // Fruits rain constantly (2-5 per wave, occasional 6-8 bursts). The cursed
@@ -127,13 +130,21 @@ export class GameEngine {
     }
   }
 
-  /** Moon Shrine difficulty ramp: every 30s raise speed/spawn/bomb frequency, capped at 5 minutes. */
+  /**
+   * Moon Shrine difficulty ramp — every 30s raise speed/spawn/bomb frequency,
+   * capped at 5 minutes. The ramp is gentler than Crimson/Imperial because the
+   * Moon Shrine is a survival endurance mode that should feel serene until the
+   * very late game, then become a punishing celestial gauntlet.
+   *
+   * Base values: speed 0.88×, spawnRate 36, bombChance 0.12
+   * Tier 10 cap:  speed 1.78×, spawnRate 18,  bombChance 0.30
+   */
   updateMoonDifficulty(dt: number) {
     this.survivalSeconds += dt / 60;
     const tier = Math.min(10, Math.floor(this.survivalSeconds / 30)); // 0..10, maxed at 300s
-    this.speedMultiplier = this.baseSpeedMultiplier + tier * 0.12;
-    this.spawnRate = Math.max(14, this.baseSpawnRate - tier * 3);
-    this.bombChance = Math.min(0.4, this.baseBombChance + tier * 0.02);
+    this.speedMultiplier = this.baseSpeedMultiplier + tier * 0.09;
+    this.spawnRate = Math.max(18, this.baseSpawnRate - tier * 1.8);
+    this.bombChance = Math.min(0.30, this.baseBombChance + tier * 0.018);
   }
 
   /**
@@ -418,13 +429,17 @@ export class GameEngine {
       const type = BAMBOO_FRUIT_TYPES[Math.floor(Math.random() * BAMBOO_FRUIT_TYPES.length)];
       this.fruits.push(new Fruit(startX, startY, vx, vy, type));
     } else if (this.mode === 'moon') {
-      // Moon Shrine — 1-3 fruits per wave. Single fruit (45%) keeps the zen pace;
-      // doubles (40%) and triples (15%) are satisfying combo moments.
-      // Slight X scatter for doubles/triples so each fruit has its own arc.
+      // Moon Shrine — 1-3 fruits per wave. Single fruit (50%) keeps the serene
+      // pace; doubles (38%) and triples (12%) are satisfying combo moments.
+      // Fruit velocity is reduced to 88% of base so arcs are longer and more
+      // graceful under the lower gravity — gives players more time to react.
+      // Horizontal scatter is tighter (100px vs 130px) so fruits stay readable.
       const pool = MOON_FRUIT_TYPES.map(t => [t, FRUIT_DATA[t]] as const);
       const totalProb = pool.reduce((sum, [, v]) => sum + v.probability, 0);
       const waveRoll = Math.random();
-      const waveSize = waveRoll < 0.45 ? 1 : waveRoll < 0.85 ? 2 : 3;
+      const waveSize = waveRoll < 0.50 ? 1 : waveRoll < 0.88 ? 2 : 3;
+      const moonVy = vy * 0.88;  // gentler upward launch → longer hang-time
+      const moonVx = vx * 0.88;
       for (let i = 0; i < waveSize; i++) {
         const rand = Math.random() * totalProb;
         let cumProb = 0;
@@ -433,9 +448,9 @@ export class GameEngine {
           cumProb += v.probability;
           if (rand <= cumProb) { type = k; break; }
         }
-        const jitterX  = startX + (Math.random() - 0.5) * 130 * i;
-        const jitterVx = vx + (Math.random() - 0.5) * 2;
-        this.fruits.push(new Fruit(jitterX, startY, jitterVx, vy, type));
+        const jitterX  = startX + (Math.random() - 0.5) * 100 * i;
+        const jitterVx = moonVx + (Math.random() - 0.5) * 1.4;
+        this.fruits.push(new Fruit(jitterX, startY, jitterVx, moonVy, type));
       }
     } else {
       // Pick fruit type by probability

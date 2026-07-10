@@ -58,6 +58,11 @@ export default function GameScreen() {
   // Mouse / touch fallback when camera is denied or hand not visible
   const mousePosRef = useRef({ x: 0, y: 0, isPresent: false });
 
+  // Moon Shrine: secondary smoothed control position applied in the game loop.
+  // A lightweight EMA (alpha=0.55) on top of the tracker's own smoothing removes
+  // any residual jitter from coordinate→canvas scaling without adding noticeable lag.
+  const moonSmoothRef = useRef<{ x: number; y: number } | null>(null);
+
   // Debug overlay state
   const [cameraReady, setCameraReady] = useState(false);
   const [fps, setFps]                 = useState(0);
@@ -271,9 +276,25 @@ export default function GameScreen() {
         if (ft.isPresent && isTrackingRef.current) {
           const mirror = webcamMirrorRef.current;
           // MediaPipe normalized coords: mirror flips x
-          const x = mirror ? (1 - ft.x) * cw : ft.x * cw;
-          const y = ft.y * ch;
-          controlPos = { x, y, isPresent: true };
+          const rawX = mirror ? (1 - ft.x) * cw : ft.x * cw;
+          const rawY = ft.y * ch;
+
+          // Moon Shrine: apply a secondary EMA smoothing pass on the canvas-space
+          // position so the sword trail feels fluid and weightless. Alpha=0.55
+          // keeps the cursor tight to the finger while eliminating residual jitter.
+          // On first appearance, snap directly so the cursor doesn't drift in.
+          if (mode === 'moon') {
+            const prev = moonSmoothRef.current;
+            const sx = prev ? 0.55 * rawX + 0.45 * prev.x : rawX;
+            const sy = prev ? 0.55 * rawY + 0.45 * prev.y : rawY;
+            moonSmoothRef.current = { x: sx, y: sy };
+            controlPos = { x: sx, y: sy, isPresent: true };
+          } else {
+            controlPos = { x: rawX, y: rawY, isPresent: true };
+          }
+        } else if (mode === 'moon') {
+          // Reset moon smooth state when hand is absent so the next detection snaps
+          moonSmoothRef.current = null;
         }
 
         engine.update(dt, controlPos);
