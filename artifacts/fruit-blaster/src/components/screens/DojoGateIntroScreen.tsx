@@ -277,31 +277,6 @@ export default function DojoGateIntroScreen() {
         </div>
       )}
 
-      {/* ══ 4. "Playing" hint – tap to skip ══════════════════════════ */}
-      <AnimatePresence>
-        {phase === 'playing' && (
-          <motion.p
-            key="skip"
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            transition={{ delay: 1.5, duration: 0.6 }}
-            onClick={() => {
-              const vid = videoRef.current;
-              if (vid) { vid.currentTime = vid.duration - 0.05; }
-            }}
-            style={{
-              position: 'absolute', bottom: '3%', left: 0, right: 0,
-              margin: 0, textAlign: 'center',
-              fontFamily: 'Georgia,serif', fontSize: 11,
-              letterSpacing: 4, textTransform: 'uppercase',
-              color: 'rgba(255,220,150,0.45)',
-              cursor: 'pointer', zIndex: 10, pointerEvents: 'auto',
-            }}
-          >
-            tap to skip
-          </motion.p>
-        )}
-      </AnimatePresence>
-
       {/* ══ 5. Debug toggle ═══════════════════════════════════════════ */}
       <button
         onClick={() => setDebug(v => !v)}

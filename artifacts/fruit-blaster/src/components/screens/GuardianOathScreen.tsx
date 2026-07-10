@@ -187,13 +187,6 @@ export default function GuardianOathScreen() {
     });
   };
 
-  /* ── Skip: go directly to world selection, bypassing the video button ── */
-  const handleSkip = () => {
-    if (hasActedRef.current) return;
-    hasActedRef.current = true;
-    setPhase('exiting');
-    setTimeout(() => setScreen('modes'), 800);
-  };
 
   return (
     <div
@@ -345,29 +338,7 @@ export default function GuardianOathScreen() {
         </div>
       )}
 
-      {/* ══ 6. Skip hint ══════════════════════════════════════════════ */}
-      <AnimatePresence>
-        {phase === 'playing' && (
-          <motion.p
-            key="skip"
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            transition={{ delay: 1.5, duration: 0.6 }}
-            onClick={handleSkip}
-            style={{
-              position: 'absolute', bottom: '3%', left: 0, right: 0,
-              margin: 0, textAlign: 'center',
-              fontFamily: 'Georgia,serif', fontSize: 11,
-              letterSpacing: 4, textTransform: 'uppercase',
-              color: 'rgba(255,220,150,0.45)',
-              cursor: 'pointer', zIndex: 10, pointerEvents: 'auto',
-            }}
-          >
-            tap to skip
-          </motion.p>
-        )}
-      </AnimatePresence>
-
-      {/* ══ 7. Fade-to-black exit ══════════════════════════════════════ */}
+      {/* ══ 6. Fade-to-black exit ══════════════════════════════════════ */}
       <AnimatePresence>
         {phase === 'exiting' && (
           <motion.div
