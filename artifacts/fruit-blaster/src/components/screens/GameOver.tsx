@@ -24,6 +24,7 @@ export default function GameOver() {
   const { playGameOver, playClick } = useSoundManager();
 
   const isMoon = mode === 'moon';
+  const isChallenge = mode === 'challenge';
   const rank = isMoon ? getMoonRank(score) : getRankForScore(score);
   const moonAccuracy = moonStats.fruitsSliced + moonStats.eclipseOrbsHit > 0
     ? Math.round((moonStats.fruitsSliced / (moonStats.fruitsSliced + moonStats.eclipseOrbsHit)) * 100)
@@ -71,7 +72,7 @@ export default function GameOver() {
         {/* Simple CSS confetti simulation could go here, or handled by particle engine */}
       </div>
 
-      <GlassPanel className={`w-full ${isMoon ? 'max-w-xl' : 'max-w-2xl'} max-h-[90vh] overflow-y-auto overflow-x-hidden p-6 md:p-8 flex flex-col items-center gap-5 z-10 text-center relative ${isMoon ? 'border-blue-300/20' : ''}`}>
+      <GlassPanel className={`w-full ${isMoon ? 'max-w-xl' : 'max-w-2xl'} max-h-[90vh] overflow-y-auto overflow-x-hidden p-6 md:p-8 flex flex-col items-center gap-5 z-10 text-center relative ${isMoon ? 'border-blue-300/20' : isChallenge ? 'border-red-900/50' : ''}`}>
         {panelImage && (
           <div 
             className="absolute inset-0 z-0 pointer-events-none opacity-80"
@@ -82,36 +83,65 @@ export default function GameOver() {
             }}
           />
         )}
-        {panelImage && <div className="absolute inset-0 bg-black/60 z-0 pointer-events-none" />}
-        
+        {panelImage && (
+          <div
+            className="absolute inset-0 z-0 pointer-events-none"
+            style={{
+              background: isChallenge
+                ? 'linear-gradient(to bottom, rgba(60,5,5,0.72) 0%, rgba(20,0,0,0.80) 60%, rgba(10,0,0,0.88) 100%)'
+                : 'rgba(0,0,0,0.60)',
+            }}
+          />
+        )}
+        {isChallenge && (
+          <div
+            className="absolute inset-0 z-0 pointer-events-none"
+            style={{
+              background: 'radial-gradient(ellipse at 50% 100%, rgba(200,40,10,0.28) 0%, transparent 65%)',
+            }}
+          />
+        )}
+
         <div className={`relative z-10 w-full flex flex-col items-center ${isMoon ? 'gap-4' : 'gap-8'}`}>
-          <h2 className={`${isMoon ? 'text-3xl md:text-4xl' : 'text-5xl md:text-6xl'} font-black font-orbitron drop-shadow-[0_0_20px_rgba(255,0,0,0.5)] ${isMoon ? 'text-blue-100 drop-shadow-[0_0_20px_rgba(140,180,255,0.5)]' : 'text-destructive'}`}>
-            {isMoon ? 'THE SHRINE FADES' : 'GAME OVER'}
+          <h2 className={`${isMoon ? 'text-3xl md:text-4xl' : 'text-5xl md:text-6xl'} font-black font-orbitron ${
+            isMoon
+              ? 'text-blue-100 drop-shadow-[0_0_20px_rgba(140,180,255,0.5)]'
+              : isChallenge
+              ? 'text-orange-300 drop-shadow-[0_0_24px_rgba(220,60,10,0.85)]'
+              : 'text-destructive drop-shadow-[0_0_20px_rgba(255,0,0,0.5)]'
+          }`}>
+            {isMoon ? 'THE SHRINE FADES' : isChallenge ? 'THE TEMPLE BURNS' : 'GAME OVER'}
           </h2>
           
           <div className="flex flex-col items-center">
-            <span className={`${isMoon ? 'text-base' : 'text-xl'} text-white/70 uppercase tracking-widest mb-1`}>Final Score</span>
+            <span className={`${isMoon ? 'text-base' : 'text-xl'} ${isChallenge ? 'text-orange-200/70' : 'text-white/70'} uppercase tracking-widest mb-1`}>Final Score</span>
             <motion.span 
               initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', delay: 0.2 }}
-              className={`${isMoon ? 'text-5xl' : 'text-7xl'} font-bold text-white leading-none`}
+              className={`${isMoon ? 'text-5xl' : 'text-7xl'} font-bold leading-none ${isChallenge ? 'text-orange-100' : 'text-white'}`}
             >
               {score}
             </motion.span>
-            <span className="text-sm text-white/50 uppercase tracking-widest mt-2">Best Score: {bestScore}</span>
+            <span className={`text-sm uppercase tracking-widest mt-2 ${isChallenge ? 'text-orange-200/50' : 'text-white/50'}`}>Best Score: {bestScore}</span>
           </div>
 
           <motion.div 
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}
-            className={`flex flex-col items-center bg-black/50 backdrop-blur-sm rounded-3xl border border-white/10 w-full ${isMoon ? 'p-3' : 'p-6'}`}
+            className={`flex flex-col items-center backdrop-blur-sm rounded-3xl w-full ${isMoon ? 'p-3 bg-black/50 border border-blue-300/10' : isChallenge ? 'p-6 bg-black/60 border border-red-900/40 shadow-[0_0_30px_rgba(180,30,10,0.25)]' : 'p-6 bg-black/50 border border-white/10'}`}
           >
-            <span className="text-sm text-white/50 uppercase mb-1">Your Rank</span>
+            <span className={`text-sm uppercase mb-1 ${isChallenge ? 'text-orange-200/60' : 'text-white/50'}`}>Your Rank</span>
             <motion.div 
               animate={{ y: [0, -10, 0] }} transition={{ repeat: Infinity, duration: 2 }}
               className={`${isMoon ? 'text-4xl mb-1' : 'text-6xl mb-4'}`}
             >
               {isMoon ? (rank as any).icon : (rank as any).cat}
             </motion.div>
-            <h3 className={`${isMoon ? 'text-xl' : 'text-3xl'} font-orbitron font-bold text-transparent bg-clip-text ${isMoon ? 'bg-gradient-to-r from-indigo-300 to-blue-100' : 'bg-gradient-to-r from-primary to-accent'}`}>
+            <h3 className={`${isMoon ? 'text-xl' : 'text-3xl'} font-orbitron font-bold text-transparent bg-clip-text ${
+              isMoon
+                ? 'bg-gradient-to-r from-indigo-300 to-blue-100'
+                : isChallenge
+                ? 'bg-gradient-to-r from-red-400 to-orange-300'
+                : 'bg-gradient-to-r from-primary to-accent'
+            }`}>
               {rank.title}
             </h3>
           </motion.div>

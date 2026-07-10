@@ -10,12 +10,24 @@ export default function HUD() {
     <div className="absolute inset-0 pointer-events-none z-10 p-6 flex justify-between items-start">
       {/* Left HUD: Score & Mode */}
       <div className="flex flex-col items-start gap-2">
-        <div className="bg-black/40 backdrop-blur-md rounded-2xl px-6 py-3 border border-white/10">
-          <span className="text-white/50 text-sm font-orbitron uppercase tracking-widest block mb-1">SCORE</span>
+        <div
+          className={`backdrop-blur-md rounded-2xl px-6 py-3 border ${
+            mode === 'challenge'
+              ? 'bg-black/55 border-red-900/50 shadow-[0_0_18px_rgba(180,30,10,0.30)]'
+              : 'bg-black/40 border-white/10'
+          }`}
+        >
+          <span
+            className={`text-sm font-orbitron uppercase tracking-widest block mb-1 ${
+              mode === 'challenge' ? 'text-orange-300/70' : 'text-white/50'
+            }`}
+          >
+            SCORE
+          </span>
           <motion.div 
             key={score}
-            initial={{ scale: 1.2, color: '#fff' }}
-            animate={{ scale: 1, color: '#e2e8f0' }}
+            initial={{ scale: 1.2, color: mode === 'challenge' ? '#fed7aa' : '#fff' }}
+            animate={{ scale: 1, color: mode === 'challenge' ? '#fdba74' : '#e2e8f0' }}
             className="text-4xl font-bold font-orbitron"
           >
             {score}
@@ -23,11 +35,29 @@ export default function HUD() {
         </div>
         
         {(mode === 'challenge' || mode === 'bamboo') && (
-          <div className="bg-black/40 backdrop-blur-md rounded-2xl px-6 py-2 border border-white/10 mt-2">
-            <span className="text-white/50 text-xs font-orbitron uppercase tracking-widest block">
-              {mode === 'bamboo' ? '🎋 Zen Time' : 'TIME'}
+          <div
+            className={`backdrop-blur-md rounded-2xl px-6 py-2 border mt-2 ${
+              mode === 'challenge'
+                ? 'bg-black/55 border-red-900/50 shadow-[0_0_14px_rgba(180,30,10,0.25)]'
+                : 'bg-black/40 border-white/10'
+            }`}
+          >
+            <span
+              className={`text-xs font-orbitron uppercase tracking-widest block ${
+                mode === 'challenge' ? 'text-orange-300/70' : 'text-white/50'
+              }`}
+            >
+              {mode === 'bamboo' ? '🎋 Zen Time' : '🔥 TIME'}
             </span>
-            <span className={`text-2xl font-bold font-orbitron ${timeLeft <= 10 ? 'text-red-500 animate-pulse' : 'text-white'}`}>
+            <span
+              className={`text-2xl font-bold font-orbitron ${
+                timeLeft <= 10
+                  ? 'text-red-500 animate-pulse'
+                  : mode === 'challenge'
+                  ? 'text-orange-200'
+                  : 'text-white'
+              }`}
+            >
               {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}
             </span>
           </div>
