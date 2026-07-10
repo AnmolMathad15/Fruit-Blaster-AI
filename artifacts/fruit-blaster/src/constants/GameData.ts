@@ -1,5 +1,9 @@
 import { FruitType, BombType, LevelConfig } from '../types/GameTypes';
 
+// Single shared radius for every custom-art fruit so fruit reads at the
+// same on-screen size in every zone/mode (Dojo, Bamboo, Moon, Crimson, Imperial).
+const FRUIT_RADIUS = 65;
+
 export const FRUIT_DATA: Record<FruitType, { color: string; colorInner: string; score: number; radius: number; probability: number; image?: string }> = {
   'Blueberry': { color: '#5B4FCF', colorInner: '#7A6EE6', score: 10, radius: 25, probability: 15 },
   'Apple': { color: '#FF4444', colorInner: '#FFFDD0', score: 10, radius: 35, probability: 15 },
@@ -15,61 +19,59 @@ export const FRUIT_DATA: Record<FruitType, { color: string; colorInner: string; 
   'Rainbow Mango': { color: 'rainbow', colorInner: '#FFD700', score: 75, radius: 40, probability: 0.2 },
 
   // ── Bamboo Grove (Zen Mode) — custom hand-painted assets ──
-  'Jade Apple':    { color: '#7CCB6A', colorInner: '#E8F7D8', score: 10, radius: 76, probability: 18, image: 'jade-apple.png' },
-  'Bamboo Pear':   { color: '#B7D96A', colorInner: '#F1F8DC', score: 10, radius: 78, probability: 16, image: 'bamboo-pear.png' },
-  'Emerald Kiwi':  { color: '#5C9E4A', colorInner: '#C7E8A8', score: 15, radius: 64, probability: 16, image: 'emerald-kiwi.png' },
-  'Lotus Peach':   { color: '#F3C6D6', colorInner: '#FFF3EE', score: 20, radius: 78, probability: 14, image: 'lotus-peach.png' },
-  'Zen Melon':     { color: '#4E9A5A', colorInner: '#DFF3C4', score: 20, radius: 88, probability: 12, image: 'zen-melon.png' },
-  'Sacred Plum':   { color: '#8E5AC2', colorInner: '#E2CBF2', score: 30, radius: 72, probability: 10, image: 'sacred-plum.png' },
-  'Forest Lime':   { color: '#9ACD4A', colorInner: '#EEF7CF', score: 15, radius: 66, probability: 14, image: 'forest-lime.png' },
+  // NOTE: all custom-art fruits across every zone share one FRUIT_RADIUS
+  // (see below) so fruit reads at a consistent size regardless of mode.
+  'Jade Apple':    { color: '#7CCB6A', colorInner: '#E8F7D8', score: 10, radius: FRUIT_RADIUS, probability: 18, image: 'jade-apple.png' },
+  'Bamboo Pear':   { color: '#B7D96A', colorInner: '#F1F8DC', score: 10, radius: FRUIT_RADIUS, probability: 16, image: 'bamboo-pear.png' },
+  'Emerald Kiwi':  { color: '#5C9E4A', colorInner: '#C7E8A8', score: 15, radius: FRUIT_RADIUS, probability: 16, image: 'emerald-kiwi.png' },
+  'Lotus Peach':   { color: '#F3C6D6', colorInner: '#FFF3EE', score: 20, radius: FRUIT_RADIUS, probability: 14, image: 'lotus-peach.png' },
+  'Zen Melon':     { color: '#4E9A5A', colorInner: '#DFF3C4', score: 20, radius: FRUIT_RADIUS, probability: 12, image: 'zen-melon.png' },
+  'Sacred Plum':   { color: '#8E5AC2', colorInner: '#E2CBF2', score: 30, radius: FRUIT_RADIUS, probability: 10, image: 'sacred-plum.png' },
+  'Forest Lime':   { color: '#9ACD4A', colorInner: '#EEF7CF', score: 15, radius: FRUIT_RADIUS, probability: 14, image: 'forest-lime.png' },
 
   // ── Moon Shrine (Survival Mode) — custom celestial assets ──
   // Lunar Kiwi has no custom art yet — it's wired here but left out of
   // MOON_FRUIT_TYPES so it never spawns until its sprite is supplied.
-  'Celestial Apple': { color: '#3a2a5c', colorInner: '#e8e6ff', score: 10, radius: 70, probability: 16, image: 'celestial-apple.png' },
-  'Spirit Pear':      { color: '#e9edf5', colorInner: '#ffffff', score: 10, radius: 70, probability: 16, image: 'spirit-pear.png' },
-  'Lunar Kiwi':        { color: '#c9d6e8', colorInner: '#ffffff', score: 10, radius: 70, probability: 0, image: 'lunar-kiwi.png' },
-  'Moon Peach':        { color: '#f0d3e0', colorInner: '#fff5f8', score: 10, radius: 70, probability: 16, image: 'moon-peach.png' },
-  'Moon Mandarin':     { color: '#e8dfe8', colorInner: '#ffffff', score: 10, radius: 70, probability: 14, image: 'moon-mandarin.png' },
-  'Silver Melon':      { color: '#e6e9f2', colorInner: '#ffffff', score: 10, radius: 76, probability: 12, image: 'silver-melon.png' },
-  'Luna Plum':         { color: '#4a3568', colorInner: '#c9b3e8', score: 10, radius: 68, probability: 14, image: 'luna-plum.png' },
-  'Moon Lime':         { color: '#d8e070', colorInner: '#f5f8d8', score: 10, radius: 68, probability: 12, image: 'moon-lime.png' },
+  'Celestial Apple': { color: '#3a2a5c', colorInner: '#e8e6ff', score: 10, radius: FRUIT_RADIUS, probability: 16, image: 'celestial-apple.png' },
+  'Spirit Pear':      { color: '#e9edf5', colorInner: '#ffffff', score: 10, radius: FRUIT_RADIUS, probability: 16, image: 'spirit-pear.png' },
+  'Lunar Kiwi':        { color: '#c9d6e8', colorInner: '#ffffff', score: 10, radius: FRUIT_RADIUS, probability: 0, image: 'lunar-kiwi.png' },
+  'Moon Peach':        { color: '#f0d3e0', colorInner: '#fff5f8', score: 10, radius: FRUIT_RADIUS, probability: 16, image: 'moon-peach.png' },
+  'Moon Mandarin':     { color: '#e8dfe8', colorInner: '#ffffff', score: 10, radius: FRUIT_RADIUS, probability: 14, image: 'moon-mandarin.png' },
+  'Silver Melon':      { color: '#e6e9f2', colorInner: '#ffffff', score: 10, radius: FRUIT_RADIUS, probability: 12, image: 'silver-melon.png' },
+  'Luna Plum':         { color: '#4a3568', colorInner: '#c9b3e8', score: 10, radius: FRUIT_RADIUS, probability: 14, image: 'luna-plum.png' },
+  'Moon Lime':         { color: '#d8e070', colorInner: '#f5f8d8', score: 10, radius: FRUIT_RADIUS, probability: 12, image: 'moon-lime.png' },
 
   // ── Crimson Temple (Challenge Mode) — legendary infernal fruits ──
-  'Infernal Apple':      { color: '#7a1a12', colorInner: '#ff8a3d', score: 15, radius: 84, probability: 16, image: 'infernal-apple.png' },
-  'Infernal Banana':     { color: '#4a1810', colorInner: '#ffb347', score: 15, radius: 78, probability: 14, image: 'infernal-banana.png' },
-  'Infernal Grape':      { color: '#3a1220', colorInner: '#ff6b3d', score: 20, radius: 70, probability: 14, image: 'infernal-grape.png' },
-  'Infernal Papaya':     { color: '#5a1a14', colorInner: '#ff9a3d', score: 20, radius: 80, probability: 12, image: 'infernal-papaya.png' },
-  'Infernal Strawberry': { color: '#4a0f0f', colorInner: '#ff5533', score: 20, radius: 74, probability: 14, image: 'infernal-strawberry.png' },
-  'Infernal Tomato':     { color: '#5a1512', colorInner: '#ff6a33', score: 15, radius: 82, probability: 15, image: 'infernal-tomato.png' },
-  'Infernal Watermelon': { color: '#2a1414', colorInner: '#ff7733', score: 25, radius: 90, probability: 9, image: 'infernal-watermelon.png' },
-  'Infernal Pineapple':  { color: '#3a1508', colorInner: '#ffaa33', score: 30, radius: 86, probability: 6, image: 'infernal-pineapple.png' },
+  'Infernal Apple':      { color: '#7a1a12', colorInner: '#ff8a3d', score: 15, radius: FRUIT_RADIUS, probability: 16, image: 'infernal-apple.png' },
+  'Infernal Banana':     { color: '#4a1810', colorInner: '#ffb347', score: 15, radius: FRUIT_RADIUS, probability: 14, image: 'infernal-banana.png' },
+  'Infernal Grape':      { color: '#3a1220', colorInner: '#ff6b3d', score: 20, radius: FRUIT_RADIUS, probability: 14, image: 'infernal-grape.png' },
+  'Infernal Papaya':     { color: '#5a1a14', colorInner: '#ff9a3d', score: 20, radius: FRUIT_RADIUS, probability: 12, image: 'infernal-papaya.png' },
+  'Infernal Strawberry': { color: '#4a0f0f', colorInner: '#ff5533', score: 20, radius: FRUIT_RADIUS, probability: 14, image: 'infernal-strawberry.png' },
+  'Infernal Tomato':     { color: '#5a1512', colorInner: '#ff6a33', score: 15, radius: FRUIT_RADIUS, probability: 15, image: 'infernal-tomato.png' },
+  'Infernal Watermelon': { color: '#2a1414', colorInner: '#ff7733', score: 25, radius: FRUIT_RADIUS, probability: 9, image: 'infernal-watermelon.png' },
+  'Infernal Pineapple':  { color: '#3a1508', colorInner: '#ffaa33', score: 30, radius: FRUIT_RADIUS, probability: 6, image: 'infernal-pineapple.png' },
 
   // ── Imperial Heaven Palace (Survival Mode) — legendary jade-and-gold fruits ──
-  // Radii reduced ~30% (matching Dojo Gate) — Imperial fruits were oversized relative to other zones.
-  'Imperial Apple':      { color: '#a01818', colorInner: '#ffe8b8', score: 20, radius: 68, probability: 16, image: 'imperial-apple.png' },
-  'Imperial Banana':     { color: '#d8c060', colorInner: '#fff8e0', score: 20, radius: 64, probability: 14, image: 'imperial-banana.png' },
-  'Imperial Cherry':     { color: '#b81818', colorInner: '#ffd8d8', score: 25, radius: 58, probability: 14, image: 'imperial-cherry.png' },
-  'Imperial Raspberry':  { color: '#c02040', colorInner: '#ffd0e0', score: 25, radius: 59, probability: 13, image: 'imperial-raspberry.png' },
-  'Imperial Gooseberry': { color: '#a8c840', colorInner: '#f0f8c8', score: 20, radius: 63, probability: 13, image: 'imperial-gooseberry.png' },
-  'Imperial Grapefruit': { color: '#e07850', colorInner: '#ffe0d0', score: 25, radius: 66, probability: 12, image: 'imperial-grapefruit.png' },
-  'Imperial Sugarcane':  { color: '#c8d8a0', colorInner: '#f4f8e8', score: 15, radius: 62, probability: 11, image: 'imperial-sugarcane.png' },
-  'Imperial Jackfruit':  { color: '#c8a838', colorInner: '#fff0c0', score: 30, radius: 70, probability: 8, image: 'imperial-jackfruit.png' },
-  'Imperial Durian':     { color: '#88a848', colorInner: '#f0f4d0', score: 35, radius: 69, probability: 6, image: 'imperial-durian.png' },
+  'Imperial Apple':      { color: '#a01818', colorInner: '#ffe8b8', score: 20, radius: FRUIT_RADIUS, probability: 16, image: 'imperial-apple.png' },
+  'Imperial Banana':     { color: '#d8c060', colorInner: '#fff8e0', score: 20, radius: FRUIT_RADIUS, probability: 14, image: 'imperial-banana.png' },
+  'Imperial Cherry':     { color: '#b81818', colorInner: '#ffd8d8', score: 25, radius: FRUIT_RADIUS, probability: 14, image: 'imperial-cherry.png' },
+  'Imperial Raspberry':  { color: '#c02040', colorInner: '#ffd0e0', score: 25, radius: FRUIT_RADIUS, probability: 13, image: 'imperial-raspberry.png' },
+  'Imperial Gooseberry': { color: '#a8c840', colorInner: '#f0f8c8', score: 20, radius: FRUIT_RADIUS, probability: 13, image: 'imperial-gooseberry.png' },
+  'Imperial Grapefruit': { color: '#e07850', colorInner: '#ffe0d0', score: 25, radius: FRUIT_RADIUS, probability: 12, image: 'imperial-grapefruit.png' },
+  'Imperial Sugarcane':  { color: '#c8d8a0', colorInner: '#f4f8e8', score: 15, radius: FRUIT_RADIUS, probability: 11, image: 'imperial-sugarcane.png' },
+  'Imperial Jackfruit':  { color: '#c8a838', colorInner: '#fff0c0', score: 30, radius: FRUIT_RADIUS, probability: 8, image: 'imperial-jackfruit.png' },
+  'Imperial Durian':     { color: '#88a848', colorInner: '#f0f4d0', score: 35, radius: FRUIT_RADIUS, probability: 6, image: 'imperial-durian.png' },
 
   // ── Dojo Gate (Classic Mode) — serene celestial dojo fruits ──
-  // Sized down (~30% smaller than the original 76-100 range) so a wave of
-  // 3-8 fruits reads as distinct individual fruits instead of an oversized,
-  // overlapping cluster — see pendingDojoSpawns staggering in GameEngine.ts.
-  'Celestial Peach':        { color: '#f0b090', colorInner: '#fff0e0', score: 10, radius: 62, probability: 16, image: 'dojo-peach.png' },
-  'Celestial Yuzu':         { color: '#e8d040', colorInner: '#fff8d0', score: 10, radius: 54, probability: 15, image: 'dojo-yuzu.png' },
-  'Celestial Kyoho Grapes': { color: '#4a2050', colorInner: '#c8a0e0', score: 15, radius: 56, probability: 15, image: 'dojo-grapes.png' },
-  'Celestial Watermelon':   { color: '#2a7a3a', colorInner: '#ff5050', score: 20, radius: 70, probability: 10, image: 'dojo-watermelon.png' },
-  'Celestial Persimmon':    { color: '#e07020', colorInner: '#ffd8a0', score: 15, radius: 58, probability: 14, image: 'dojo-persimmon.png' },
-  'Celestial Japanese Plum':{ color: '#5a2050', colorInner: '#e8b8d0', score: 15, radius: 55, probability: 14, image: 'dojo-plum.png' },
-  'Celestial Pomegranate':  { color: '#a01818', colorInner: '#ff6060', score: 20, radius: 63, probability: 11, image: 'dojo-pomegranate.png' },
-  'Celestial Avocado':      { color: '#2a4a20', colorInner: '#c8e090', score: 15, radius: 59, probability: 12, image: 'dojo-avocado.png' },
-  'Celestial Dragon Fruit': { color: '#c81858', colorInner: '#fff0f0', score: 25, radius: 60, probability: 9, image: 'dojo-dragonfruit.png' },
+  'Celestial Peach':        { color: '#f0b090', colorInner: '#fff0e0', score: 10, radius: FRUIT_RADIUS, probability: 16, image: 'dojo-peach.png' },
+  'Celestial Yuzu':         { color: '#e8d040', colorInner: '#fff8d0', score: 10, radius: FRUIT_RADIUS, probability: 15, image: 'dojo-yuzu.png' },
+  'Celestial Kyoho Grapes': { color: '#4a2050', colorInner: '#c8a0e0', score: 15, radius: FRUIT_RADIUS, probability: 15, image: 'dojo-grapes.png' },
+  'Celestial Watermelon':   { color: '#2a7a3a', colorInner: '#ff5050', score: 20, radius: FRUIT_RADIUS, probability: 10, image: 'dojo-watermelon.png' },
+  'Celestial Persimmon':    { color: '#e07020', colorInner: '#ffd8a0', score: 15, radius: FRUIT_RADIUS, probability: 14, image: 'dojo-persimmon.png' },
+  'Celestial Japanese Plum':{ color: '#5a2050', colorInner: '#e8b8d0', score: 15, radius: FRUIT_RADIUS, probability: 14, image: 'dojo-plum.png' },
+  'Celestial Pomegranate':  { color: '#a01818', colorInner: '#ff6060', score: 20, radius: FRUIT_RADIUS, probability: 11, image: 'dojo-pomegranate.png' },
+  'Celestial Avocado':      { color: '#2a4a20', colorInner: '#c8e090', score: 15, radius: FRUIT_RADIUS, probability: 12, image: 'dojo-avocado.png' },
+  'Celestial Dragon Fruit': { color: '#c81858', colorInner: '#fff0f0', score: 25, radius: FRUIT_RADIUS, probability: 9, image: 'dojo-dragonfruit.png' },
 };
 
 export const BOMB_DATA: Record<BombType, { color: string; fuseColor: string; radius: number; probability: number; effect: string; image?: string }> = {
