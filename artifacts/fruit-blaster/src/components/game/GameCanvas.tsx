@@ -58,10 +58,12 @@ export default function GameScreen() {
   // Mouse / touch fallback when camera is denied or hand not visible
   const mousePosRef = useRef({ x: 0, y: 0, isPresent: false });
 
-  // Moon Shrine: secondary smoothed control position applied in the game loop.
-  // A lightweight EMA (alpha=0.55) on top of the tracker's own smoothing removes
-  // any residual jitter from coordinate→canvas scaling without adding noticeable lag.
-  const moonSmoothRef = useRef<{ x: number; y: number } | null>(null);
+  // Secondary per-frame EMA smoothing applied to the canvas-space control position
+  // in the game loop, on top of the tracker's own adaptive smoothing. Removes any
+  // residual jitter from the normalized→canvas coordinate scaling step.
+  // Alpha varies by mode: slower/deliberate modes get a gentler blend so the sword
+  // stays rock-solid; fast-paced modes get a higher alpha to stay responsive.
+  const secondarySmoothRef = useRef<{ x: number; y: number } | null>(null);
 
   // Debug overlay state
   const [cameraReady, setCameraReady] = useState(false);
@@ -75,8 +77,10 @@ export default function GameScreen() {
 
     async function setupCam() {
       try {
+        // 720×540 gives MediaPipe more pixel data for better landmark accuracy
+        // without overloading the CPU delegate (which processes every RAF frame).
         const stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } },
+          video: { facingMode: 'user', width: { ideal: 720 }, height: { ideal: 540 } },
         });
         if (!active || !videoRef.current) return;
 
@@ -279,22 +283,26 @@ export default function GameScreen() {
           const rawX = mirror ? (1 - ft.x) * cw : ft.x * cw;
           const rawY = ft.y * ch;
 
-          // Moon Shrine: apply a secondary EMA smoothing pass on the canvas-space
-          // position so the sword trail feels fluid and weightless. Alpha=0.55
-          // keeps the cursor tight to the finger while eliminating residual jitter.
-          // On first appearance, snap directly so the cursor doesn't drift in.
-          if (mode === 'moon') {
-            const prev = moonSmoothRef.current;
-            const sx = prev ? 0.55 * rawX + 0.45 * prev.x : rawX;
-            const sy = prev ? 0.55 * rawY + 0.45 * prev.y : rawY;
-            moonSmoothRef.current = { x: sx, y: sy };
-            controlPos = { x: sx, y: sy, isPresent: true };
-          } else {
-            controlPos = { x: rawX, y: rawY, isPresent: true };
-          }
-        } else if (mode === 'moon') {
-          // Reset moon smooth state when hand is absent so the next detection snaps
-          moonSmoothRef.current = null;
+          // Secondary EMA smoothing pass on top of the tracker's own adaptive
+          // smoothing. Removes residual jitter from the normalized→canvas scaling
+          // step. Alpha varies by mode so deliberate modes stay rock-solid while
+          // fast-paced modes remain snappy.
+          //   classic (Dojo Gate)  — 0.50: most stable for slow training moves
+          //   moon                 — 0.55: fluid/weightless feel
+          //   survival / challenge — 0.65: responsive for intense play
+          //   all others           — 0.60: balanced default
+          const alpha = mode === 'classic'  ? 0.50
+                      : mode === 'moon'     ? 0.55
+                      : (mode === 'survival' || mode === 'challenge') ? 0.65
+                      : 0.60;
+          const prev = secondarySmoothRef.current;
+          const sx = prev ? alpha * rawX + (1 - alpha) * prev.x : rawX;
+          const sy = prev ? alpha * rawY + (1 - alpha) * prev.y : rawY;
+          secondarySmoothRef.current = { x: sx, y: sy };
+          controlPos = { x: sx, y: sy, isPresent: true };
+        } else {
+          // Reset secondary smooth state when hand absent so next detection snaps
+          secondarySmoothRef.current = null;
         }
 
         engine.update(dt, controlPos);

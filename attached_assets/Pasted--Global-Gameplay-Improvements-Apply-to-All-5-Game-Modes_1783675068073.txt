@@ -1,0 +1,76 @@
+# Global Gameplay Improvements (Apply to All 5 Game Modes)
+
+These improvements must be applied consistently across **Dojo Gate, Bamboo Grove, Moon Shrine, Crimson Temple, and Imperial Heaven Palace** to provide a polished, premium gameplay experience.
+
+## 1. Improve Hand Tracking
+
+* Optimize hand detection for maximum accuracy and responsiveness.
+* Sword movement should follow the player's fingertip with **minimal latency**.
+* Reduce jitter, shaking, and sudden jumps.
+* Smooth the tracking while maintaining fast response.
+* If the hand is briefly lost, recover tracking immediately without noticeable delays.
+* Prioritize stable gameplay at high frame rates (target **60 FPS** where possible).
+
+## 2. Sword Ready Before Game Starts
+
+* Detect the player's hand before gameplay begins.
+* Display the selected sword attached to the player's index finger immediately after hand detection.
+* The sword should remain visible and follow the finger while waiting for the game to begin.
+* Do not spawn fruits until the countdown is complete.
+
+## 3. Countdown Sequence
+
+Before every game starts:
+
+* Display a large animated countdown:
+
+  * **3**
+  * **2**
+  * **1**
+  * **GO!**
+* Each number should appear for approximately **1 second**.
+* Add subtle scaling/fade animations for each number.
+* Play a countdown sound for 3, 2, and 1.
+* Play an energetic "GO!" sound effect when the game starts.
+* Begin fruit spawning only after the **GO!** animation finishes.
+
+## 4. Smooth Gameplay
+
+Ensure gameplay feels fluid in every mode.
+
+* Maintain stable frame rates.
+* Eliminate lag, stuttering, and frame drops.
+* Keep animations smooth and responsive.
+* Optimize particle effects and shadows to avoid performance issues.
+* Prevent input delay between hand movement and sword movement.
+
+## 5. Game Flow
+
+The complete gameplay sequence should be:
+
+1. Player selects a game mode.
+2. Camera opens.
+3. Hand detection initializes.
+4. Sword appears on the player's fingertip.
+5. Wait until a hand is detected.
+6. Show the countdown:
+
+   * 3
+   * 2
+   * 1
+   * GO!
+7. Start spawning fruits.
+8. Begin scoring and gameplay.
+
+## 6. Premium Experience
+
+The game should feel polished from start to finish:
+
+* Instant and reliable hand tracking.
+* Responsive sword movement.
+* Smooth animations and transitions.
+* Fast loading between menus and game modes.
+* No visual glitches, flickering, or input lag.
+* Consistent gameplay quality across all five themed worlds.
+
+**Goal:** Deliver a responsive, AAA-quality Fruit Ninja–style experience where the sword feels like a natural extension of the player's hand from the moment the game begins.

@@ -48,6 +48,12 @@ export class GameEngine {
   baseSpawnRate: number = 60;
   baseBombChance: number = 0;
   baseSpeedMultiplier: number = 1;
+
+  // Sword angle smoothing — EMA-filtered angle per draw call so the sword
+  // image doesn't spin/flicker on slow or deliberate movements (especially
+  // critical in Dojo Gate where movements are measured and precise).
+  _swordAngle: number = 0;
+  _swordAngleSet: boolean = false;
   
   constructor(
     canvas: HTMLCanvasElement, 
@@ -753,104 +759,121 @@ export class GameEngine {
       ctx.restore();
     });
     
-    // Bamboo Grove: sacred bamboo sword follows the fingertip, replacing the cursor.
-    if (this.mode === 'bamboo' && this.swordTrail.length > 0) {
-      const tip = this.swordTrail[0];
-      const prev = this.swordTrail[Math.min(3, this.swordTrail.length - 1)];
-      const swordImg = getBambooImage('bamboo-sword.png');
-      if (swordImg) {
-        const angle = Math.atan2(tip.y - prev.y, tip.x - prev.x) + Math.PI / 4;
-        const h = 210;
-        const w = h * (swordImg.naturalWidth / swordImg.naturalHeight);
-        ctx.save();
-        ctx.translate(tip.x, tip.y);
-        ctx.rotate(angle);
-        ctx.shadowBlur = 18;
-        ctx.shadowColor = 'rgba(120,255,140,0.65)';
-        ctx.drawImage(swordImg, -w / 2, -h / 2, w, h);
-        ctx.restore();
-      }
-    }
+    // ── Sword image rendering ──────────────────────────────────────────────────
+    // All modes share the same EMA angle smoother (_swordAngle / _swordAngleSet).
+    // Dojo Gate uses a longer trail window (8 frames vs 3) so the angle stays
+    // stable during the slow, deliberate movements the zone is designed for.
+    // Angle EMA: 35% toward new angle each frame → smooth rotation without lag.
+    if (this.swordTrail.length > 0) {
+      const tip  = this.swordTrail[0];
+      // Dojo Gate: look 8 frames back for a stable direction reading.
+      // All other modes: 3 frames (fast-paced; 3 frames ≈ 50 ms is enough).
+      const histLen   = this.mode === 'classic' ? 8 : 3;
+      const prevPt    = this.swordTrail[Math.min(histLen, this.swordTrail.length - 1)];
+      const rawAngle  = Math.atan2(tip.y - prevPt.y, tip.x - prevPt.x) + Math.PI / 4;
 
-    // Moon Shrine: the Moonlight Katana follows the fingertip (~180-220px on a 1080p canvas).
-    if (this.mode === 'moon' && this.swordTrail.length > 0) {
-      const tip = this.swordTrail[0];
-      const prev = this.swordTrail[Math.min(3, this.swordTrail.length - 1)];
-      const swordImg = getMoonImage('moon-katana.png');
-      if (swordImg) {
-        const angle = Math.atan2(tip.y - prev.y, tip.x - prev.x) + Math.PI / 4;
-        const h = (200 / 1080) * this.height * 1.9; // scale with canvas, enlarged Moonlight Katana
-        const w = h * (swordImg.naturalWidth / swordImg.naturalHeight);
-        ctx.save();
-        ctx.translate(tip.x, tip.y);
-        ctx.rotate(angle);
-        ctx.shadowBlur = this.moonBlessingActive ? 30 : 20;
-        ctx.shadowColor = this.moonBlessingActive ? 'rgba(140,190,255,0.95)' : 'rgba(200,220,255,0.75)';
-        ctx.drawImage(swordImg, -w / 2, -h / 2, w, h);
-        ctx.restore();
+      // EMA with wraparound: blend the shortest angular distance toward rawAngle
+      let smoothAngle: number;
+      if (!this._swordAngleSet) {
+        smoothAngle = rawAngle;
+        this._swordAngleSet = true;
+      } else {
+        let diff = rawAngle - this._swordAngle;
+        // Normalise diff to [-π, π] so we always rotate the short way
+        while (diff >  Math.PI) diff -= 2 * Math.PI;
+        while (diff < -Math.PI) diff += 2 * Math.PI;
+        // Dojo Gate: gentler blend (25%) for extra stability on slow moves.
+        // Other modes: 35% for snappy response on fast slashes.
+        const blend = this.mode === 'classic' ? 0.25 : 0.35;
+        smoothAngle = this._swordAngle + blend * diff;
       }
-    }
+      this._swordAngle = smoothAngle;
 
-    // Crimson Temple: the Infernal Dragon Blade follows the fingertip — sized to
-    // read as a heavy, weighty weapon (~230-260px on a 1080p canvas) without
-    // overwhelming the fruits.
-    if (this.mode === 'challenge' && this.swordTrail.length > 0) {
-      const tip = this.swordTrail[0];
-      const prev = this.swordTrail[Math.min(3, this.swordTrail.length - 1)];
-      const swordImg = getCrimsonImage('infernal-dragon-blade.png');
-      if (swordImg) {
-        const angle = Math.atan2(tip.y - prev.y, tip.x - prev.x) + Math.PI / 4;
-        const h = (240 / 1080) * this.height * 1.9;
-        const w = h * (swordImg.naturalWidth / swordImg.naturalHeight);
-        ctx.save();
-        ctx.translate(tip.x, tip.y);
-        ctx.rotate(angle);
-        ctx.shadowBlur = 24;
-        ctx.shadowColor = 'rgba(255,90,40,0.85)';
-        ctx.drawImage(swordImg, -w / 2, -h / 2, w, h);
-        ctx.restore();
+      // Bamboo Grove: sacred bamboo sword follows the fingertip, replacing the cursor.
+      if (this.mode === 'bamboo') {
+        const swordImg = getBambooImage('bamboo-sword.png');
+        if (swordImg) {
+          const h = 210;
+          const w = h * (swordImg.naturalWidth / swordImg.naturalHeight);
+          ctx.save();
+          ctx.translate(tip.x, tip.y);
+          ctx.rotate(smoothAngle);
+          ctx.shadowBlur = 18;
+          ctx.shadowColor = 'rgba(120,255,140,0.65)';
+          ctx.drawImage(swordImg, -w / 2, -h / 2, w, h);
+          ctx.restore();
+        }
       }
-    }
 
-    // Imperial Heaven Palace: the Imperial Heaven Blade follows the fingertip —
-    // 20-25% longer and ~20% wider than the Crimson Temple's blade per the
-    // zone's "increase sword size" design goal, while staying elegant.
-    if (this.mode === 'survival' && this.swordTrail.length > 0) {
-      const tip = this.swordTrail[0];
-      const prev = this.swordTrail[Math.min(3, this.swordTrail.length - 1)];
-      const swordImg = getImperialImage('imperial-heaven-blade.png');
-      if (swordImg) {
-        const angle = Math.atan2(tip.y - prev.y, tip.x - prev.x) + Math.PI / 4;
-        const h = (240 / 1080) * this.height * 1.9 * 1.22;
-        const w = h * (swordImg.naturalWidth / swordImg.naturalHeight) * 1.2;
-        ctx.save();
-        ctx.translate(tip.x, tip.y);
-        ctx.rotate(angle);
-        ctx.shadowBlur = 28;
-        ctx.shadowColor = 'rgba(255,220,140,0.9)';
-        ctx.drawImage(swordImg, -w / 2, -h / 2, w, h);
-        ctx.restore();
+      // Moon Shrine: the Moonlight Katana follows the fingertip (~180-220px on a 1080p canvas).
+      if (this.mode === 'moon') {
+        const swordImg = getMoonImage('moon-katana.png');
+        if (swordImg) {
+          const h = (200 / 1080) * this.height * 1.9;
+          const w = h * (swordImg.naturalWidth / swordImg.naturalHeight);
+          ctx.save();
+          ctx.translate(tip.x, tip.y);
+          ctx.rotate(smoothAngle);
+          ctx.shadowBlur = this.moonBlessingActive ? 30 : 20;
+          ctx.shadowColor = this.moonBlessingActive ? 'rgba(140,190,255,0.95)' : 'rgba(200,220,255,0.75)';
+          ctx.drawImage(swordImg, -w / 2, -h / 2, w, h);
+          ctx.restore();
+        }
       }
-    }
 
-    // Dojo Gate: the Grandmaster's Bell Katana follows the fingertip — ~20-25%
-    // larger than a standard blade per the zone's premium/powerful design goal.
-    if (this.mode === 'classic' && this.swordTrail.length > 0) {
-      const tip = this.swordTrail[0];
-      const prev = this.swordTrail[Math.min(3, this.swordTrail.length - 1)];
-      const swordImg = getDojoImage('grandmaster-bell-katana.png');
-      if (swordImg) {
-        const angle = Math.atan2(tip.y - prev.y, tip.x - prev.x) + Math.PI / 4;
-        const h = (200 / 1080) * this.height * 1.9 * 1.22;
-        const w = h * (swordImg.naturalWidth / swordImg.naturalHeight);
-        ctx.save();
-        ctx.translate(tip.x, tip.y);
-        ctx.rotate(angle);
-        ctx.shadowBlur = 22;
-        ctx.shadowColor = 'rgba(255,215,160,0.8)';
-        ctx.drawImage(swordImg, -w / 2, -h / 2, w, h);
-        ctx.restore();
+      // Crimson Temple: the Infernal Dragon Blade — heavy, weighty (~230-260px on 1080p).
+      if (this.mode === 'challenge') {
+        const swordImg = getCrimsonImage('infernal-dragon-blade.png');
+        if (swordImg) {
+          const h = (240 / 1080) * this.height * 1.9;
+          const w = h * (swordImg.naturalWidth / swordImg.naturalHeight);
+          ctx.save();
+          ctx.translate(tip.x, tip.y);
+          ctx.rotate(smoothAngle);
+          ctx.shadowBlur = 24;
+          ctx.shadowColor = 'rgba(255,90,40,0.85)';
+          ctx.drawImage(swordImg, -w / 2, -h / 2, w, h);
+          ctx.restore();
+        }
       }
+
+      // Imperial Heaven Palace: the Imperial Heaven Blade — 20-25% longer and
+      // ~20% wider than the Crimson Temple's blade.
+      if (this.mode === 'survival') {
+        const swordImg = getImperialImage('imperial-heaven-blade.png');
+        if (swordImg) {
+          const h = (240 / 1080) * this.height * 1.9 * 1.22;
+          const w = h * (swordImg.naturalWidth / swordImg.naturalHeight) * 1.2;
+          ctx.save();
+          ctx.translate(tip.x, tip.y);
+          ctx.rotate(smoothAngle);
+          ctx.shadowBlur = 28;
+          ctx.shadowColor = 'rgba(255,220,140,0.9)';
+          ctx.drawImage(swordImg, -w / 2, -h / 2, w, h);
+          ctx.restore();
+        }
+      }
+
+      // Dojo Gate: the Grandmaster's Bell Katana — ~20-25% larger than a standard blade.
+      // Uses the longest history window and gentlest blend so the sword tracks
+      // deliberate training movements without spinning on direction changes.
+      if (this.mode === 'classic') {
+        const swordImg = getDojoImage('grandmaster-bell-katana.png');
+        if (swordImg) {
+          const h = (200 / 1080) * this.height * 1.9 * 1.22;
+          const w = h * (swordImg.naturalWidth / swordImg.naturalHeight);
+          ctx.save();
+          ctx.translate(tip.x, tip.y);
+          ctx.rotate(smoothAngle);
+          ctx.shadowBlur = 22;
+          ctx.shadowColor = 'rgba(255,215,160,0.8)';
+          ctx.drawImage(swordImg, -w / 2, -h / 2, w, h);
+          ctx.restore();
+        }
+      }
+    } else {
+      // No trail points yet — reset angle memory so next appearance snaps cleanly
+      this._swordAngleSet = false;
     }
 
     // Draw Sword Trail

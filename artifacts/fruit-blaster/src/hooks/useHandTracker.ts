@@ -13,18 +13,18 @@
  * 3. We wait for 'loadedmetadata' before calling detectForVideo so that
  *    videoWidth / videoHeight are non-zero.
  *
- * 4. detectForVideo is called every animation frame (not gated on currentTime
- *    diffing, which could stall if the browser pauses video decode).
+ * 4. Adaptive EMA smoothing is applied to raw MediaPipe coordinates each frame.
+ *    Alpha scales with hand speed: fast movement → higher alpha (low lag),
+ *    stationary hand → lower alpha (very stable, no micro-jitter).
+ *    Range: 0.35 (stationary) → 0.75 (fast). On first detection after a gap,
+ *    positions snap directly so the cursor never drifts in from elsewhere.
  *
- * 5. EMA (exponential moving average) smoothing is applied to the raw MediaPipe
- *    coordinates before publishing. This eliminates per-frame jitter without
- *    adding noticeable latency. Alpha = 0.45 keeps tracking tight but smooth.
- *    On first detection after a lost period, positions snap immediately so the
- *    cursor never lags to catch up.
- *
- * 6. Lost-frame debouncing: 15 consecutive no-detection frames are required
+ * 5. Lost-frame debouncing: 15 consecutive no-detection frames are required
  *    before the hand is marked absent, absorbing occlusion / lighting flicker /
  *    fast-movement misses without desensitising the tracker.
+ *
+ * 6. Camera is requested at 720×540 (vs 640×480) for better landmark accuracy.
+ *    Higher than this hurts CPU inference performance on the CPU delegate.
  */
 
 import { useState, useEffect, useRef, useCallback } from 'react';
@@ -38,10 +38,18 @@ export interface FingertipState {
   isPresent: boolean;
 }
 
-/** EMA smoothing factor: 0 = fully smoothed (laggy), 1 = raw (jittery). */
-const SMOOTH_ALPHA = 0.45;
+/** Minimum EMA alpha (stationary hand — very smooth). */
+const SMOOTH_ALPHA_MIN = 0.35;
+/** Maximum EMA alpha (fast movement — very responsive). */
+const SMOOTH_ALPHA_MAX = 0.75;
+/**
+ * Speed scale factor: controls how quickly alpha ramps to max.
+ * Normalized distance-per-frame of ~0.05 (fast slash) yields max alpha.
+ * speed * SPEED_SCALE clamped to [0,1] then mapped to [MIN,MAX].
+ */
+const SPEED_SCALE = 12;
 
-/** Frames without a detection before the hand is considered absent. */
+/** Frames without detection before the hand is considered absent. */
 const LOST_FRAME_THRESHOLD = 15;
 
 export function useHandTracker() {
@@ -49,15 +57,14 @@ export function useHandTracker() {
   const [initError, setInitError]   = useState<string | null>(null);
   const [isTracking, setIsTracking] = useState(false);
 
-  // All values that the RAF loop reads — always use refs to avoid stale closures
   const landmarkerRef    = useRef<HandLandmarker | null>(null);
   const isRunningRef     = useRef(false);
   const animFrameRef     = useRef<number>(0);
   const fingertipRef     = useRef<FingertipState>({ x: 0, y: 0, isPresent: false });
   const lostFramesRef    = useRef(0);
 
-  // EMA state: last published smoothed position, used as the "previous" value
-  // each frame. Reset to raw on first detection so the cursor snaps instantly.
+  // EMA state: last smoothed position used as "previous" each frame.
+  // null = hand just appeared → snap instead of interpolating.
   const smoothedRef      = useRef<{ x: number; y: number } | null>(null);
 
   const [fingertip, setFingertip] = useState<FingertipState>({ x: 0, y: 0, isPresent: false });
@@ -81,14 +88,14 @@ export function useHandTracker() {
           baseOptions: {
             modelAssetPath:
               'https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task',
-            // GPU delegate fails in sandboxed iframes — use CPU for reliability
+            // GPU delegate fails in sandboxed iframes — CPU is reliable everywhere
             delegate: 'CPU',
           },
           runningMode: 'VIDEO',
           numHands: 1,
-          // minHandDetectionConfidence: higher = fewer false positives, less jitter
+          // Higher confidence thresholds → fewer false positives / shaky detections
           minHandDetectionConfidence: 0.65,
-          minHandPresenceConfidence: 0.6,
+          minHandPresenceConfidence: 0.60,
           minTrackingConfidence: 0.55,
         });
         if (cancelled) { landmarker.close(); return; }
@@ -130,7 +137,10 @@ export function useHandTracker() {
       await new Promise<void>((resolve) => {
         const onMeta = () => { video.removeEventListener('loadedmetadata', onMeta); resolve(); };
         video.addEventListener('loadedmetadata', onMeta);
-        if (video.readyState >= 2 && video.videoWidth > 0) { video.removeEventListener('loadedmetadata', onMeta); resolve(); }
+        if (video.readyState >= 2 && video.videoWidth > 0) {
+          video.removeEventListener('loadedmetadata', onMeta);
+          resolve();
+        }
       });
     }
 
@@ -140,9 +150,9 @@ export function useHandTracker() {
 
     if (!landmarkerRef.current) return false;
 
-    console.log(`[HandTracker] Starting detection loop — videoSize: ${video.videoWidth}×${video.videoHeight}`);
+    console.log(`[HandTracker] Starting detection loop — ${video.videoWidth}×${video.videoHeight}`);
     isRunningRef.current = true;
-    smoothedRef.current = null; // reset EMA on (re)start
+    smoothedRef.current  = null; // reset EMA on (re)start
     setIsTracking(true);
 
     const detect = () => {
@@ -157,18 +167,23 @@ export function useHandTracker() {
             lostFramesRef.current = 0;
             const pt = results.landmarks[0][8]; // index fingertip (landmark 8)
 
-            // ── EMA smoothing ──────────────────────────────────────────────
-            // On first detection after a gap, snap directly to raw position so
-            // the cursor doesn't drift in from (0,0) or the last known location.
+            // ── Adaptive EMA smoothing ─────────────────────────────────────
+            // Alpha scales with movement speed so fast slashes feel instant
+            // while a held/stationary hand stays rock-solid with no wobble.
             let sx: number;
             let sy: number;
+
             if (smoothedRef.current === null || !fingertipRef.current.isPresent) {
               // First frame or hand just reappeared — snap, no interpolation
               sx = pt.x;
               sy = pt.y;
             } else {
-              sx = SMOOTH_ALPHA * pt.x + (1 - SMOOTH_ALPHA) * smoothedRef.current.x;
-              sy = SMOOTH_ALPHA * pt.y + (1 - SMOOTH_ALPHA) * smoothedRef.current.y;
+              const prev = smoothedRef.current;
+              const speed = Math.hypot(pt.x - prev.x, pt.y - prev.y);
+              const t = Math.min(1, speed * SPEED_SCALE);
+              const alpha = SMOOTH_ALPHA_MIN + t * (SMOOTH_ALPHA_MAX - SMOOTH_ALPHA_MIN);
+              sx = alpha * pt.x + (1 - alpha) * prev.x;
+              sy = alpha * pt.y + (1 - alpha) * prev.y;
             }
             smoothedRef.current = { x: sx, y: sy };
 
@@ -176,12 +191,10 @@ export function useHandTracker() {
             fingertipRef.current = next;
             setFingertip(next);
           } else {
-            // Debounce hand loss — require LOST_FRAME_THRESHOLD consecutive
-            // misses before marking absent. Absorbs single-frame MediaPipe
-            // dropout from occlusion, lighting, or fast movement.
+            // Debounce: require LOST_FRAME_THRESHOLD misses before marking absent.
             lostFramesRef.current += 1;
             if (lostFramesRef.current >= LOST_FRAME_THRESHOLD && fingertipRef.current.isPresent) {
-              smoothedRef.current = null; // reset EMA so next detection snaps
+              smoothedRef.current = null; // reset so next detection snaps
               const next: FingertipState = { ...fingertipRef.current, isPresent: false };
               fingertipRef.current = next;
               setFingertip(next);
