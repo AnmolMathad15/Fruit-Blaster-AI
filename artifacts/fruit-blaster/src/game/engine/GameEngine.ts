@@ -80,12 +80,14 @@ export class GameEngine {
       // Imperial Heaven Palace — the hardest, most intense world: ~40-50% more
       // fruits than the Crimson Temple, heavier bomb frequency, and a difficulty
       // ramp every 30-45s per the zone's design brief.
-      this.bombChance = 0.3;
+      // Rebalanced: gentle opening (first ~30s at tier 0) so players can build
+      // momentum, then a steady climb to a punishing-but-fair late game.
+      this.bombChance = 0.16;
       this.spawnRate = 26;
-      this.speedMultiplier = 1.25;
-      this.baseBombChance = 0.3;
+      this.speedMultiplier = 1.15;
+      this.baseBombChance = 0.16;
       this.baseSpawnRate = 26;
-      this.baseSpeedMultiplier = 1.25;
+      this.baseSpeedMultiplier = 1.15;
     } else if (mode === 'classic') {
       // Dojo Gate — the game's default/classic zone: fast, generous fruit
       // waves (4-8 fruits) with the Cursed Oni Mask appearing far less often
@@ -127,13 +129,21 @@ export class GameEngine {
     this.bombChance = Math.min(0.4, this.baseBombChance + tier * 0.02);
   }
 
-  /** Imperial Heaven Palace difficulty ramp: every ~35s, gradually push speed/spawn/bombs higher — the hardest world in the game. */
+  /**
+   * Imperial Heaven Palace difficulty ramp — the hardest world, but fair:
+   * tier 0 holds for the first ~30s (build momentum), then speed/spawn/bombs
+   * climb steadily every tier, capping bomb chance at 40-45% so the late
+   * game is brutal without ever feeling unwinnable.
+   */
   updateImperialDifficulty(dt: number) {
     this.survivalSeconds += dt / 60;
-    const tier = Math.min(10, Math.floor(this.survivalSeconds / 35)); // 0..10
+    // Tier 0 holds for the first 30s (momentum-building window), then a new
+    // tier every 30s. Bomb chance reaches its 42% cap by ~tier 6-7 (~200s),
+    // so the 3+ minute mark is a genuine extreme-endurance test.
+    const tier = Math.min(10, Math.floor(this.survivalSeconds / 30)); // 0..10
     this.speedMultiplier = this.baseSpeedMultiplier + tier * 0.1;
     this.spawnRate = Math.max(16, this.baseSpawnRate - tier * 1.6);
-    this.bombChance = Math.min(0.45, this.baseBombChance + tier * 0.015);
+    this.bombChance = Math.min(0.42, this.baseBombChance + tier * 0.04);
   }
   
   resize(w: number, h: number) {
@@ -154,8 +164,10 @@ export class GameEngine {
     if (this.spawnTimer <= 0) {
       this.spawnEntity();
       this.spawnTimer = this.spawnRate / this.speedMultiplier;
-      // Add randomness
+      // Add randomness, but never let it push the next spawn to near-zero —
+      // otherwise high-tier spawn rates can produce unfair back-to-back bursts.
       this.spawnTimer += (Math.random() - 0.5) * 20;
+      this.spawnTimer = Math.max(this.spawnRate * 0.4, this.spawnTimer);
     }
 
     // Dojo Gate: release queued wave fruits one at a time as their individual
@@ -249,8 +261,12 @@ export class GameEngine {
   spawnEntity() {
     // Dojo Gate: never allow more than one Cursed Oni Mask on screen at once,
     // per the zone's "never create impossible situations" fairness rule.
+    // Imperial Heaven Palace: never allow more than 2 Judgment Orbs on screen
+    // at once, so a bomb roll never stacks the screen with hazards.
     const isBomb = this.mode === 'classic'
       ? (this.bombs.length === 0 && Math.random() < this.bombChance)
+      : this.mode === 'survival'
+      ? (this.bombs.length < 2 && Math.random() < this.bombChance)
       : Math.random() < this.bombChance;
     const startX = this.width * 0.2 + Math.random() * (this.width * 0.6);
     const startY = this.height + 50;
@@ -271,16 +287,26 @@ export class GameEngine {
         : this.mode === 'survival' ? "Emperor's Judgment Orb"
         : this.mode === 'classic' ? 'Cursed Oni Mask'
         : 'Normal';
-      // Crimson Temple / Imperial Palace: bombs frequently arrive in bursts of
-      // 2-3 (Imperial even reaching double/triple Judgment Orb waves) rather
-      // than one at a time, keeping constant pressure on the player.
-      const bombCount = this.mode === 'challenge'
+      // Crimson Temple: bombs frequently arrive in bursts of 2-3, keeping
+      // constant pressure on the player. Imperial Heaven Palace hard-caps
+      // total on-screen bombs at 2 (clamped against however many are already
+      // active) and forces deterministic minimum spacing between clustered
+      // bombs, so a bomb roll can never exceed the cap or box the player in.
+      let bombCount = this.mode === 'challenge'
         ? (Math.random() < 0.3 ? 3 : Math.random() < 0.55 ? 2 : 1)
         : this.mode === 'survival'
-        ? (Math.random() < 0.4 ? 3 : Math.random() < 0.65 ? 2 : 1)
+        ? Math.random() < 0.4 ? 2 : 1
         : 1;
+      if (this.mode === 'survival') {
+        bombCount = Math.max(0, Math.min(bombCount, 2 - this.bombs.length));
+      }
       for (let i = 0; i < bombCount; i++) {
-        const jitterX = startX + (Math.random() - 0.5) * 140 * i;
+        // Imperial: deterministic minimum spacing (not random jitter) between
+        // clustered bombs so they never sit directly beside each other —
+        // a safe lane always remains between them.
+        const jitterX = this.mode === 'survival'
+          ? startX + (i - (bombCount - 1) / 2) * 320
+          : startX + (Math.random() - 0.5) * 140 * i;
         const jitterVx = vx + (Math.random() - 0.5) * 2.5;
         this.bombs.push(new Bomb(jitterX, startY, jitterVx, vy, type));
       }
@@ -288,10 +314,12 @@ export class GameEngine {
       // Imperial Heaven Palace spawns exclusively from our nine legendary fruits,
       // weighted by probability, with large multi-fruit waves (2-5, occasionally
       // more) to satisfy the "40-50% more fruits than Crimson Temple" design goal.
+      // Wave size capped at 4 (was up to 5) and spread wider so every wave
+      // still leaves at least one clear gap to slice through.
       const pool = IMPERIAL_FRUIT_TYPES.map(t => [t, FRUIT_DATA[t]] as const);
       const totalProb = pool.reduce((sum, [, v]) => sum + v.probability, 0);
       const roll = Math.random();
-      const waveSize = roll < 0.2 ? 5 : roll < 0.45 ? 4 : roll < 0.7 ? 3 : roll < 0.9 ? 2 : 1;
+      const waveSize = roll < 0.25 ? 4 : roll < 0.55 ? 3 : roll < 0.8 ? 2 : 1;
       for (let i = 0; i < waveSize; i++) {
         const rand = Math.random() * totalProb;
         let cumProb = 0;
@@ -300,7 +328,7 @@ export class GameEngine {
           cumProb += v.probability;
           if (rand <= cumProb) { type = k; break; }
         }
-        const jitterX = startX + (Math.random() - 0.5) * 130 * i;
+        const jitterX = startX + (Math.random() - 0.5) * 160 * i;
         const jitterVx = vx + (Math.random() - 0.5) * 2.2;
         this.fruits.push(new Fruit(jitterX, startY, jitterVx, vy, type));
       }
