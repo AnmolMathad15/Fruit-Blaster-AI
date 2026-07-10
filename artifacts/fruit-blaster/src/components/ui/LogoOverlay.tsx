@@ -16,10 +16,10 @@ import { motion } from 'framer-motion';
 const BASE_W = 1920;
 const BASE_H = 1080;
 
-const BTN_VX = 1739;
-const BTN_VY = 902;
-const BTN_VW = 140;
-const BTN_VH = 160;
+const BTN_VX = 1732;
+const BTN_VY = 907;
+const BTN_VW = 230;
+const BTN_VH = 236;
 
 interface Layout { scale: number; offsetX: number; offsetY: number; }
 
