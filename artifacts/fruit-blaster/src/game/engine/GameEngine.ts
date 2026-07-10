@@ -42,6 +42,8 @@ export class GameEngine {
 
   // Moon Shrine — Survival Mode: difficulty escalates every 30s, maxing at 5min.
   survivalSeconds: number = 0;
+  // Dojo Gate — tracks elapsed seconds to control bomb grace period and wave ramp.
+  dojoSeconds: number = 0;
   moonBlessingActive: boolean = false;
   baseSpawnRate: number = 60;
   baseBombChance: number = 0;
@@ -89,13 +91,13 @@ export class GameEngine {
       this.baseSpawnRate = 26;
       this.baseSpeedMultiplier = 1.15;
     } else if (mode === 'classic') {
-      // Dojo Gate — the game's default/classic zone: fast, generous fruit
-      // waves (4-8 fruits) with the Cursed Oni Mask appearing far less often
-      // than other worlds' hazards (~1 in 8-15 waves) per the zone's
-      // discipline-over-recklessness design brief.
-      this.bombChance = 0.09;
-      this.spawnRate = 24;
-      this.speedMultiplier = 1.05;
+      // Dojo Gate — beginner-friendly training world. Slow, readable waves
+      // (max 3 fruits, one by one). No bombs for the first 17s, then rare.
+      // Reduced gravity (0.20) gives smooth, predictable arcs with more air time.
+      this.bombChance = 0;      // starts at 0; updateDojoDifficulty ramps it in
+      this.spawnRate = 46;      // ~0.77s between waves — generous reaction window
+      this.speedMultiplier = 1.0;
+      this.gravity = 0.20;      // 33% less than default — slower, longer arcs
     } else if (mode === 'bamboo') {
       // Bamboo Grove — Zen Mode: calm, balanced, no escalating difficulty.
       this.bombChance = 0.1;
@@ -148,6 +150,18 @@ export class GameEngine {
     this.bombChance = Math.min(0.42, this.baseBombChance + tier * 0.04);
   }
   
+  /** Dojo Gate difficulty ramp: bomb-free for first 17s, then gently ramps to ~1 bomb per 15–20 fruits. */
+  updateDojoDifficulty(dt: number) {
+    this.dojoSeconds += dt / 60;
+    // Grace period: no bombs for the first 17 seconds so beginners can learn timing.
+    // After 17s, ramp bombChance from 0 → 0.09 over the next 10s (max = ~1 bomb per 16 fruits).
+    if (this.dojoSeconds < 17) {
+      this.bombChance = 0;
+    } else {
+      this.bombChance = Math.min(0.09, ((this.dojoSeconds - 17) / 10) * 0.09);
+    }
+  }
+
   resize(w: number, h: number) {
     this.width = w;
     this.height = h;
@@ -160,11 +174,18 @@ export class GameEngine {
 
     if (this.mode === 'moon') this.updateMoonDifficulty(dt);
     if (this.mode === 'survival') this.updateImperialDifficulty(dt);
+    if (this.mode === 'classic') this.updateDojoDifficulty(dt);
     
     // Spawn logic
     this.spawnTimer -= dt;
     if (this.spawnTimer <= 0) {
-      this.spawnEntity();
+      // Dojo Gate: never queue a new wave while the previous one is still
+      // streaming out — this strictly prevents cross-wave fruit overlap and
+      // keeps the beginner experience calm and readable.
+      const dojoBlocked = this.mode === 'classic' && this.pendingDojoSpawns.length > 0;
+      if (!dojoBlocked) {
+        this.spawnEntity();
+      }
       this.spawnTimer = this.spawnRate / this.speedMultiplier;
       // Add randomness, but never let it push the next spawn to near-zero —
       // otherwise high-tier spawn rates can produce unfair back-to-back bursts.
@@ -359,16 +380,20 @@ export class GameEngine {
         this.fruits.push(new Fruit(jitterX, startY, jitterVx, vy, type));
       }
     } else if (this.mode === 'classic') {
-      // Dojo Gate spawns exclusively from our nine celestial fruits, weighted by
-      // probability, in generous waves (3-8 fruits) with almost no idle time,
-      // per the zone's "nonstop, rewarding" design brief. Rather than pushing
-      // the whole wave onto screen in the same frame (which reads as a bundled
-      // clump), each fruit is queued with its own short launch delay so the
-      // wave streams in individually, one fruit at a time.
+      // Dojo Gate — beginner-friendly, max 3 fruits at once, launched one by one.
+      // First 35s: always a single fruit so new players can learn the arc without
+      // being overwhelmed. After 35s: 50% single / 35% double / 15% triple —
+      // the triple is a combo-reward moment, never a punishment.
+      // Fruits launch at 80% speed (dojoVy/dojoVx) for smooth, predictable arcs.
       const pool = DOJO_FRUIT_TYPES.map(t => [t, FRUIT_DATA[t]] as const);
       const totalProb = pool.reduce((sum, [, v]) => sum + v.probability, 0);
       const roll = Math.random();
-      const waveSize = roll < 0.15 ? 8 : roll < 0.35 ? 6 : roll < 0.6 ? 5 : roll < 0.85 ? 4 : 3;
+      const waveSize = this.dojoSeconds < 35
+        ? 1
+        : roll < 0.50 ? 1 : roll < 0.85 ? 2 : 3;
+      // 20% slower launch — readable arc, more time to react
+      const dojoVy = vy * 0.80;
+      const dojoVx = vx * 0.80;
       for (let i = 0; i < waveSize; i++) {
         const rand = Math.random() * totalProb;
         let cumProb = 0;
@@ -378,10 +403,9 @@ export class GameEngine {
           if (rand <= cumProb) { type = k; break; }
         }
         const jitterX = this.width * 0.15 + Math.random() * (this.width * 0.7);
-        const jitterVx = vx + (Math.random() - 0.5) * 2;
-        // Stagger launches ~7 frames apart (plus small jitter) so each fruit
-        // is visually distinct instead of arriving in the same instant.
-        this.pendingDojoSpawns.push({ timer: i * 7 + Math.random() * 3, x: jitterX, vx: jitterVx, vy, type });
+        const jitterVx = dojoVx + (Math.random() - 0.5) * 1.2; // tighter horizontal spread
+        // Stagger 10 frames apart — each fruit clearly distinct and easy to track
+        this.pendingDojoSpawns.push({ timer: i * 10 + Math.random() * 2, x: jitterX, vx: jitterVx, vy: dojoVy, type });
       }
     } else if (this.mode === 'bamboo') {
       // Bamboo Grove spawns exclusively from our seven custom fruits.
