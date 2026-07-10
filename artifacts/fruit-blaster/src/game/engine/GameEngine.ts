@@ -109,10 +109,12 @@ export class GameEngine {
       this.baseSpawnRate = 45;
       this.baseSpeedMultiplier = 1;
     } else if (mode === 'challenge') {
-      // Crimson Temple — Challenge Mode: ~40% faster spawns and a heavy, relentless
-      // bomb presence — the Infernal Dragon Core should be a constant threat.
-      this.bombChance = 0.45;
-      this.spawnRate = 36;
+      // Crimson Temple — Challenge Mode: high-intensity volcanic battlefield.
+      // Fruits rain constantly (2-5 per wave, occasional 6-8 bursts). The cursed
+      // green bomb is a clear hazard but appears rarely (~1 per 10 fruits) so
+      // players are rewarded for skill, not punished by unavoidable bombs.
+      this.bombChance = 0.15;
+      this.spawnRate = 24;
       this.speedMultiplier = 1.15;
     } else {
       this.bombChance = 0.2;
@@ -333,12 +335,17 @@ export class GameEngine {
         this.fruits.push(new Fruit(jitterX, startY, jitterVx, vy, type));
       }
     } else if (this.mode === 'challenge') {
-      // Crimson Temple spawns exclusively from our eight infernal fruits, weighted
-      // by probability, and frequently launches multi-fruit waves (2-4 at once)
-      // to keep the screen feeling alive per the zone's design brief.
+      // Crimson Temple — high-intensity volcanic battlefield. Most waves are 2-5
+      // fruits; 8% of waves are burst waves (6-8 fruits) for satisfying combos.
+      // Average ~3.8 fruits/wave at 24-frame intervals keeps the screen alive.
       const pool = CRIMSON_FRUIT_TYPES.map(t => [t, FRUIT_DATA[t]] as const);
       const totalProb = pool.reduce((sum, [, v]) => sum + v.probability, 0);
-      const waveSize = Math.random() < 0.35 ? (Math.random() < 0.4 ? 4 : 3) : (Math.random() < 0.5 ? 2 : 1);
+      const roll = Math.random();
+      const waveSize = roll < 0.08 ? (6 + Math.floor(Math.random() * 3))  // 6–8 burst  (8%)
+                     : roll < 0.30 ? 5                                      // 5 fruits   (22%)
+                     : roll < 0.55 ? 4                                      // 4 fruits   (25%)
+                     : roll < 0.78 ? 3                                      // 3 fruits   (23%)
+                     : 2;                                                    // 2 fruits   (22%)
       for (let i = 0; i < waveSize; i++) {
         const rand = Math.random() * totalProb;
         let cumProb = 0;

@@ -81,7 +81,7 @@ export const BOMB_DATA: Record<BombType, { color: string; fuseColor: string; rad
   'Explosive': { color: '#FF5500', fuseColor: '#FFDD00', radius: 40, probability: 5, effect: 'large_explosion' },
   'Cursed Bamboo Seed': { color: '#3D1E52', fuseColor: '#B87CF0', radius: 42, probability: 100, effect: 'lose_life', image: 'cursed-bamboo-seed.png' },
   'Cursed Eclipse Orb': { color: '#120a1e', fuseColor: '#B87CF0', radius: 74, probability: 100, effect: 'lose_life', image: 'cursed-eclipse-orb.png' },
-  'Infernal Dragon Core': { color: '#1a0806', fuseColor: '#FF5522', radius: 78, probability: 100, effect: 'lose_life', image: 'infernal-dragon-core.png' },
+  'Infernal Dragon Core': { color: '#1a0806', fuseColor: '#00ff44', radius: 78, probability: 100, effect: 'lose_life', image: 'cursed-bomb.png' },
   "Emperor's Judgment Orb": { color: '#f0ead0', fuseColor: '#FFD700', radius: 82, probability: 100, effect: 'lose_life', image: 'emperors-judgment-orb.png' },
   'Cursed Oni Mask': { color: '#3a0a0a', fuseColor: '#ff2020', radius: 80, probability: 100, effect: 'lose_life', image: 'cursed-oni-mask.png' },
 };
