@@ -49,7 +49,7 @@ export default function GameRoot() {
       <ScreenTransition keyName={screen}>
         {renderScreen()}
       </ScreenTransition>
-      {screen !== 'splash' && <LogoOverlay />}
+      {screen !== 'splash' && screen !== 'menu' && <LogoOverlay />}
     </div>
   );
 }

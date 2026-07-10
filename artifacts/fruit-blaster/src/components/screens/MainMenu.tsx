@@ -132,7 +132,7 @@ export default function MainMenu() {
   const musicReady   = useRef(false);
 
   const [muted,  setMuted]  = useState(false);
-  const [debug,  setDebug]  = useState(false);
+  const debug = false;
   const [layout, setLayout] = useState<CoverLayout>({ scale: 1, offsetX: 0, offsetY: 0 });
   const [drag,   setDrag]   = useState({ dx: 0, dy: 0 });
   const [copied, setCopied] = useState(false);
@@ -353,8 +353,8 @@ export default function MainMenu() {
         )}
       </div>
 
-      {/* ── 5. Debug calibration panel ── */}
-      {debug && (
+      {/* ── 5. Debug calibration panel (disabled on landing page) ── */}
+      {false && debug && (
         <div style={{
           position: 'absolute', top: 50, right: 12, zIndex: 200,
           background: 'rgba(0,0,0,0.90)',
@@ -425,22 +425,6 @@ export default function MainMenu() {
       >
         {muted ? '🔇' : '🔊'}
       </motion.button>
-
-      {/* ── 8. Debug toggle ── */}
-      <button
-        onClick={() => setDebug(v => !v)}
-        style={{
-          position: 'absolute', top: 14, left: 14, zIndex: 300,
-          padding: '5px 12px', fontFamily: 'monospace', fontSize: 11,
-          background: debug ? 'rgba(255,60,60,0.85)' : 'rgba(0,0,0,0.55)',
-          color: '#fff',
-          border: `1px solid ${debug ? '#ff4444' : 'rgba(255,255,255,0.2)'}`,
-          borderRadius: 6, cursor: 'pointer', backdropFilter: 'blur(4px)',
-          transition: 'all 0.2s',
-        }}
-      >
-        {debug ? '🔴 Debug ON' : '⚫ Debug OFF'}
-      </button>
     </div>
   );
 }
