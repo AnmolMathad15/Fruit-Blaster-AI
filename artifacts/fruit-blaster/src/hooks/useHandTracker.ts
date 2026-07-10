@@ -52,6 +52,25 @@ const SPEED_SCALE = 12;
 /** Frames without detection before the hand is considered absent. */
 const LOST_FRAME_THRESHOLD = 15;
 
+/**
+ * Frames a hand must be *consistently* detected before we trust it as present.
+ * Guards against single-frame false positives (a sleeve, a shadow, a face edge
+ * briefly scoring above threshold) snapping the sword onto the wrong point.
+ */
+const PRESENCE_CONFIRM_FRAMES = 4;
+
+/**
+ * Max normalized distance the fingertip may move between consecutive frames
+ * before we treat it as an implausible jump (misdetection latching onto a
+ * different object) rather than real motion, and discard the frame.
+ * At 60fps a real slash covers a fraction of the frame per tick; 0.35 of the
+ * normalized [0,1] space in one frame is far beyond any real fingertip motion.
+ */
+const MAX_JUMP_DISTANCE = 0.35;
+/** Consecutive discarded "jump" frames before we give up and accept the new
+ * position anyway — otherwise a genuinely fast slash could get stuck forever. */
+const MAX_JUMP_DISCARDS = 3;
+
 export function useHandTracker() {
   const [initStatus, setInitStatus] = useState<InitStatus>('idle');
   const [initError, setInitError]   = useState<string | null>(null);
@@ -62,10 +81,20 @@ export function useHandTracker() {
   const animFrameRef     = useRef<number>(0);
   const fingertipRef     = useRef<FingertipState>({ x: 0, y: 0, isPresent: false });
   const lostFramesRef    = useRef(0);
+  // Consecutive frames the hand has been seen — must clear PRESENCE_CONFIRM_FRAMES
+  // before we trust a *new* detection (guards the appearance side; LOST_FRAME_THRESHOLD
+  // already guards the disappearance side).
+  const presenceFramesRef = useRef(0);
+  // Consecutive frames discarded for an implausible jump in fingertip position.
+  const jumpDiscardsRef   = useRef(0);
 
   // EMA state: last smoothed position used as "previous" each frame.
   // null = hand just appeared → snap instead of interpolating.
   const smoothedRef      = useRef<{ x: number; y: number } | null>(null);
+  // Last *raw* (unsmoothed) landmark position — the jump filter compares
+  // against this rather than the smoothed point, so a real fast slash doesn't
+  // get flagged just because the smoothed cursor is lagging behind it.
+  const lastRawRef       = useRef<{ x: number; y: number } | null>(null);
 
   const [fingertip, setFingertip] = useState<FingertipState>({ x: 0, y: 0, isPresent: false });
 
@@ -92,11 +121,12 @@ export function useHandTracker() {
             delegate: 'CPU',
           },
           runningMode: 'VIDEO',
-          numHands: 1,
-          // Higher confidence thresholds → fewer false positives / shaky detections
-          minHandDetectionConfidence: 0.65,
-          minHandPresenceConfidence: 0.60,
-          minTrackingConfidence: 0.55,
+          numHands: 1, // track exactly one hand — ignore any second hand / false detection
+          // Strict confidence thresholds (0.8–0.9) — sharply cuts false positives from
+          // body, face, clothing, or background being misread as a hand.
+          minHandDetectionConfidence: 0.85,
+          minHandPresenceConfidence: 0.8,
+          minTrackingConfidence: 0.8,
         });
         if (cancelled) { landmarker.close(); return; }
 
@@ -153,6 +183,9 @@ export function useHandTracker() {
     console.log(`[HandTracker] Starting detection loop — ${video.videoWidth}×${video.videoHeight}`);
     isRunningRef.current = true;
     smoothedRef.current  = null; // reset EMA on (re)start
+    presenceFramesRef.current = 0;
+    jumpDiscardsRef.current = 0;
+    lastRawRef.current = null;
     setIsTracking(true);
 
     const detect = () => {
@@ -163,9 +196,41 @@ export function useHandTracker() {
           const now = performance.now();
           const results = landmarkerRef.current.detectForVideo(video, now);
 
+          // numHands: 1 already caps the model to its single most-confident hand,
+          // but guard explicitly in case a future config change relaxes that.
           if (results.landmarks?.length > 0) {
             lostFramesRef.current = 0;
-            const pt = results.landmarks[0][8]; // index fingertip (landmark 8)
+            const pt = results.landmarks[0][8]; // index fingertip only (landmark 8) — never any other landmark
+
+            // ── Implausible-jump rejection ──────────────────────────────────
+            // A misdetection latching onto a different object (or the model
+            // briefly re-anchoring on an edge) shows up as a huge frame-to-frame
+            // jump. Discard those frames and hold the last stable position,
+            // unless the jump persists for several frames (a genuinely fast
+            // slash), in which case we accept it rather than get stuck.
+            if (lastRawRef.current !== null && fingertipRef.current.isPresent) {
+              const prevRaw = lastRawRef.current;
+              const jump = Math.hypot(pt.x - prevRaw.x, pt.y - prevRaw.y);
+              if (jump > MAX_JUMP_DISTANCE && jumpDiscardsRef.current < MAX_JUMP_DISCARDS) {
+                jumpDiscardsRef.current += 1;
+                animFrameRef.current = requestAnimationFrame(detect);
+                return;
+              }
+            }
+            jumpDiscardsRef.current = 0;
+            lastRawRef.current = { x: pt.x, y: pt.y };
+
+            // ── Presence confirmation ───────────────────────────────────────
+            // Require a few consecutive detections before trusting a *new*
+            // appearance, so a single stray frame (skin-toned object, motion
+            // blur) can't snap the sword onto a false hand.
+            if (!fingertipRef.current.isPresent) {
+              presenceFramesRef.current += 1;
+              if (presenceFramesRef.current < PRESENCE_CONFIRM_FRAMES) {
+                animFrameRef.current = requestAnimationFrame(detect);
+                return;
+              }
+            }
 
             // ── Adaptive EMA smoothing ─────────────────────────────────────
             // Alpha scales with movement speed so fast slashes feel instant
@@ -192,6 +257,9 @@ export function useHandTracker() {
             setFingertip(next);
           } else {
             // Debounce: require LOST_FRAME_THRESHOLD misses before marking absent.
+            presenceFramesRef.current = 0;
+            jumpDiscardsRef.current = 0;
+            lastRawRef.current = null;
             lostFramesRef.current += 1;
             if (lostFramesRef.current >= LOST_FRAME_THRESHOLD && fingertipRef.current.isPresent) {
               smoothedRef.current = null; // reset so next detection snaps
@@ -218,6 +286,10 @@ export function useHandTracker() {
     setIsTracking(false);
     cancelAnimationFrame(animFrameRef.current);
     smoothedRef.current = null;
+    presenceFramesRef.current = 0;
+    jumpDiscardsRef.current = 0;
+    lastRawRef.current = null;
+    lostFramesRef.current = 0;
     const stopped: FingertipState = { x: 0, y: 0, isPresent: false };
     fingertipRef.current = stopped;
     setFingertip(stopped);
