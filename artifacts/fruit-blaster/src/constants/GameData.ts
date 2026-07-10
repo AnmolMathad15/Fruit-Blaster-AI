@@ -1,8 +1,11 @@
 import { FruitType, BombType, LevelConfig } from '../types/GameTypes';
 
 // Single shared radius for every custom-art fruit so fruit reads at the
-// same on-screen size in every zone/mode (Dojo, Bamboo, Moon, Crimson, Imperial).
+// same on-screen size in every zone/mode (Dojo, Moon, Crimson, Imperial).
 const FRUIT_RADIUS = 65;
+
+// Bamboo Grove fruits are drawn larger so they fill the zen-style canvas well.
+const BAMBOO_FRUIT_RADIUS = 90;
 
 export const FRUIT_DATA: Record<FruitType, { color: string; colorInner: string; score: number; radius: number; probability: number; image?: string }> = {
   'Blueberry': { color: '#5B4FCF', colorInner: '#7A6EE6', score: 10, radius: 25, probability: 15 },
@@ -21,13 +24,13 @@ export const FRUIT_DATA: Record<FruitType, { color: string; colorInner: string; 
   // ── Bamboo Grove (Zen Mode) — custom hand-painted assets ──
   // NOTE: all custom-art fruits across every zone share one FRUIT_RADIUS
   // (see below) so fruit reads at a consistent size regardless of mode.
-  'Jade Apple':    { color: '#7CCB6A', colorInner: '#E8F7D8', score: 10, radius: FRUIT_RADIUS, probability: 18, image: 'jade-apple.png' },
-  'Bamboo Pear':   { color: '#B7D96A', colorInner: '#F1F8DC', score: 10, radius: FRUIT_RADIUS, probability: 16, image: 'bamboo-pear.png' },
-  'Emerald Kiwi':  { color: '#5C9E4A', colorInner: '#C7E8A8', score: 15, radius: FRUIT_RADIUS, probability: 16, image: 'emerald-kiwi.png' },
-  'Lotus Peach':   { color: '#F3C6D6', colorInner: '#FFF3EE', score: 20, radius: FRUIT_RADIUS, probability: 14, image: 'lotus-peach.png' },
-  'Zen Melon':     { color: '#4E9A5A', colorInner: '#DFF3C4', score: 20, radius: FRUIT_RADIUS, probability: 12, image: 'zen-melon.png' },
-  'Sacred Plum':   { color: '#8E5AC2', colorInner: '#E2CBF2', score: 30, radius: FRUIT_RADIUS, probability: 10, image: 'sacred-plum.png' },
-  'Forest Lime':   { color: '#9ACD4A', colorInner: '#EEF7CF', score: 15, radius: FRUIT_RADIUS, probability: 14, image: 'forest-lime.png' },
+  'Jade Apple':    { color: '#7CCB6A', colorInner: '#E8F7D8', score: 10, radius: BAMBOO_FRUIT_RADIUS, probability: 18, image: 'jade-apple.png' },
+  'Bamboo Pear':   { color: '#B7D96A', colorInner: '#F1F8DC', score: 10, radius: BAMBOO_FRUIT_RADIUS, probability: 16, image: 'bamboo-pear.png' },
+  'Emerald Kiwi':  { color: '#5C9E4A', colorInner: '#C7E8A8', score: 15, radius: BAMBOO_FRUIT_RADIUS, probability: 16, image: 'emerald-kiwi.png' },
+  'Lotus Peach':   { color: '#F3C6D6', colorInner: '#FFF3EE', score: 20, radius: BAMBOO_FRUIT_RADIUS, probability: 14, image: 'lotus-peach.png' },
+  'Zen Melon':     { color: '#4E9A5A', colorInner: '#DFF3C4', score: 20, radius: BAMBOO_FRUIT_RADIUS, probability: 12, image: 'zen-melon.png' },
+  'Sacred Plum':   { color: '#8E5AC2', colorInner: '#E2CBF2', score: 30, radius: BAMBOO_FRUIT_RADIUS, probability: 10, image: 'sacred-plum.png' },
+  'Forest Lime':   { color: '#9ACD4A', colorInner: '#EEF7CF', score: 15, radius: BAMBOO_FRUIT_RADIUS, probability: 14, image: 'forest-lime.png' },
 
   // ── Moon Shrine (Survival Mode) — custom celestial assets ──
   // Lunar Kiwi has no custom art yet — it's wired here but left out of
