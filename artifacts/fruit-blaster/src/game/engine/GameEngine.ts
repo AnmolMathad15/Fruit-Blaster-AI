@@ -84,12 +84,15 @@ export class GameEngine {
       // ramp every 30-45s per the zone's design brief.
       // Rebalanced: gentle opening (first ~30s at tier 0) so players can build
       // momentum, then a steady climb to a punishing-but-fair late game.
-      this.bombChance = 0.16;
+      // Imperial Heaven Palace — reduced speed (0.88×) and very rare bombs
+      // (~1–2 per 45 s at base). Both values ramp slowly so the feeling stays
+      // controlled even deep into a long run.
+      this.bombChance = 0.015;
       this.spawnRate = 26;
-      this.speedMultiplier = 1.15;
-      this.baseBombChance = 0.16;
+      this.speedMultiplier = 0.88;
+      this.baseBombChance = 0.015;
       this.baseSpawnRate = 26;
-      this.baseSpeedMultiplier = 1.15;
+      this.baseSpeedMultiplier = 0.88;
     } else if (mode === 'classic') {
       // Dojo Gate — beginner-friendly training world. Slow, readable waves
       // (max 3 fruits, one by one). No bombs for the first 17s, then rare.
@@ -145,9 +148,12 @@ export class GameEngine {
     // tier every 30s. Bomb chance reaches its 42% cap by ~tier 6-7 (~200s),
     // so the 3+ minute mark is a genuine extreme-endurance test.
     const tier = Math.min(10, Math.floor(this.survivalSeconds / 30)); // 0..10
-    this.speedMultiplier = this.baseSpeedMultiplier + tier * 0.1;
+    // Speed climbs from 0.88× to ~1.46× over 5 min — noticeable but not chaotic.
+    this.speedMultiplier = this.baseSpeedMultiplier + tier * 0.058;
     this.spawnRate = Math.max(16, this.baseSpawnRate - tier * 1.6);
-    this.bombChance = Math.min(0.42, this.baseBombChance + tier * 0.04);
+    // Bomb ramp: starts at ~1.5 bombs/45 s, reaches ~2 bombs/45 s at tier 10.
+    // Cap of 0.020 keeps it at most ~2 bombs per 45 s for the entire session.
+    this.bombChance = Math.min(0.020, this.baseBombChance + tier * 0.0005);
   }
   
   /** Dojo Gate difficulty ramp: bomb-free for first 17s, then gently ramps to ~1 bomb per 15–20 fruits. */
