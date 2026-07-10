@@ -30,7 +30,7 @@ export default function GameScreen() {
   const lastTimeRef = useRef<number>(performance.now());
   const musicRef    = useRef<HTMLAudioElement>(null);
 
-  const { setScreen, mode, setScore, setLives, score, combo, setCombo, isPaused, setPaused, timeLeft, setTimeLeft } = useGameStore();
+  const { setScreen, mode, setScore, setLives, score, combo, setCombo, isPaused, setPaused, timeLeft, setTimeLeft, setSkipWorldIntro } = useGameStore();
   const { webcamMirror, swordSkin, musicVolume } = useSettingsStore();
   const { addSwing, updateBestCombo } = useStatsStore();
   const {
@@ -446,7 +446,7 @@ export default function GameScreen() {
           <GlassPanel className="p-8 flex flex-col items-center gap-4">
             <h2 className="text-4xl font-orbitron font-bold text-white mb-4">PAUSED</h2>
             <Button onClick={() => setPaused(false)} variant="primary" className="w-full">RESUME</Button>
-            <Button onClick={() => setScreen('menu')} variant="secondary" className="w-full">QUIT</Button>
+            <Button onClick={() => { setSkipWorldIntro(true); setScreen('modes'); }} variant="secondary" className="w-full">QUIT</Button>
           </GlassPanel>
         </div>
       )}
