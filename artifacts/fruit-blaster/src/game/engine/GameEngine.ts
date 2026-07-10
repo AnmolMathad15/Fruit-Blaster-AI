@@ -276,12 +276,17 @@ export class GameEngine {
       }
     }
     
-    // Update sword trail
+    // Update sword trail — age all points, then remove expired ones from the
+    // tail (entries are newest-first: index 0 = latest, end = oldest).
+    // Truncating via .length avoids the new-array allocation that .filter()
+    // creates every frame.
     for (let i = 0; i < this.swordTrail.length; i++) {
       this.swordTrail[i].age += dt;
     }
-    this.swordTrail = this.swordTrail.filter(t => t.age < 15); // max 15 frames
-    
+    let trailEnd = this.swordTrail.length;
+    while (trailEnd > 0 && this.swordTrail[trailEnd - 1].age >= 15) trailEnd--;
+    if (trailEnd < this.swordTrail.length) this.swordTrail.length = trailEnd;
+
     // Collision detection
     if (fingerPos.isPresent) {
       this.swordTrail.unshift({ x: fingerPos.x, y: fingerPos.y, age: 0 });
@@ -309,7 +314,9 @@ export class GameEngine {
           }
         }
       }
-      this.lastFingerPos = { x: fingerPos.x, y: fingerPos.y };
+      // Mutate in-place — avoids a new object allocation every frame.
+      if (this.lastFingerPos === null) this.lastFingerPos = { x: fingerPos.x, y: fingerPos.y };
+      else { this.lastFingerPos.x = fingerPos.x; this.lastFingerPos.y = fingerPos.y; }
     } else {
       this.lastFingerPos = null;
     }

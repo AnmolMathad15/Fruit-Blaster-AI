@@ -41,6 +41,19 @@ export default defineConfig({
   build: {
     outDir: path.resolve(import.meta.dirname, 'dist/public'),
     emptyOutDir: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Split heavy deps into separate cacheable chunks so MediaPipe /
+          // animation / React don't all land in one monolithic bundle.
+          // Each chunk is independently cacheable on Vercel's CDN — a game
+          // logic change won't bust the vendor-mediapipe cache, etc.
+          'vendor-mediapipe': ['@mediapipe/tasks-vision'],
+          'vendor-react':     ['react', 'react-dom'],
+          'vendor-motion':    ['framer-motion'],
+        },
+      },
+    },
   },
   server: {
     port,
