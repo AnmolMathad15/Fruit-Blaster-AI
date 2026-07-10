@@ -7,10 +7,12 @@
  *    initStatus is React state; any function that closes over it captures a
  *    stale copy. Refs are always current.
  *
- * 2. Delegate selection: GPU when the page is the top-level frame (e.g. Vercel
- *    production — 3–5× faster inference), CPU inside sandboxed iframes (Replit
- *    preview, cross-origin embeds where GPU fails silently). Falls back to CPU
- *    automatically if GPU creation throws.
+ * 2. Delegate selection: CPU only. A GPU delegate was previously tried first
+ *    on top-level pages (e.g. Vercel production) for faster inference, but on
+ *    real user hardware it could initialize successfully while silently
+ *    producing zero hand detections — a MediaPipe GPU-delegate failure mode
+ *    that throws no error, so it was never caught by the fallback. CPU is
+ *    proven reliable across every environment tested and is used everywhere.
  *
  * 3. We wait for 'loadedmetadata' before calling detectForVideo so that
  *    videoWidth / videoHeight are non-zero.
@@ -133,19 +135,25 @@ export function useHandTracker() {
         );
         if (cancelled) return;
 
-        // Use GPU delegate when the page is the top-level browsing context
-        // (e.g. production Vercel deployment) — GPU inference is 3–5× faster.
-        // Fall back to CPU for sandboxed iframes (Replit preview) where GPU
-        // WebGL contexts are blocked. Wrap in try/catch so any GPU init failure
-        // (unsupported hardware, driver issue) automatically retries with CPU.
-        const isInIframe = (() => { try { return window.self !== window.top; } catch { return true; } })();
-        const delegateOrder: Array<'GPU' | 'CPU'> = isInIframe ? ['CPU'] : ['GPU', 'CPU'];
-
+        // CPU delegate only. A GPU delegate was previously attempted first on
+        // top-level pages (e.g. production Vercel deployments) for a 3–5×
+        // inference speedup, with try/catch fallback to CPU on init failure.
+        // In practice, on real user hardware the GPU delegate can initialize
+        // successfully (no throw) while producing zero hand detections — a
+        // silent MediaPipe Tasks Vision GPU-delegate failure mode that the
+        // try/catch never caught. That reproduced exactly as "camera works,
+        // hand never detected" in production, while dev (always CPU, via the
+        // old iframe check) worked fine. CPU delegate has proven reliable
+        // across every environment tested, so it is now used unconditionally
+        // rather than re-introducing an unvalidated GPU fast path. If GPU is
+        // reconsidered later, gate it behind a post-init detection sanity
+        // probe with automatic demotion to CPU — not just init exceptions.
         console.log('[HandTracker] Creating HandLandmarker…');
-        const landmarkerOpts = {
+        const landmarker = await HandLandmarker.createFromOptions(vision, {
           baseOptions: {
             modelAssetPath:
               'https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task',
+            delegate: 'CPU',
           },
           runningMode: 'VIDEO' as const,
           numHands: 1, // track exactly one hand — ignore any second hand / false detection
@@ -154,26 +162,8 @@ export function useHandTracker() {
           minHandDetectionConfidence: 0.85,
           minHandPresenceConfidence: 0.8,
           minTrackingConfidence: 0.8,
-        };
-
-        let landmarker: HandLandmarker | null = null;
-        for (const delegate of delegateOrder) {
-          try {
-            landmarker = await HandLandmarker.createFromOptions(vision, {
-              ...landmarkerOpts,
-              baseOptions: { ...landmarkerOpts.baseOptions, delegate },
-            });
-            console.log(`[HandTracker] Using ${delegate} delegate`);
-            break;
-          } catch (delegateErr) {
-            if (delegate === 'GPU') {
-              console.warn('[HandTracker] GPU delegate unavailable, falling back to CPU:', delegateErr);
-            } else {
-              throw delegateErr; // CPU failure is unrecoverable
-            }
-          }
-        }
-        if (!landmarker) throw new Error('Failed to create HandLandmarker with any delegate');
+        });
+        console.log('[HandTracker] Using CPU delegate');
         if (cancelled) { landmarker.close(); return; }
 
         landmarkerRef.current = landmarker;

@@ -145,8 +145,8 @@ export default function GameScreen() {
       try {
         // 640×480 is the optimal trade-off for MediaPipe CPU inference: enough
         // pixel density for accurate landmarks while keeping per-frame processing
-        // cost ~19% lower than 720×540. GPU delegate (used on Vercel) handles
-        // higher resolutions efficiently, but 640×480 is the safe default.
+        // cost ~19% lower than 720×540. CPU is the only delegate used (see
+        // useHandTracker) so this resolution matters everywhere, not just dev.
         const stream = await navigator.mediaDevices.getUserMedia({
           video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } },
         });
