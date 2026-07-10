@@ -57,7 +57,8 @@ export default function BambooGroveIntroScreen() {
   const [debug,   setDebug]   = useState(false);
   const [offset,  setOffset]  = useState<Offset>(ZERO);
   const [copied,  setCopied]  = useState(false);
-  const [hovered, setHovered] = useState(false);
+  const [leaves,  setLeaves]  = useState<{ id: number; angle: number; dist: number; delay: number; size: number; rotate: number }[]>([]);
+  const leafIdRef = useRef(0);
 
   /* ── Container resize → cover layout ── */
   useEffect(() => {
@@ -83,6 +84,17 @@ export default function BambooGroveIntroScreen() {
   /* ── Enter game ── */
   const enterGrove = () => {
     if (exiting || debug) return;
+    // Scatter bamboo leaves from the button instead of a hover glow — the
+    // grove's own way of acknowledging the tap.
+    const burst = Array.from({ length: 10 }, () => ({
+      id: leafIdRef.current++,
+      angle: Math.random() * Math.PI * 2,
+      dist: 60 + Math.random() * 70,
+      delay: Math.random() * 0.08,
+      size: 14 + Math.random() * 12,
+      rotate: (Math.random() - 0.5) * 360,
+    }));
+    setLeaves(burst);
     setExiting(true);
     setTimeout(() => {
       setMode('bamboo');
@@ -163,8 +175,6 @@ export default function BambooGroveIntroScreen() {
           >
             <div
               onMouseDown={onMouseDown}
-              onMouseEnter={() => !debug && setHovered(true)}
-              onMouseLeave={() => setHovered(false)}
               onClick={enterGrove}
               style={{
                 position: 'absolute',
@@ -177,19 +187,33 @@ export default function BambooGroveIntroScreen() {
                 borderRadius: 8,
               }}
             >
-              {/* Hover glow (production only) */}
-              {!debug && hovered && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  style={{
-                    position: 'absolute', inset: -10,
-                    borderRadius: 12,
-                    border: '2px solid rgba(120,220,80,0.6)',
-                    boxShadow: '0 0 28px 8px rgba(80,200,60,0.35)',
-                    pointerEvents: 'none',
-                  }}
-                />
+              {/* Tap feedback — bamboo leaves scatter from the button instead
+                  of any hover/glow effect, per the grove's natural theme. */}
+              {leaves.length > 0 && (
+                <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
+                  {leaves.map(leaf => (
+                    <motion.span
+                      key={leaf.id}
+                      initial={{ opacity: 1, x: 0, y: 0, rotate: 0, scale: 0.6 }}
+                      animate={{
+                        opacity: 0,
+                        x: Math.cos(leaf.angle) * leaf.dist,
+                        y: Math.sin(leaf.angle) * leaf.dist + 40,
+                        rotate: leaf.rotate,
+                        scale: 1,
+                      }}
+                      transition={{ duration: 0.9, delay: leaf.delay, ease: 'easeOut' }}
+                      style={{
+                        position: 'absolute',
+                        left: '50%', top: '50%',
+                        fontSize: leaf.size,
+                        filter: 'drop-shadow(0 0 4px rgba(80,200,60,0.5))',
+                      }}
+                    >
+                      🍃
+                    </motion.span>
+                  ))}
+                </div>
               )}
 
               {/* Debug overlay */}

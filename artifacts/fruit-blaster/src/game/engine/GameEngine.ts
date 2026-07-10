@@ -733,9 +733,10 @@ export class GameEngine {
       ctx.lineCap = 'round';
       ctx.lineJoin = 'round';
       
-      // Glow
-      ctx.shadowBlur = 15;
-      ctx.shadowColor = skinColors.base;
+      // Glow — Bamboo Grove strikes glow a bright, vivid green regardless of
+      // the player's chosen sword skin, per the zone's own identity.
+      ctx.shadowBlur = this.mode === 'bamboo' ? 20 : 15;
+      ctx.shadowColor = this.mode === 'bamboo' ? 'rgba(60,255,90,0.9)' : skinColors.base;
       
       ctx.beginPath();
       ctx.moveTo(this.swordTrail[0].x, this.swordTrail[0].y);
@@ -747,7 +748,7 @@ export class GameEngine {
         this.swordTrail[0].x, this.swordTrail[0].y,
         this.swordTrail[this.swordTrail.length-1].x, this.swordTrail[this.swordTrail.length-1].y
       );
-      grad.addColorStop(0, skinColors.tip);
+      grad.addColorStop(0, this.mode === 'bamboo' ? '#4bff5f' : skinColors.tip);
       grad.addColorStop(1, 'transparent');
       
       ctx.strokeStyle = grad;
@@ -755,9 +756,10 @@ export class GameEngine {
       ctx.stroke();
       
       // Core — in Bamboo Grove the sacred sword sprite is the cursor, so the
-      // trail stays a soft emerald slash streak instead of a plain white cursor line.
+      // trail is a bright, saturated green slash streak instead of a plain
+      // white cursor line.
       ctx.shadowBlur = 0;
-      ctx.strokeStyle = this.mode === 'bamboo' ? 'rgba(180,255,180,0.55)'
+      ctx.strokeStyle = this.mode === 'bamboo' ? 'rgba(70,255,90,0.95)'
         : this.mode === 'moon' ? 'rgba(190,215,255,0.6)'
         : this.mode === 'challenge' ? 'rgba(255,120,60,0.6)'
         : this.mode === 'survival' ? 'rgba(255,225,150,0.65)'
@@ -777,7 +779,7 @@ export class GameEngine {
           vy: (Math.random() - 0.5) * 4,
           life: 10 + Math.random() * 10,
           maxLife: 20,
-          color: skinColors.tip,
+          color: this.mode === 'bamboo' ? '#4bff5f' : skinColors.tip,
           size: 1 + Math.random() * 3,
           type: 'juice'
         }));
