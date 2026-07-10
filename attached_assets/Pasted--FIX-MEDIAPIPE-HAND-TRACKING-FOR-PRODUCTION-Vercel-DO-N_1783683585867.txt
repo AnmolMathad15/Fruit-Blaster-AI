@@ -1,0 +1,575 @@
+# 🚀 FIX MEDIAPIPE HAND TRACKING FOR PRODUCTION (Vercel) — DO NOT CHANGE GAMEPLAY
+
+## OBJECTIVE
+
+The game works perfectly inside the Replit development environment.
+
+After deployment to Vercel, the game is functional, but **MediaPipe hand tracking becomes noticeably less smooth**, introducing latency, jitter, inconsistent sword movement, and occasional frame drops.
+
+**This is NOT acceptable.**
+
+The deployed production version must feel **identical** to the Replit/local version.
+
+The objective is to make production hand tracking **ultra smooth, ultra responsive, low latency, stable, and premium** while keeping the gameplay exactly the same.
+
+---
+
+# VERY IMPORTANT
+
+## DO NOT CHANGE
+
+* Game mechanics
+* Fruit spawning logic
+* Combo system
+* Scoring
+* Physics
+* Themes
+* Assets
+* UI
+* Animations
+* Sounds
+* Difficulty
+* Camera UI
+* Sword design
+* Collision system
+* Game balance
+
+The only goal is improving **runtime performance** and **MediaPipe responsiveness**.
+
+---
+
+# INVESTIGATE THE ENTIRE PRODUCTION PIPELINE
+
+Compare Development vs Production.
+
+Find every difference causing production slowdown.
+
+Investigate:
+
+* Vite production build
+* Vercel deployment
+* MediaPipe loading
+* WASM loading
+* Asset loading
+* JS bundle optimization
+* Rendering loop
+* Canvas rendering
+* Video rendering
+* Camera constraints
+* GPU acceleration
+* Browser rendering
+* Memory allocation
+* Event loop timing
+* Garbage collection
+* Network requests
+* Thread blocking
+
+Do NOT assume anything.
+
+Profile everything.
+
+---
+
+# PROFILE PERFORMANCE
+
+Use Chrome Performance profiler.
+
+Measure:
+
+* FPS
+* Frame time
+* CPU usage
+* GPU usage
+* Memory
+* Long Tasks
+* JS execution
+* Rendering time
+* Paint time
+* Layout time
+* Animation timing
+* Camera processing
+* MediaPipe inference time
+* Collision time
+* Drawing time
+
+Identify every bottleneck.
+
+---
+
+# MEDIAPIPE OPTIMIZATION
+
+Inspect MediaPipe configuration.
+
+Ensure production uses:
+
+* Single hand tracking
+* Optimized detection frequency
+* Efficient landmark tracking
+* Proper running mode
+* Correct model complexity
+* Proper confidence thresholds
+* Stable landmark prediction
+* Fastest inference pipeline
+
+Ensure the detector is never recreated.
+
+Initialize only once.
+
+Reuse the same detector throughout gameplay.
+
+Never reload models.
+
+Never recreate tensors.
+
+Never recreate contexts.
+
+---
+
+# CAMERA OPTIMIZATION
+
+Verify production camera settings.
+
+Use optimal constraints.
+
+Ensure production is NOT requesting unnecessarily large frames.
+
+Prefer:
+
+* 640×480
+* 30 FPS
+
+unless testing proves a different resolution performs better.
+
+Ensure the displayed camera can remain full size while inference uses an optimized resolution.
+
+---
+
+# VIDEO PIPELINE
+
+Avoid unnecessary copies.
+
+Avoid repeated conversions.
+
+Avoid unnecessary drawImage operations.
+
+Avoid unnecessary image scaling.
+
+Avoid unnecessary canvas copies.
+
+Avoid decoding overhead.
+
+Ensure zero redundant processing.
+
+---
+
+# RENDER LOOP
+
+Audit the animation loop.
+
+Ensure there is only ONE:
+
+* requestAnimationFrame loop
+
+Never create multiple loops.
+
+Never accidentally stack animation loops.
+
+Never perform duplicate updates.
+
+Never perform duplicate renders.
+
+Ensure consistent frame pacing.
+
+---
+
+# HAND TRACKING LOOP
+
+Run MediaPipe efficiently.
+
+Do NOT block rendering.
+
+Separate:
+
+Input
+
+↓
+
+Hand detection
+
+↓
+
+Game update
+
+↓
+
+Rendering
+
+Ensure inference scheduling is optimal.
+
+Avoid inference backlog.
+
+Avoid queue buildup.
+
+Prevent delayed landmark updates.
+
+---
+
+# MAIN THREAD OPTIMIZATION
+
+Remove unnecessary work from every frame.
+
+Move expensive computations outside the render loop whenever possible.
+
+Never:
+
+Recalculate constants every frame.
+
+Reload assets.
+
+Recreate arrays.
+
+Allocate large objects.
+
+Create unnecessary closures.
+
+Create new functions inside animation loops.
+
+Create unnecessary temporary objects.
+
+---
+
+# OBJECT ALLOCATION
+
+Prevent garbage collection spikes.
+
+Reuse:
+
+Arrays
+
+Vectors
+
+Points
+
+Collision objects
+
+Particles
+
+Animation objects
+
+Camera buffers
+
+Landmark buffers
+
+Sword trail buffers
+
+Avoid frequent allocations.
+
+Use object pooling where appropriate.
+
+---
+
+# CANVAS OPTIMIZATION
+
+Audit every canvas operation.
+
+Avoid:
+
+Repeated save()
+
+Repeated restore()
+
+Repeated scaling
+
+Repeated clipping
+
+Repeated transformations
+
+Repeated alpha changes
+
+Repeated font changes
+
+Repeated state switching
+
+Batch drawing where possible.
+
+Minimize state changes.
+
+---
+
+# IMAGE OPTIMIZATION
+
+Ensure every asset is GPU-friendly.
+
+Verify:
+
+PNG sizes
+
+Image decoding
+
+Image upload
+
+Texture reuse
+
+Avoid decoding images during gameplay.
+
+Preload everything.
+
+Cache everything.
+
+---
+
+# COLLISION SYSTEM
+
+Profile collision detection.
+
+Ensure collision checks remain O(n).
+
+Avoid nested unnecessary loops.
+
+Avoid repeated calculations.
+
+Cache reusable values.
+
+---
+
+# PARTICLE SYSTEM
+
+Verify particles never accumulate.
+
+Destroy unused particles.
+
+Pool particle objects.
+
+Prevent memory growth.
+
+---
+
+# SWORD TRAIL
+
+Optimize trail rendering.
+
+Reuse buffers.
+
+Limit stored trail points.
+
+Remove expired trail segments immediately.
+
+---
+
+# MEDIA PIPE + GAME SYNCHRONIZATION
+
+Ensure:
+
+Hand tracking
+
+↓
+
+Sword movement
+
+↓
+
+Collision
+
+↓
+
+Fruit slicing
+
+occurs within the same frame whenever possible.
+
+Avoid introducing one-frame latency.
+
+Minimize input delay.
+
+---
+
+# MEMORY MANAGEMENT
+
+Watch memory usage for several minutes.
+
+Ensure:
+
+No memory leaks
+
+No retained objects
+
+No growing arrays
+
+No detached canvases
+
+No accumulating listeners
+
+No accumulating timers
+
+No stale references
+
+---
+
+# EVENT LISTENERS
+
+Ensure listeners are added once.
+
+Remove unused listeners.
+
+Prevent duplicate subscriptions.
+
+---
+
+# ASSET LOADING
+
+Lazy load only non-critical resources.
+
+Critical gameplay assets should already be available before gameplay begins.
+
+Never block gameplay waiting for assets.
+
+---
+
+# VITE BUILD OPTIMIZATION
+
+Review production build configuration.
+
+Enable proper code splitting.
+
+Separate:
+
+MediaPipe
+
+Game engine
+
+UI
+
+Libraries
+
+Utilities
+
+Avoid one massive JS bundle.
+
+Preserve runtime behavior.
+
+---
+
+# VERCEL OPTIMIZATION
+
+Verify deployment configuration.
+
+Ensure:
+
+Correct cache headers
+
+Static asset caching
+
+Compressed assets
+
+Correct MIME types
+
+Proper WASM serving
+
+Proper worker serving
+
+Proper public asset delivery
+
+No unnecessary redirects
+
+No runtime fetch delays
+
+---
+
+# WEBGL / GPU
+
+Ensure browser GPU acceleration is actually being used.
+
+Avoid unnecessary CPU rendering.
+
+Use hardware acceleration whenever supported.
+
+---
+
+# TIMING CONSISTENCY
+
+Maintain stable:
+
+30 FPS minimum
+
+Prefer 60 FPS on capable hardware.
+
+Avoid frame spikes.
+
+Avoid frame pacing instability.
+
+---
+
+# BROWSER COMPATIBILITY
+
+Verify smooth behavior on:
+
+Chrome
+
+Edge
+
+Firefox
+
+Production build should behave consistently.
+
+---
+
+# DEBUG LOGGING
+
+Remove unnecessary console logging from production.
+
+Avoid repeated logging every frame.
+
+Logging inside animation loops must be eliminated.
+
+---
+
+# ACCEPTANCE CRITERIA
+
+The deployed Vercel version should:
+
+✅ Feel identical to Replit
+
+✅ Immediate sword response
+
+✅ No noticeable input delay
+
+✅ Stable hand tracking
+
+✅ Smooth landmark updates
+
+✅ No jitter
+
+✅ No random freezes
+
+✅ No frame drops
+
+✅ Stable FPS
+
+✅ Low CPU usage
+
+✅ Efficient GPU usage
+
+✅ No memory leaks
+
+✅ No unnecessary garbage collection spikes
+
+✅ Efficient MediaPipe inference
+
+✅ Consistent collision timing
+
+✅ Smooth animations
+
+✅ Smooth fruit slicing
+
+✅ Premium gameplay experience
+
+---
+
+# FINAL REQUIREMENT
+
+After completing the optimizations:
+
+1. Explain the exact root cause(s) of the production-only slowdown.
+2. List every optimization that was applied.
+3. Compare development vs production performance.
+4. Verify that no gameplay mechanics, visuals, UI, physics, assets, or balance were changed.
+5. Confirm that the deployed Vercel version now matches the responsiveness and smoothness of the local/Replit version.
