@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useGameStore, GameMode } from '../../store/gameStore';
 import { useSettingsStore } from '../../store/settingsStore';
@@ -50,11 +50,15 @@ export default function GameScreen() {
   const {
     startTracking, stopTracking,
     fingertip, fingertipRef,
-    isTracking, initStatus, initError,
+    isTracking, trackingLost, initStatus, initError,
   } = useHandTracker();
 
   // "Hand Lost" — once tracking has begun, losing the hand pauses gameplay in Moon Shrine.
   const [handLost, setHandLost] = useState(false);
+
+  // Camera lost mid-game: set when the stream track ends OR the detect loop
+  // hits too many consecutive errors. Shows a recovery overlay across all modes.
+  const [cameraLost, setCameraLost] = useState(false);
 
   // ─── Pre-game phase: sword-ready → countdown → playing ────────────────────
   const [preGamePhase, setPreGamePhase] = useState<PreGamePhase>('waiting-hand');
@@ -151,6 +155,20 @@ export default function GameScreen() {
         const video = videoRef.current;
         video.srcObject = stream;
 
+        // Detect hardware/permission loss mid-game: if any track ends unexpectedly
+        // (user revokes permission, USB webcam unplugged, OS kill), stop tracking
+        // and surface the recovery overlay immediately.
+        stream.getTracks().forEach(track => {
+          track.addEventListener('ended', () => {
+            if (!active) return;
+            console.warn('[GameCanvas] Camera track ended mid-game');
+            stopTracking();
+            setCameraReady(false);
+            setCameraLost(true);
+            setPaused(true); // freeze gameplay while the recovery overlay is shown
+          });
+        });
+
         // Wait for dimensions to be known before marking ready
         await new Promise<void>((resolve) => {
           const check = () => {
@@ -202,6 +220,92 @@ export default function GameScreen() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initStatus, cameraReady]);
+
+  // ─── Camera lost: surface recovery overlay ────────────────────────────────
+  // trackingLost fires when the detect loop hits MAX_CONSECUTIVE_ERRORS.
+  // Pause the engine so gameplay freezes and the overlay is actionable.
+  useEffect(() => {
+    if (trackingLost) {
+      setCameraLost(true);
+      setPaused(true);
+    }
+  }, [trackingLost, setPaused]);
+
+  // ─── Restart camera after mid-game loss ────────────────────────────────────
+  // Guard against concurrent reconnect attempts (e.g. double-click).
+  const restartingRef = useRef(false);
+
+  const restartCamera = useCallback(async () => {
+    if (restartingRef.current) return; // already in flight — ignore
+    restartingRef.current = true;
+
+    // Tear down the dead stream first
+    stopTracking();
+    const vid = videoRef.current;
+    if (vid?.srcObject) {
+      (vid.srcObject as MediaStream).getTracks().forEach(t => t.stop());
+      vid.srcObject = null;
+    }
+    setCameraReady(false);
+
+    // Re-acquire the camera. Only clear the cameraLost overlay on success;
+    // on failure, leave it visible so the user still has the retry button.
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } },
+      });
+      if (!videoRef.current) { restartingRef.current = false; return; }
+
+      const video = videoRef.current;
+      video.srcObject = stream;
+
+      // Re-attach track-ended guard on the new stream
+      stream.getTracks().forEach(track => {
+        track.addEventListener('ended', () => {
+          console.warn('[GameCanvas] Camera track ended (post-restart)');
+          stopTracking();
+          setCameraReady(false);
+          setCameraLost(true);
+          setPaused(true); // freeze gameplay while the recovery overlay is shown
+        });
+      });
+
+      await new Promise<void>((resolve) => {
+        if (video.readyState >= 1 && video.videoWidth > 0) return resolve();
+        video.addEventListener('loadedmetadata', () => resolve(), { once: true });
+      });
+
+      try { await video.play(); } catch (e) { console.warn('[GameCanvas] video.play() post-restart error:', e); }
+
+      setCameraReady(true);
+      await startTracking(video);
+      // Success — dismiss the overlay and resume gameplay
+      setCameraLost(false);
+      setPaused(false);
+    } catch (e) {
+      console.warn('[GameCanvas] Camera re-acquisition failed:', e);
+      // Keep cameraLost=true so the retry button stays visible.
+      // Also surface cameraDenied so mouse fallback arms if they quit and retry.
+      setCameraDenied(true);
+    } finally {
+      restartingRef.current = false;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stopTracking, startTracking, setPaused]);
+
+  // ─── Tab visibility: resume video if browser paused it ────────────────────
+  // Browsers can pause video elements when a tab goes to the background.
+  // On return, resume so MediaPipe keeps receiving live frames instead of
+  // processing the last frozen frame over and over.
+  useEffect(() => {
+    const onVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && videoRef.current?.paused) {
+        videoRef.current.play().catch(() => {});
+      }
+    };
+    document.addEventListener('visibilitychange', onVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', onVisibilityChange);
+  }, []);
 
   // ─── Sword ready → countdown trigger ───────────────────────────────────────
   // As soon as a hand is detected the sword is already drawn on the fingertip
@@ -594,7 +698,30 @@ export default function GameScreen() {
         )}
       </AnimatePresence>
 
-      {isPaused && mode === 'moon' && handLost && (
+      {/* Camera lost overlay — highest priority, shown above all other pause states */}
+      {cameraLost && (
+        <div className="absolute inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-[60]">
+          <GlassPanel className="p-8 flex flex-col items-center gap-4 max-w-sm text-center">
+            <span className="text-5xl">📷</span>
+            <h2 className="text-3xl font-orbitron font-bold text-white">Camera Lost</h2>
+            <p className="text-white/60 text-sm">
+              Your webcam disconnected or became unavailable mid-game.
+            </p>
+            <Button onClick={restartCamera} variant="primary" className="w-full mt-2">
+              Reconnect Camera
+            </Button>
+            <Button
+              onClick={() => { setSkipWorldIntro(true); setScreen('modes'); }}
+              variant="secondary"
+              className="w-full"
+            >
+              Quit to Menu
+            </Button>
+          </GlassPanel>
+        </div>
+      )}
+
+      {isPaused && !cameraLost && mode === 'moon' && handLost && (
         <div className="absolute inset-0 bg-[#0a0a1a]/70 backdrop-blur-sm flex items-center justify-center z-50 pointer-events-none">
           <GlassPanel className="p-8 flex flex-col items-center gap-2">
             <span className="text-5xl">🌙</span>
@@ -604,7 +731,7 @@ export default function GameScreen() {
         </div>
       )}
 
-      {isPaused && !(mode === 'moon' && handLost) && (
+      {isPaused && !cameraLost && !(mode === 'moon' && handLost) && (
         <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
           <GlassPanel className="p-8 flex flex-col items-center gap-4">
             <h2 className="text-4xl font-orbitron font-bold text-white mb-4">PAUSED</h2>

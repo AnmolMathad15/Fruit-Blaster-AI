@@ -60,6 +60,14 @@ const SPEED_SCALE = 12;
 const LOST_FRAME_THRESHOLD = 15;
 
 /**
+ * Consecutive detectForVideo errors before the loop declares the tracker dead
+ * and surfaces trackingLost=true so the caller can show a recovery UI.
+ * 10 frames ≈ 167 ms at 60 fps — long enough to absorb a single noisy frame,
+ * short enough to react quickly to a genuine WASM / GPU context failure.
+ */
+const MAX_CONSECUTIVE_ERRORS = 10;
+
+/**
  * Frames a hand must be *consistently* detected before we trust it as present.
  * Guards against single-frame false positives (a sleeve, a shadow, a face edge
  * briefly scoring above threshold) snapping the sword onto the wrong point.
@@ -82,6 +90,10 @@ export function useHandTracker() {
   const [initStatus, setInitStatus] = useState<InitStatus>('idle');
   const [initError, setInitError]   = useState<string | null>(null);
   const [isTracking, setIsTracking] = useState(false);
+  // True when the detect loop has been stopped due to persistent errors.
+  // Caller should show a recovery UI and call startTracking again after
+  // re-acquiring the camera stream.
+  const [trackingLost, setTrackingLost] = useState(false);
 
   const landmarkerRef    = useRef<HandLandmarker | null>(null);
   const isRunningRef     = useRef(false);
@@ -93,7 +105,9 @@ export function useHandTracker() {
   // already guards the disappearance side).
   const presenceFramesRef = useRef(0);
   // Consecutive frames discarded for an implausible jump in fingertip position.
-  const jumpDiscardsRef   = useRef(0);
+  const jumpDiscardsRef         = useRef(0);
+  // Consecutive detectForVideo errors — resets to 0 on any successful frame.
+  const consecutiveErrorsRef    = useRef(0);
 
   // EMA state: last smoothed position used as "previous" each frame.
   // null = hand just appeared → snap instead of interpolating.
@@ -218,6 +232,8 @@ export function useHandTracker() {
     presenceFramesRef.current = 0;
     jumpDiscardsRef.current = 0;
     lastRawRef.current = null;
+    consecutiveErrorsRef.current = 0;
+    setTrackingLost(false); // clear any previous error state on restart
     setIsTracking(true);
 
     const detect = () => {
@@ -230,6 +246,7 @@ export function useHandTracker() {
 
           // numHands: 1 already caps the model to its single most-confident hand,
           // but guard explicitly in case a future config change relaxes that.
+          consecutiveErrorsRef.current = 0; // successful inference — clear error streak
           if (results.landmarks?.length > 0) {
             lostFramesRef.current = 0;
             const pt = results.landmarks[0][8]; // index fingertip only (landmark 8) — never any other landmark
@@ -306,7 +323,21 @@ export function useHandTracker() {
           }
         } catch (err) {
           console.error('[HandTracker] detectForVideo error:', err);
+          consecutiveErrorsRef.current += 1;
+          if (consecutiveErrorsRef.current >= MAX_CONSECUTIVE_ERRORS) {
+            // Persistent failure — WASM crash, GPU context loss, etc.
+            // Stop the loop and surface trackingLost so the caller can show
+            // a recovery UI (re-acquire the stream, then call startTracking).
+            console.error(`[HandTracker] ${MAX_CONSECUTIVE_ERRORS} consecutive errors — detect loop stopped`);
+            isRunningRef.current = false;
+            setIsTracking(false);
+            setTrackingLost(true);
+            return; // do NOT schedule another frame
+          }
         }
+      } else {
+        // Video not yet ready this frame — not an inference error, reset counter.
+        consecutiveErrorsRef.current = 0;
       }
 
       animFrameRef.current = requestAnimationFrame(detect);
@@ -335,6 +366,7 @@ export function useHandTracker() {
     fingertip,
     fingertipRef,
     isTracking,
+    trackingLost,
     initStatus,
     initError,
     startTracking,

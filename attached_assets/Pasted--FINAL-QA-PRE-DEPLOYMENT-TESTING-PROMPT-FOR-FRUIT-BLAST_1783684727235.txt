@@ -1,0 +1,848 @@
+# 🚀 FINAL QA & PRE-DEPLOYMENT TESTING PROMPT FOR FRUIT BLASTER AI
+
+## OBJECTIVE
+
+Perform a complete production-level Quality Assurance (QA), functionality verification, performance audit, optimization review, and bug detection for **Fruit Blaster AI**.
+
+This is the **final release testing phase** before public launch.
+
+The goal is to ensure that the game is polished, stable, bug-free, smooth, responsive, production-ready, and provides a premium gaming experience.
+
+---
+
+# IMPORTANT
+
+## DO NOT MODIFY
+
+* Gameplay
+* Rules
+* Theme designs
+* Assets
+* Animations
+* Difficulty
+* Scoring
+* UI layout
+* Physics
+* Camera placement
+* Sound design
+* Visual identity
+
+Only identify bugs, performance issues, deployment issues, and production inconsistencies.
+
+If any fixes are required, apply only those necessary to preserve the existing gameplay and design.
+
+---
+
+# STEP 1 — BUILD VERIFICATION
+
+Verify that:
+
+* Production build completes successfully.
+* No TypeScript errors.
+* No Vite build failures.
+* No missing imports.
+* No missing assets.
+* No unresolved dependencies.
+* No build warnings that affect gameplay.
+* No source map issues affecting production.
+* Bundle is optimized.
+* Code splitting works correctly.
+* Lazy loading functions properly.
+* Production output is valid.
+
+Generate a report for:
+
+* Build size
+* JS bundle size
+* CSS size
+* Asset sizes
+* Large chunks
+* Optimization opportunities
+
+---
+
+# STEP 2 — DEPLOYMENT VERIFICATION
+
+Verify deployed application.
+
+Check:
+
+* Vercel deployment status
+* Static asset delivery
+* WASM loading
+* Image loading
+* Font loading
+* Audio loading
+* Cache headers
+* Compression
+* MIME types
+* HTTPS
+* CORS
+* Routing
+* Environment variables
+* Production URLs
+
+Ensure there are:
+
+* No 404s
+* No 500s
+* No CORS issues
+* No missing assets
+* No failed requests
+
+---
+
+# STEP 3 — PERFORMANCE AUDIT
+
+Profile entire application.
+
+Measure:
+
+FPS
+
+Frame Time
+
+CPU Usage
+
+GPU Usage
+
+Memory Usage
+
+Garbage Collection
+
+Rendering Time
+
+Animation Time
+
+Input Latency
+
+MediaPipe Inference Time
+
+Collision Time
+
+Canvas Rendering Time
+
+Network Requests
+
+Asset Loading Time
+
+Startup Time
+
+Interaction Delay
+
+Long Tasks
+
+Event Loop Blocking
+
+Layout Shifts
+
+Paint Time
+
+Generate a performance report.
+
+---
+
+# STEP 4 — MEDIAPIPE TESTING
+
+Verify:
+
+Model loads only once.
+
+No duplicate initialization.
+
+No detector recreation.
+
+No WASM reload.
+
+No inference queue buildup.
+
+No dropped frames.
+
+No landmark instability.
+
+No tracking jitter.
+
+No hand drift.
+
+No delayed response.
+
+No unstable confidence values.
+
+Test:
+
+Fast movement
+
+Slow movement
+
+Diagonal movement
+
+Circular movement
+
+Rapid direction changes
+
+Hand entering frame
+
+Hand leaving frame
+
+Partial hand visibility
+
+Low light
+
+Bright light
+
+Background clutter
+
+Distance variations
+
+Recovery after hand loss
+
+Measure:
+
+Detection latency
+
+Tracking stability
+
+FPS during tracking
+
+Inference consistency
+
+---
+
+# STEP 5 — CAMERA TESTING
+
+Verify:
+
+Permission request
+
+Permission denial
+
+Permission recovery
+
+Camera restart
+
+Correct resolution
+
+Correct aspect ratio
+
+Correct mirroring
+
+Correct orientation
+
+Camera cleanup
+
+No memory leaks
+
+No frozen frames
+
+No delayed initialization
+
+---
+
+# STEP 6 — SWORD TESTING
+
+Verify:
+
+Sword appears instantly.
+
+Correct theme sword.
+
+Correct size.
+
+Correct scale.
+
+Correct rotation.
+
+Correct position.
+
+No shaking.
+
+No jitter.
+
+No delay.
+
+No drift.
+
+No clipping.
+
+Smooth trail.
+
+Correct collision point.
+
+No visual artifacts.
+
+---
+
+# STEP 7 — COLLISION TESTING
+
+Verify:
+
+Fruit collision
+
+Bomb collision
+
+Edge collision
+
+Fast slice
+
+Slow slice
+
+Diagonal slice
+
+Rapid consecutive slices
+
+Simultaneous fruits
+
+Combo collision
+
+Near miss detection
+
+No false positives.
+
+No missed slices.
+
+Collision accuracy above 99%.
+
+---
+
+# STEP 8 — GAMEPLAY TESTING
+
+Test every game mode independently.
+
+## Bamboo Grove
+
+Verify:
+
+Assets
+
+Music
+
+Fruit spawning
+
+Bomb spawning
+
+Combo
+
+Particles
+
+Score
+
+Timer
+
+Game Over
+
+Restart
+
+Pause
+
+Resume
+
+Home navigation
+
+Difficulty
+
+Balance
+
+Performance
+
+---
+
+## Moon Shrine
+
+Verify everything above.
+
+---
+
+## Crimson Temple
+
+Verify everything above.
+
+---
+
+## Imperial Heaven Palace
+
+Verify everything above.
+
+---
+
+## Dojo
+
+Verify everything above.
+
+---
+
+# STEP 9 — FRUIT TESTING
+
+Test every fruit.
+
+Verify:
+
+Spawn
+
+Scale
+
+Rotation
+
+Animation
+
+Collision
+
+Slice animation
+
+Slice sound
+
+Particle effect
+
+Removal
+
+Respawn
+
+No clipping.
+
+No incorrect hitboxes.
+
+---
+
+# STEP 10 — BOMB TESTING
+
+Verify:
+
+Spawn
+
+Animation
+
+Collision
+
+Explosion
+
+Explosion sound
+
+Game Over
+
+Restart
+
+No false explosions.
+
+---
+
+# STEP 11 — UI TESTING
+
+Verify:
+
+Home
+
+Theme Selection
+
+Countdown
+
+Pause
+
+Resume
+
+Restart
+
+Game Over
+
+Score
+
+Timer
+
+Combo
+
+Multiplier
+
+Buttons
+
+Hover states
+
+Transitions
+
+Responsive scaling
+
+No overlapping UI.
+
+No broken layouts.
+
+---
+
+# STEP 12 — AUDIO TESTING
+
+Verify:
+
+Background music
+
+Looping
+
+Slice sounds
+
+Explosion
+
+Combo
+
+Countdown
+
+Pause
+
+Resume
+
+Restart
+
+Volume balance
+
+Audio latency
+
+No overlapping audio.
+
+No repeated playback bugs.
+
+---
+
+# STEP 13 — ANIMATION TESTING
+
+Verify:
+
+Fruit animations
+
+Sword animation
+
+Trail animation
+
+Combo animation
+
+Countdown
+
+Particles
+
+Explosion
+
+Game Over
+
+Menu transitions
+
+No stutter.
+
+No dropped frames.
+
+---
+
+# STEP 14 — ASSET TESTING
+
+Verify every image.
+
+No:
+
+White backgrounds
+
+Broken PNGs
+
+Incorrect scaling
+
+Wrong positioning
+
+Pixelation
+
+Compression artifacts
+
+Missing transparency
+
+Verify preload.
+
+Verify cache.
+
+---
+
+# STEP 15 — RESPONSIVE TESTING
+
+Desktop
+
+1366×768
+
+1600×900
+
+1920×1080
+
+2560×1440
+
+4K
+
+Verify:
+
+Canvas
+
+UI
+
+Camera
+
+Scoreboard
+
+Pause button
+
+Buttons
+
+No clipping.
+
+No overlap.
+
+---
+
+# STEP 16 — BROWSER TESTING
+
+Test:
+
+Chrome
+
+Edge
+
+Firefox
+
+Verify:
+
+Camera
+
+MediaPipe
+
+Canvas
+
+Audio
+
+Performance
+
+Gameplay
+
+No browser-specific bugs.
+
+---
+
+# STEP 17 — STRESS TESTING
+
+Play continuously.
+
+5 minutes
+
+10 minutes
+
+20 minutes
+
+30 minutes
+
+Measure:
+
+FPS stability
+
+Memory growth
+
+CPU usage
+
+GPU usage
+
+Tracking quality
+
+Input delay
+
+Audio stability
+
+Particle cleanup
+
+Garbage collection
+
+Object pooling
+
+No degradation over time.
+
+---
+
+# STEP 18 — MEMORY LEAK TEST
+
+Verify:
+
+No growing arrays
+
+No growing listeners
+
+No duplicate timers
+
+No stale references
+
+No leaked textures
+
+No leaked images
+
+No leaked particles
+
+No leaked MediaPipe resources
+
+No detached canvases
+
+No detached DOM nodes
+
+---
+
+# STEP 19 — CONSOLE AUDIT
+
+Production console must have:
+
+No errors
+
+No failed fetches
+
+No repeated warnings
+
+No excessive logging
+
+Remove development logs.
+
+---
+
+# STEP 20 — CODE REVIEW
+
+Inspect:
+
+Game loop
+
+MediaPipe loop
+
+Collision system
+
+Canvas rendering
+
+Object pooling
+
+Event listeners
+
+Timers
+
+Intervals
+
+Animation frames
+
+Cleanup logic
+
+Memory management
+
+Performance bottlenecks
+
+Bundle optimization
+
+---
+
+# STEP 21 — FINAL BUG HUNT
+
+Search for:
+
+Visual bugs
+
+Gameplay bugs
+
+Audio bugs
+
+Physics bugs
+
+Collision bugs
+
+Tracking bugs
+
+Animation bugs
+
+Deployment bugs
+
+Race conditions
+
+Timing bugs
+
+Memory leaks
+
+Performance bottlenecks
+
+Cross-browser issues
+
+Edge cases
+
+---
+
+# STEP 22 — FINAL OPTIMIZATION
+
+Without changing gameplay:
+
+Optimize:
+
+Rendering
+
+MediaPipe
+
+Canvas
+
+Animation
+
+Collision
+
+Memory
+
+CPU
+
+GPU
+
+Asset loading
+
+Bundle size
+
+Code splitting
+
+Caching
+
+Object pooling
+
+Image decoding
+
+Audio loading
+
+Network performance
+
+---
+
+# STEP 23 — FINAL REPORT
+
+Produce a detailed report containing:
+
+1. Build Status
+2. Deployment Status
+3. Performance Metrics
+4. FPS Analysis
+5. CPU Usage
+6. GPU Usage
+7. Memory Usage
+8. MediaPipe Analysis
+9. Collision Accuracy
+10. Asset Verification
+11. UI Verification
+12. Audio Verification
+13. Browser Compatibility
+14. Responsive Testing
+15. Stress Test Results
+16. Memory Leak Results
+17. Console Audit
+18. Bugs Found
+19. Fixes Applied
+20. Remaining Issues (if any)
+21. Optimization Summary
+22. Lighthouse Performance (if applicable)
+23. Overall Production Readiness Score (0–100%)
+
+---
+
+# SUCCESS CRITERIA
+
+The game should satisfy all of the following:
+
+* ✅ Production build completes successfully.
+* ✅ Deployed version matches local/Replit behavior.
+* ✅ Smooth, responsive MediaPipe hand tracking.
+* ✅ Stable 60 FPS on capable hardware (minimum stable 30 FPS).
+* ✅ No noticeable input latency.
+* ✅ No memory leaks during extended gameplay.
+* ✅ No console errors (only harmless third-party warnings if unavoidable).
+* ✅ All five themes function correctly.
+* ✅ Accurate collision detection.
+* ✅ Audio, UI, and animations work flawlessly.
+* ✅ Assets load correctly with no missing files.
+* ✅ Responsive across supported desktop resolutions.
+* ✅ Compatible with Chrome, Edge, and Firefox.
+* ✅ Overall production readiness score of **95% or higher** before public release.

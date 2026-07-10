@@ -5,3 +5,4 @@
 - [Dojo Gate katana asset was unwired](dojo-gate-asset-wiring.md) — a themed sprite existing in public/<theme>/ doesn't mean GameEngine.ts actually draws it; check for the mode-specific draw block
 - [Pre-game phase gating](pregame-phase-gating.md) — a countdown/wait phase must gate every per-mode timer, not just spawning; fallback inputs should arm only on definitive failure
 - [MediaPipe false-positive hardening](mediapipe-false-positive-hardening.md) — confidence thresholds alone don't stop stray hand misdetections; add presence-confirm + raw-position jump rejection
+- [Webcam freeze recovery](webcam-freeze-recovery.md) — three failure paths (WASM crash, track ended, video paused) each need distinct detection + recovery; restartCamera must guard concurrency and only clear cameraLost on success
