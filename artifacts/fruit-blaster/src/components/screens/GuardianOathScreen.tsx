@@ -100,7 +100,7 @@ export default function GuardianOathScreen() {
   const hasActedRef  = useRef(false);
 
   const [phase,     setPhase]     = useState<Phase>('fadein');
-  const [debug,     setDebug]     = useState(false);
+  const debug = false;
   const [layout,    setLayout]    = useState<CoverLayout>({ scale: 1, offsetX: 0, offsetY: 0 });
   const [drag,      setDrag]      = useState({ dx: 0, dy: 0 });
   const [copied,    setCopied]    = useState(false);
@@ -293,8 +293,8 @@ export default function GuardianOathScreen() {
       {/* ══ 4. Petal burst from tap point ═══════════════════════════════ */}
       <BurstPetals active={showBurst} cx={tapPt.cx} cy={tapPt.cy} />
 
-      {/* ══ 5. Debug calibration panel ════════════════════════════════ */}
-      {debug && phase !== 'fadein' && (
+      {/* ══ 5. Debug calibration panel (disabled) ════════════════════ */}
+      {false && debug && phase !== 'fadein' && (
         <div style={{
           position: 'absolute', top: 50, right: 12, zIndex: 200,
           background: 'rgba(0,0,0,0.90)',
@@ -351,21 +351,6 @@ export default function GuardianOathScreen() {
         )}
       </AnimatePresence>
 
-      {/* ══ 8. Debug toggle ═══════════════════════════════════════════ */}
-      <button
-        onClick={() => setDebug(v => !v)}
-        style={{
-          position: 'absolute', top: 12, right: 12, zIndex: 300,
-          padding: '5px 12px', fontFamily: 'monospace', fontSize: 11,
-          background: debug ? 'rgba(255,60,60,0.85)' : 'rgba(0,0,0,0.55)',
-          color: '#fff',
-          border: `1px solid ${debug ? '#ff4444' : 'rgba(255,255,255,0.2)'}`,
-          borderRadius: 6, cursor: 'pointer', backdropFilter: 'blur(4px)',
-          transition: 'all 0.2s',
-        }}
-      >
-        {debug ? '🔴 Debug ON' : '⚫ Debug OFF'}
-      </button>
     </div>
   );
 }

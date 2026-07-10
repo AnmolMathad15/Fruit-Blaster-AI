@@ -428,7 +428,7 @@ export default function WorldSelectionScreen() {
 
   const [phase,  setPhase]  = useState<Phase>(skipWorldIntro ? 'interactive' : 'playing');
   const [chosen, setChosen] = useState<GameMode | null>(null);
-  const [debug,  setDebug]  = useState(false);
+  const debug = false;
   const [offsets, dispatch] = useReducer(offsetReducer, undefined, initOffsets);
 
   /* ── Cover layout tracker ── */
@@ -590,8 +590,8 @@ export default function WorldSelectionScreen() {
         )}
       </AnimatePresence>
 
-      {/* ══ Calibration panel (debug only) ═══════════════════════════ */}
-      {debug && (
+      {/* ══ Calibration panel (disabled) ═══════════════════════════ */}
+      {false && debug && (
         <CalibPanel
           dests={BASE_DESTINATIONS}
           offsets={offsets}
@@ -618,22 +618,6 @@ export default function WorldSelectionScreen() {
           </motion.p>
         )}
       </AnimatePresence>
-
-      {/* ══ Debug toggle ═════════════════════════════════════════════ */}
-      <button
-        onClick={() => setDebug(v => !v)}
-        style={{
-          position: 'absolute', top: 12, right: 12, zIndex: 300,
-          padding: '5px 12px', fontFamily: 'monospace', fontSize: 11,
-          background: debug ? 'rgba(255,60,60,0.85)' : 'rgba(0,0,0,0.55)',
-          color: '#fff',
-          border: `1px solid ${debug ? '#ff4444' : 'rgba(255,255,255,0.2)'}`,
-          borderRadius: 6, cursor: 'pointer', backdropFilter: 'blur(4px)',
-          transition: 'all 0.2s',
-        }}
-      >
-        {debug ? '🔴 Debug ON' : '⚫ Debug OFF'}
-      </button>
 
       {/* ══ Vignette ═════════════════════════════════════════════════ */}
       <AnimatePresence>
