@@ -1,0 +1,664 @@
+# 🚨 CRITICAL PRODUCTION ISSUE — COMPLETELY FIX MEDIAPIPE HAND TRACKING (PRODUCTION + DEVELOPMENT)
+
+## OBJECTIVE
+
+The MediaPipe hand tracking system is currently broken and unreliable in the production deployment.
+
+The game itself loads correctly, but the hand tracking system is either:
+
+- Not detecting hands at all.
+- Detecting only occasionally.
+- Detecting for a moment and then stopping.
+- Failing to initialize.
+- Losing tracking randomly.
+- Producing severe latency and jitter.
+- Working in development but failing after deployment.
+- Failing silently without proper error reporting.
+
+This is a production-blocking issue.
+
+Your task is to perform a complete investigation, identify the exact root cause(s), fix every issue, and ensure MediaPipe works flawlessly in both development and production.
+
+DO NOT implement temporary workarounds.
+DO NOT bypass MediaPipe.
+DO NOT replace MediaPipe with another library.
+Fix the existing implementation properly.
+
+------------------------------------------------------------
+
+## ABSOLUTE REQUIREMENTS
+
+DO NOT CHANGE:
+
+- Gameplay
+- Rules
+- Difficulty
+- Combo System
+- Physics
+- Fruit spawning
+- Bomb logic
+- UI
+- Themes
+- Assets
+- Music
+- Sound Effects
+- Sword Design
+- Sword Trail
+- Animations
+- Camera UI
+- Game Flow
+
+The ONLY objective is restoring a fully working, production-ready MediaPipe hand tracking system.
+
+------------------------------------------------------------
+
+## PHASE 1 — COMPLETE ROOT CAUSE ANALYSIS
+
+Do NOT guess.
+
+Compare:
+
+- Development (Replit)
+- Local Production Build
+- Vercel Production Build
+
+Identify every difference.
+
+Investigate:
+
+- Build process
+- Vite configuration
+- Production optimizations
+- Static asset handling
+- WASM loading
+- Model loading
+- Cache behavior
+- Camera initialization
+- Rendering loop
+- Browser APIs
+- MediaPipe initialization
+- Deployment configuration
+
+Determine exactly why production behaves differently.
+
+------------------------------------------------------------
+
+## PHASE 2 — VERIFY MEDIAPIPE INSTALLATION
+
+Verify:
+
+- Correct package versions
+- No dependency conflicts
+- Correct imports
+- No duplicate MediaPipe packages
+- No outdated API usage
+- Compatible TensorFlow/Web APIs (if applicable)
+
+Ensure the project is using the recommended MediaPipe Tasks Vision implementation.
+
+------------------------------------------------------------
+
+## PHASE 3 — VERIFY MODEL LOADING
+
+Verify:
+
+HandLandmarker model
+
+Vision Task files
+
+WASM
+
+Workers
+
+Model URLs
+
+Asset URLs
+
+Ensure:
+
+✔ HTTP 200 responses
+
+✔ No 404
+
+✔ No CORS errors
+
+✔ Correct MIME types
+
+✔ Correct cache headers
+
+✔ Correct production URLs
+
+If assets are inside the project, ensure they are copied into the production build correctly.
+
+------------------------------------------------------------
+
+## PHASE 4 — VERIFY WASM
+
+Ensure:
+
+WASM loads correctly.
+
+No missing files.
+
+No incorrect URLs.
+
+No CDN failures.
+
+No version mismatches.
+
+No blocked requests.
+
+Verify browser successfully instantiates the WASM module.
+
+------------------------------------------------------------
+
+## PHASE 5 — VERIFY CAMERA
+
+Ensure:
+
+Camera permission works.
+
+Camera initializes only once.
+
+Video stream starts successfully.
+
+Correct video resolution.
+
+Correct aspect ratio.
+
+Correct facing mode.
+
+No duplicate streams.
+
+No frozen video.
+
+No black frames.
+
+No race conditions.
+
+------------------------------------------------------------
+
+## PHASE 6 — VERIFY DETECTOR INITIALIZATION
+
+Detector should:
+
+Initialize once.
+
+Never recreate itself.
+
+Never recreate Vision.
+
+Never recreate WASM.
+
+Never recreate the model.
+
+Never recreate GPU resources.
+
+Initialization order must be:
+
+App Starts
+
+↓
+
+Camera Ready
+
+↓
+
+Vision Files Ready
+
+↓
+
+Model Loaded
+
+↓
+
+Detector Created
+
+↓
+
+Detector Ready
+
+↓
+
+Tracking Starts
+
+------------------------------------------------------------
+
+## PHASE 7 — VERIFY DETECTION LOOP
+
+There must be exactly ONE detection loop.
+
+Ensure:
+
+No duplicate requestAnimationFrame loops.
+
+No duplicate intervals.
+
+No recursive loops.
+
+No stacked callbacks.
+
+Detection sequence:
+
+Read Camera Frame
+
+↓
+
+Run MediaPipe
+
+↓
+
+Receive Landmarks
+
+↓
+
+Update Sword
+
+↓
+
+Collision Detection
+
+↓
+
+Render Frame
+
+------------------------------------------------------------
+
+## PHASE 8 — VERIFY LANDMARKS
+
+Verify:
+
+Landmarks exist.
+
+Coordinates update continuously.
+
+Confidence values remain stable.
+
+No NaN values.
+
+No undefined landmarks.
+
+No frozen coordinates.
+
+No delayed updates.
+
+Test:
+
+Slow movement
+
+Fast movement
+
+Diagonal movement
+
+Circular movement
+
+Hand leaving frame
+
+Hand entering frame
+
+Rapid movement
+
+Recovery after tracking loss
+
+------------------------------------------------------------
+
+## PHASE 9 — VERIFY SWORD SYNCHRONIZATION
+
+Ensure:
+
+Landmarks
+
+↓
+
+Sword Position
+
+↓
+
+Sword Rotation
+
+↓
+
+Trail
+
+↓
+
+Collision
+
+All occur during the same animation frame.
+
+No lag.
+
+No drift.
+
+No jitter.
+
+No delayed sword updates.
+
+------------------------------------------------------------
+
+## PHASE 10 — VERIFY GAME LOOP
+
+Ensure:
+
+Only one requestAnimationFrame loop.
+
+Stable FPS.
+
+No duplicate rendering.
+
+No duplicate updates.
+
+No timing inconsistencies.
+
+------------------------------------------------------------
+
+## PHASE 11 — VERIFY VITE CONFIGURATION
+
+Audit:
+
+vite.config
+
+Asset handling
+
+Base path
+
+Aliases
+
+Public folder
+
+Workers
+
+Code splitting
+
+Tree shaking
+
+Lazy loading
+
+Static assets
+
+Production optimizations
+
+Ensure MediaPipe assets survive production build.
+
+------------------------------------------------------------
+
+## PHASE 12 — VERIFY VERCEL CONFIGURATION
+
+Inspect:
+
+vercel.json
+
+Output directory
+
+Headers
+
+Static asset serving
+
+Compression
+
+Caching
+
+Routing
+
+Ensure:
+
+No asset rewriting.
+
+No missing static files.
+
+Correct cache behavior.
+
+Correct MIME types.
+
+------------------------------------------------------------
+
+## PHASE 13 — VERIFY PERFORMANCE
+
+Measure:
+
+FPS
+
+Frame Time
+
+CPU Usage
+
+GPU Usage
+
+Memory Usage
+
+Inference Time
+
+Detection FPS
+
+Rendering Time
+
+Collision Time
+
+Animation Time
+
+Identify bottlenecks.
+
+Optimize only where necessary.
+
+Do NOT reduce tracking quality.
+
+------------------------------------------------------------
+
+## PHASE 14 — MEMORY MANAGEMENT
+
+Ensure:
+
+No leaked detector.
+
+No leaked listeners.
+
+No leaked timers.
+
+No leaked animation frames.
+
+No leaked camera streams.
+
+No leaked canvases.
+
+No leaked arrays.
+
+No growing memory usage.
+
+------------------------------------------------------------
+
+## PHASE 15 — DEBUGGING
+
+Temporarily create a developer debug overlay showing:
+
+Camera Status
+
+Detector Status
+
+Model Loaded
+
+Vision Loaded
+
+WASM Loaded
+
+Tracking Status
+
+Detection FPS
+
+Current Confidence
+
+Detected Hands
+
+Current Landmark Count
+
+Inference Time
+
+This overlay should automatically disable in production.
+
+------------------------------------------------------------
+
+## PHASE 16 — BROWSER TESTING
+
+Test on:
+
+Chrome
+
+Edge
+
+Firefox
+
+Verify:
+
+Camera
+
+MediaPipe
+
+Canvas
+
+Gameplay
+
+Tracking
+
+No browser-specific failures.
+
+------------------------------------------------------------
+
+## PHASE 17 — STRESS TEST
+
+Test:
+
+5 minutes
+
+10 minutes
+
+20 minutes
+
+30 minutes
+
+Verify:
+
+No FPS degradation.
+
+No tracking degradation.
+
+No memory growth.
+
+No detector failures.
+
+No camera freezes.
+
+No increasing latency.
+
+------------------------------------------------------------
+
+## PHASE 18 — ERROR HANDLING
+
+Gracefully handle:
+
+Camera denied
+
+Camera unavailable
+
+Model loading failure
+
+WASM failure
+
+Unsupported browser
+
+Detector creation failure
+
+Tracking loss
+
+Network failure
+
+Provide clear user-friendly messages.
+
+Never silently fail.
+
+------------------------------------------------------------
+
+## PHASE 19 — LOGGING
+
+Development:
+
+Provide meaningful logs:
+
+✔ Camera Ready
+
+✔ Vision Ready
+
+✔ Model Loaded
+
+✔ Detector Ready
+
+✔ Tracking Started
+
+✔ Tracking Lost
+
+✔ Detector Destroyed
+
+Production:
+
+Remove unnecessary logs.
+
+No console spam.
+
+No logging every frame.
+
+------------------------------------------------------------
+
+## PHASE 20 — FINAL VALIDATION
+
+Verify all of the following:
+
+✅ Camera initializes successfully.
+
+✅ MediaPipe loads successfully.
+
+✅ WASM loads correctly.
+
+✅ Vision task loads correctly.
+
+✅ Hand Landmarker initializes once.
+
+✅ Detector is never recreated.
+
+✅ Hand tracking starts immediately after camera initialization.
+
+✅ Hands are detected consistently.
+
+✅ Tracking never randomly stops.
+
+✅ Sword follows the hand smoothly.
+
+✅ Collision detection remains accurate.
+
+✅ No console errors.
+
+✅ No failed network requests.
+
+✅ No missing assets.
+
+✅ No performance regressions.
+
+✅ Production behaves exactly like development.
+
+------------------------------------------------------------
+
+## FINAL DELIVERABLE
+
+After completing the work, provide a detailed report including:
+
+1. Root cause(s) identified.
+2. Every file modified.
+3. Every code change made.
+4. Every configuration change made.
+5. MediaPipe asset verification.
+6. Camera verification.
+7. WASM verification.
+8. Production deployment verification.
+9. Performance comparison (Development vs Production).
+10. FPS before vs after.
+11. Tracking latency before vs after.
+12. Remaining issues (if any).
+13. Confirmation that gameplay, UI, assets, rules, animations, themes, and mechanics remain completely unchanged.
+14. Confirmation that the deployed production version now has smooth, stable, low-latency, production-ready MediaPipe hand tracking equivalent to or better than the local development version.

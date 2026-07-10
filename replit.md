@@ -6,7 +6,7 @@ A gesture-controlled browser game where players slice falling fruits with their 
 
 - **Fruit Blaster game** runs via the managed artifact workflow `artifacts/fruit-blaster: web` (`pnpm --filter @workspace/fruit-blaster run dev`), served at `/`. Restart with the `WorkflowsRestart` tool using that exact name.
 - **API server** runs via the managed artifact workflow `artifacts/api-server: API Server`, served at `/api`. Confirmed running and healthy after import setup.
-- Imported project setup (2026-07-10): re-registered artifacts + workflows for fruit-blaster, api-server, and the mockup-sandbox canvas (artifact registration had been lost since the last import), ran `pnpm install`, started all three services, and verified the game loads in preview and `GET /api/healthz` returns 200. `DATABASE_URL` is already set in the environment.
+- Imported project setup (2026-07-10): re-registered artifacts + workflows for fruit-blaster, api-server, and the mockup-sandbox canvas (artifact registration had been lost since the last import), ran `pnpm install` (node_modules was missing, causing all three workflows to fail with "vite not found" / "esbuild not found"), restarted all three services, and verified the game loads in preview and `GET /api/healthz` returns 200. `DATABASE_URL` is already set in the environment.
 - `pnpm run typecheck` — full typecheck across all packages
 - `pnpm run build` — typecheck + build all packages
 - `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
