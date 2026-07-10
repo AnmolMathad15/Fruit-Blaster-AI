@@ -12,7 +12,11 @@ export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
-    runtimeErrorOverlay(),
+    // Dev-only tooling — must never ship in a production bundle (Vercel or
+    // otherwise). Gated the same way as the Replit-specific plugins below.
+    ...(process.env.NODE_ENV !== 'production'
+      ? [runtimeErrorOverlay()]
+      : []),
     ...(process.env.NODE_ENV !== 'production' && process.env.REPL_ID !== undefined
       ? [
           await import('@replit/vite-plugin-cartographer').then((m) =>

@@ -1,0 +1,215 @@
+# Prepare Fruit Blaster AI for Vercel Deployment (Without Changing Gameplay)
+
+## Objective
+
+Prepare the entire project for **successful deployment on Vercel** while preserving the current functionality. The deployment process should not modify gameplay mechanics, UI, assets, game logic, hand tracking behavior, themes, scoring, or user experience.
+
+This task is purely about making the project production-ready for Vercel.
+
+---
+
+# Critical Requirement
+
+**Do NOT change any game functionality.**
+
+Do NOT modify:
+
+* Game rules
+* Fruit spawning logic
+* Sword mechanics
+* Hand tracking algorithms
+* Scoring system
+* UI/UX design
+* Animations
+* Assets
+* Sound effects
+* Theme colors
+* Game modes
+* Camera functionality
+* MediaPipe implementation (unless required only for production compatibility)
+
+Only fix deployment, build, and production compatibility issues.
+
+---
+
+# Production Build Verification
+
+* Ensure the project builds successfully using the standard production build.
+* Verify there are no TypeScript, Vite, or bundler errors.
+* Remove unused imports, dead code, and build warnings only if they do not affect functionality.
+* Confirm the project runs correctly after the production build.
+
+---
+
+# Vercel Compatibility
+
+Configure the project for Vercel best practices.
+
+Verify:
+
+* Correct Vite build configuration.
+* Proper output directory (`dist`).
+* Correct base path configuration.
+* Proper SPA routing so refreshing any route works.
+* Production asset loading.
+* Correct handling of static assets.
+* Correct public folder usage.
+* Proper environment variable handling.
+* HTTPS compatibility.
+* Camera permissions work correctly in production.
+
+---
+
+# Dependency Verification
+
+* Ensure all required dependencies are listed correctly.
+* Remove duplicate or conflicting packages.
+* Verify package versions are compatible.
+* Make sure build-time and runtime dependencies are correctly categorized.
+
+---
+
+# Environment Variables
+
+If environment variables are required:
+
+* Create a `.env.example`.
+* Use `import.meta.env`.
+* Never hardcode secrets.
+* Ensure missing variables fail gracefully.
+
+---
+
+# Asset Optimization
+
+Without changing appearance:
+
+* Verify all asset paths.
+* Ensure images load correctly after deployment.
+* Verify audio loads correctly.
+* Check fonts.
+* Check icons.
+* Verify transparent PNGs.
+* Ensure lazy-loaded assets resolve correctly.
+
+---
+
+# MediaPipe Compatibility
+
+Ensure MediaPipe works correctly in production.
+
+Verify:
+
+* Models load correctly after deployment.
+* Camera initializes over HTTPS.
+* Worker files (if used) resolve correctly.
+* CDN or local assets are production-safe.
+* No broken paths after bundling.
+
+---
+
+# Routing
+
+If React Router is used:
+
+* Configure proper SPA fallback.
+* Direct navigation to any page should work.
+* Refreshing the browser should not produce a 404.
+
+---
+
+# Performance
+
+Without changing gameplay:
+
+* Enable production optimizations.
+* Minify assets.
+* Tree-shake unused code.
+* Split bundles where appropriate.
+* Optimize loading without altering functionality.
+
+---
+
+# Browser Compatibility
+
+Verify compatibility with:
+
+* Chrome
+* Edge
+* Firefox
+* Brave
+* Opera
+
+Desktop should be the primary target.
+
+---
+
+# Mobile Compatibility
+
+Ensure the deployed game:
+
+* Opens correctly.
+* Requests camera permission.
+* Maintains layout.
+* Preserves gameplay.
+
+---
+
+# Error Handling
+
+Gracefully handle:
+
+* Camera permission denied.
+* Camera unavailable.
+* Hand not detected.
+* MediaPipe loading failure.
+* Asset loading failure.
+* Slow internet connections.
+
+Display user-friendly messages instead of crashing.
+
+---
+
+# Deployment Configuration
+
+Create or verify:
+
+* `vercel.json` (only if required)
+* Correct build command.
+* Correct output directory.
+* Correct framework detection.
+* Proper cache settings.
+
+Do not introduce unnecessary configuration files.
+
+---
+
+# Final Verification Checklist
+
+Before considering the project deployment-ready, verify:
+
+* ✅ Project builds successfully.
+* ✅ No build errors.
+* ✅ No runtime errors.
+* ✅ Camera works.
+* ✅ MediaPipe loads.
+* ✅ Assets load correctly.
+* ✅ Audio works.
+* ✅ All five game modes function exactly as before.
+* ✅ UI is unchanged.
+* ✅ Performance remains smooth.
+* ✅ The project deploys successfully on Vercel.
+
+---
+
+# Deliverables
+
+After making the deployment improvements:
+
+1. Explain every file that was modified and why.
+2. Show the exact changes made.
+3. Confirm that no gameplay logic was altered.
+4. Confirm that the project is fully ready for Vercel deployment.
+5. Ensure the codebase remains clean, maintainable, and production-ready.
+
+**Primary Goal:** Make the existing game deploy successfully on Vercel while preserving every aspect of the current gameplay experience and code behavior.
