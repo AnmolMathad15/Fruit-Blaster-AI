@@ -31,6 +31,12 @@ export class GameEngine {
   mode: string;
   speedMultiplier: number = 1;
   bombChance: number = 0;
+
+  // Gates fruit/bomb spawning and difficulty ramps. False during the
+  // pre-game "sword ready + countdown" sequence: the sword still tracks the
+  // fingertip and draws, but nothing spawns until the caller flips this on
+  // once the GO! animation finishes.
+  active: boolean = false;
   
   onScore: (pts: number, x: number, y: number, perfect: boolean) => void;
   onMiss: () => void;
@@ -195,36 +201,41 @@ export class GameEngine {
   update(dt: number = 1, fingerPos: {x: number, y: number, isPresent: boolean}) {
     // dt represents multiplier for 60fps
 
-    if (this.mode === 'moon') this.updateMoonDifficulty(dt);
-    if (this.mode === 'survival') this.updateImperialDifficulty(dt);
-    if (this.mode === 'classic') this.updateDojoDifficulty(dt);
-    
-    // Spawn logic
-    this.spawnTimer -= dt;
-    if (this.spawnTimer <= 0) {
-      // Dojo Gate: never queue a new wave while the previous one is still
-      // streaming out — this strictly prevents cross-wave fruit overlap and
-      // keeps the beginner experience calm and readable.
-      const dojoBlocked = this.mode === 'classic' && this.pendingDojoSpawns.length > 0;
-      if (!dojoBlocked) {
-        this.spawnEntity();
-      }
-      this.spawnTimer = this.spawnRate / this.speedMultiplier;
-      // Add randomness, but never let it push the next spawn to near-zero —
-      // otherwise high-tier spawn rates can produce unfair back-to-back bursts.
-      this.spawnTimer += (Math.random() - 0.5) * 20;
-      this.spawnTimer = Math.max(this.spawnRate * 0.4, this.spawnTimer);
-    }
+    // Pre-game (sword-ready + countdown): freeze difficulty ramps and spawning
+    // entirely so no fruit/bomb timers silently advance while the player is
+    // still waiting for hand detection or watching the 3-2-1-GO! countdown.
+    if (this.active) {
+      if (this.mode === 'moon') this.updateMoonDifficulty(dt);
+      if (this.mode === 'survival') this.updateImperialDifficulty(dt);
+      if (this.mode === 'classic') this.updateDojoDifficulty(dt);
 
-    // Dojo Gate: release queued wave fruits one at a time as their individual
-    // launch delay elapses, instead of all appearing in the same frame.
-    if (this.pendingDojoSpawns.length) {
-      for (let i = this.pendingDojoSpawns.length - 1; i >= 0; i--) {
-        const p = this.pendingDojoSpawns[i];
-        p.timer -= dt;
-        if (p.timer <= 0) {
-          this.fruits.push(new Fruit(p.x, this.height + 50, p.vx, p.vy, p.type));
-          this.pendingDojoSpawns.splice(i, 1);
+      // Spawn logic
+      this.spawnTimer -= dt;
+      if (this.spawnTimer <= 0) {
+        // Dojo Gate: never queue a new wave while the previous one is still
+        // streaming out — this strictly prevents cross-wave fruit overlap and
+        // keeps the beginner experience calm and readable.
+        const dojoBlocked = this.mode === 'classic' && this.pendingDojoSpawns.length > 0;
+        if (!dojoBlocked) {
+          this.spawnEntity();
+        }
+        this.spawnTimer = this.spawnRate / this.speedMultiplier;
+        // Add randomness, but never let it push the next spawn to near-zero —
+        // otherwise high-tier spawn rates can produce unfair back-to-back bursts.
+        this.spawnTimer += (Math.random() - 0.5) * 20;
+        this.spawnTimer = Math.max(this.spawnRate * 0.4, this.spawnTimer);
+      }
+
+      // Dojo Gate: release queued wave fruits one at a time as their individual
+      // launch delay elapses, instead of all appearing in the same frame.
+      if (this.pendingDojoSpawns.length) {
+        for (let i = this.pendingDojoSpawns.length - 1; i >= 0; i--) {
+          const p = this.pendingDojoSpawns[i];
+          p.timer -= dt;
+          if (p.timer <= 0) {
+            this.fruits.push(new Fruit(p.x, this.height + 50, p.vx, p.vy, p.type));
+            this.pendingDojoSpawns.splice(i, 1);
+          }
         }
       }
     }

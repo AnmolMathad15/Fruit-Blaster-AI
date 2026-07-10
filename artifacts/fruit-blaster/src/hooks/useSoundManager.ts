@@ -141,12 +141,40 @@ export function useSoundManager() {
     playTone(300, 'sawtooth', 1.0, 0.5, 50);
   }, [playTone]);
 
+  // Pre-game countdown "3, 2, 1" — a short, crisp tick, same pitch each time
+  // so it reads as a metronome rather than a melody.
+  const playCountdownTick = useCallback(() => {
+    playTone(520, 'sine', 0.18, 0.35);
+  }, [playTone]);
+
+  // Countdown "GO!" — energetic upward sweep + bright chime layered together.
+  const playCountdownGo = useCallback(() => {
+    playTone(660, 'square', 0.35, 0.45, 1100);
+    const ctx = getCtx();
+    if (!ctx) return;
+    const masterVol = soundVolume / 100;
+    if (masterVol <= 0) return;
+    const chime = ctx.createOscillator();
+    const gain = ctx.createGain();
+    chime.type = 'triangle';
+    chime.frequency.setValueAtTime(880, ctx.currentTime);
+    chime.frequency.exponentialRampToValueAtTime(1760, ctx.currentTime + 0.25);
+    gain.gain.setValueAtTime(masterVol * 0.35, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
+    chime.connect(gain);
+    gain.connect(ctx.destination);
+    chime.start(ctx.currentTime);
+    chime.stop(ctx.currentTime + 0.4);
+  }, [soundVolume]);
+
   return {
     playSlice,
     playBomb,
     playCombo,
     playMiss,
     playClick,
-    playGameOver
+    playGameOver,
+    playCountdownTick,
+    playCountdownGo,
   };
 }

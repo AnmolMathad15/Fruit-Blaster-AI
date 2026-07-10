@@ -3,3 +3,4 @@
 - [Particle type rendering gap](particle-type-rendering.md) — Particle.type union in GameTypes.ts is decoupled from GameEngine.draw()'s render cases; new types are silently invisible until drawn
 - [Moon Shrine slash quality](moon-shrine-slash-quality.md) — "clean/perfect" slice detection must use sword-trail speed, not fruit velocity, or scoring/buffs desync from actual player input
 - [Dojo Gate katana asset was unwired](dojo-gate-asset-wiring.md) — a themed sprite existing in public/<theme>/ doesn't mean GameEngine.ts actually draws it; check for the mode-specific draw block
+- [Pre-game phase gating](pregame-phase-gating.md) — a countdown/wait phase must gate every per-mode timer, not just spawning; fallback inputs should arm only on definitive failure

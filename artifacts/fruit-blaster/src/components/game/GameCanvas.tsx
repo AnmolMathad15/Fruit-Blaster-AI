@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useGameStore, GameMode } from '../../store/gameStore';
 import { useSettingsStore } from '../../store/settingsStore';
 import { useStatsStore } from '../../store/statsStore';
@@ -9,6 +10,15 @@ import { getSwordSkinColors } from '../../utils/mathUtils';
 import { useMoonStore } from '../../store/moonStore';
 import HUD from './HUD';
 import { GlassPanel, Button } from '../ui/UIComponents';
+
+// ─── Pre-game flow ──────────────────────────────────────────────────────────
+// waiting-hand: camera + model are up, sword is drawn on the fingertip (or
+//               mouse, as a fallback), but nothing spawns yet.
+// countdown:    3 → 2 → 1 → GO!, ~1s per beat, fruit spawning stays frozen.
+// playing:      GO! finished — engine.active flips on and fruits start falling.
+type PreGamePhase = 'waiting-hand' | 'countdown' | 'playing';
+type CountdownBeat = 3 | 2 | 1 | 'GO';
+const COUNTDOWN_BEAT_MS = 1000;
 
 // Zones with a dedicated ambient/gameplay music track. Add new zones here —
 // the play/pause/cleanup effects below key off this map generically.
@@ -46,6 +56,51 @@ export default function GameScreen() {
   // "Hand Lost" — once tracking has begun, losing the hand pauses gameplay in Moon Shrine.
   const [handLost, setHandLost] = useState(false);
 
+  // ─── Pre-game phase: sword-ready → countdown → playing ────────────────────
+  const [preGamePhase, setPreGamePhase] = useState<PreGamePhase>('waiting-hand');
+  const preGamePhaseRef = useRef<PreGamePhase>('waiting-hand');
+  useEffect(() => { preGamePhaseRef.current = preGamePhase; }, [preGamePhase]);
+  const [countdownBeat, setCountdownBeat] = useState<CountdownBeat | null>(null);
+  const countdownStartedRef = useRef(false);
+  const countdownTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+
+  // Runs the 3 → 2 → 1 → GO! sequence once, then flips the engine live.
+  // Guarded by countdownStartedRef so a hand flicker or stray mousedown can't
+  // restart it mid-sequence.
+  const startCountdown = () => {
+    if (countdownStartedRef.current) return;
+    countdownStartedRef.current = true;
+    setPreGamePhase('countdown');
+
+    const beats: CountdownBeat[] = [3, 2, 1, 'GO'];
+    beats.forEach((beat, i) => {
+      const timer = setTimeout(() => {
+        setCountdownBeat(beat);
+        if (beat === 'GO') playCountdownGoRef.current(); else playCountdownTickRef.current();
+      }, i * COUNTDOWN_BEAT_MS);
+      countdownTimersRef.current.push(timer);
+    });
+
+    const finishTimer = setTimeout(() => {
+      setCountdownBeat(null);
+      setPreGamePhase('playing');
+      if (engineRef.current) engineRef.current.active = true;
+    }, beats.length * COUNTDOWN_BEAT_MS);
+    countdownTimersRef.current.push(finishTimer);
+  };
+
+  // Sounds close over stale callbacks if referenced directly inside the
+  // setTimeout chain above (it's built once per countdown start) — refs keep
+  // them current without re-triggering the countdown effect.
+  const playCountdownTickRef = useRef<() => void>(() => {});
+  const playCountdownGoRef   = useRef<() => void>(() => {});
+
+  useEffect(() => () => {
+    // Clear any in-flight countdown timers on unmount / mode change.
+    countdownTimersRef.current.forEach(clearTimeout);
+    countdownTimersRef.current = [];
+  }, []);
+
   const isTrackingRef = useRef(isTracking);
   useEffect(() => { isTrackingRef.current = isTracking; }, [isTracking]);
 
@@ -53,7 +108,9 @@ export default function GameScreen() {
   const comboRef = useRef(combo);
   useEffect(() => { comboRef.current = combo; }, [combo]);
 
-  const { playSlice, playBomb, playMiss, playCombo } = useSoundManager();
+  const { playSlice, playBomb, playMiss, playCombo, playCountdownTick, playCountdownGo } = useSoundManager();
+  useEffect(() => { playCountdownTickRef.current = playCountdownTick; }, [playCountdownTick]);
+  useEffect(() => { playCountdownGoRef.current = playCountdownGo; }, [playCountdownGo]);
 
   // Mouse / touch fallback when camera is denied or hand not visible
   const mousePosRef = useRef({ x: 0, y: 0, isPresent: false });
@@ -67,6 +124,9 @@ export default function GameScreen() {
 
   // Debug overlay state
   const [cameraReady, setCameraReady] = useState(false);
+  // Set only when getUserMedia definitively fails (denied/unavailable) — used to
+  // arm the mouse/touch countdown fallback without racing normal init states.
+  const [cameraDenied, setCameraDenied] = useState(false);
   const [fps, setFps]                 = useState(0);
   const fpsFramesRef = useRef<number[]>([]);
 
@@ -108,6 +168,7 @@ export default function GameScreen() {
         }
       } catch (e) {
         console.warn('[GameCanvas] Camera denied — mouse/touch fallback active:', e);
+        if (active) setCameraDenied(true);
       }
     }
 
@@ -137,6 +198,37 @@ export default function GameScreen() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initStatus, cameraReady]);
+
+  // ─── Sword ready → countdown trigger ───────────────────────────────────────
+  // As soon as a hand is detected the sword is already drawn on the fingertip
+  // (GameEngine draws it every frame regardless of `active`); once that first
+  // detection lands, kick off the 3-2-1-GO! sequence.
+  useEffect(() => {
+    if (preGamePhase === 'waiting-hand' && isTracking && fingertip.isPresent) {
+      startCountdown();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [preGamePhase, isTracking, fingertip.isPresent]);
+
+  // Mouse/touch fallback: if hand tracking is unavailable (camera denied or
+  // model failed to load), the first click/drag both starts slicing and
+  // kicks off the same countdown so the flow stays consistent.
+  useEffect(() => {
+    if (preGamePhase !== 'waiting-hand') return;
+    // Only arm the fallback once hand tracking is *definitively* unavailable —
+    // either the camera was denied outright, or the MediaPipe model failed to
+    // load. Mid-init states (still loading, camera up but hand not yet seen)
+    // must keep waiting for a real hand instead of racing to the fallback.
+    if (!cameraDenied && initStatus !== 'error') return;
+    const trigger = () => startCountdown();
+    window.addEventListener('mousedown', trigger, { once: true });
+    window.addEventListener('touchstart', trigger, { once: true });
+    return () => {
+      window.removeEventListener('mousedown', trigger);
+      window.removeEventListener('touchstart', trigger);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [preGamePhase, isTracking, initStatus, cameraDenied]);
 
   // ─── Game Engine setup ─────────────────────────────────────────────────────
   useEffect(() => {
@@ -307,7 +399,7 @@ export default function GameScreen() {
 
         engine.update(dt, controlPos);
 
-        if (mode === 'moon') {
+        if (mode === 'moon' && preGamePhaseRef.current === 'playing') {
           tickSurvival(dt);
           tickBlessing(dt);
           const state = useMoonStore.getState();
@@ -360,9 +452,11 @@ export default function GameScreen() {
   }, [mode]);
 
   // ─── Moon Shrine: pause gameplay while the hand is lost mid-tracking ───────
+  // Only kicks in once real gameplay has started — during the sword-ready /
+  // countdown phases, a momentarily absent hand is expected, not a pause event.
   const autoPausedRef = useRef(false);
   useEffect(() => {
-    if (mode !== 'moon' || !isTracking) return;
+    if (mode !== 'moon' || !isTracking || preGamePhase !== 'playing') return;
     if (!fingertip.isPresent) {
       if (!isPaused) { setPaused(true); autoPausedRef.current = true; }
       setHandLost(true);
@@ -371,7 +465,7 @@ export default function GameScreen() {
       autoPausedRef.current = false;
       setHandLost(false);
     }
-  }, [mode, isTracking, fingertip.isPresent, isPaused, setPaused]);
+  }, [mode, isTracking, fingertip.isPresent, isPaused, setPaused, preGamePhase]);
 
   // ─── Zone ambient music: plays only while the camera feed is live and the
   // player is actively slicing (not paused). Each zone with a dedicated track
@@ -380,13 +474,13 @@ export default function GameScreen() {
     const audio = musicRef.current;
     if (!audio || !(mode in ZONE_MUSIC)) return;
 
-    if (cameraReady && !isPaused) {
+    if (cameraReady && !isPaused && preGamePhase === 'playing') {
       audio.volume = Math.min(1, Math.max(0, musicVolume / 100));
       audio.play().catch(() => {});
     } else {
       audio.pause();
     }
-  }, [mode, cameraReady, isPaused, musicVolume]);
+  }, [mode, cameraReady, isPaused, musicVolume, preGamePhase]);
 
   // Stop and rewind zone music whenever we leave the game screen / mode changes.
   useEffect(() => {
@@ -400,8 +494,10 @@ export default function GameScreen() {
   }, [mode]);
 
   // ─── Challenge mode timer ──────────────────────────────────────────────────
+  // Frozen until real gameplay starts (post sword-ready + countdown), so the
+  // clock never bleeds seconds off while the player is still getting into position.
   useEffect(() => {
-    if ((mode !== 'challenge' && mode !== 'bamboo') || isPaused) return;
+    if ((mode !== 'challenge' && mode !== 'bamboo') || isPaused || preGamePhase !== 'playing') return;
     const t = setInterval(() => {
       setTimeLeft((l: number) => {
         if (l <= 1) { clearInterval(t); setScreen('gameover'); return 0; }
@@ -409,7 +505,7 @@ export default function GameScreen() {
       });
     }, 1000);
     return () => clearInterval(t);
-  }, [mode, isPaused]);
+  }, [mode, isPaused, preGamePhase]);
 
   // ─── Render ────────────────────────────────────────────────────────────────
   return (
@@ -441,24 +537,49 @@ export default function GameScreen() {
 
       <HUD />
 
-      {/* Status badge */}
-      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 pointer-events-none">
-        {initStatus === 'loading' && (
-          <StatusBadge color="yellow">⏳ Loading AI model…</StatusBadge>
+      {/* Status badge — only relevant before real gameplay starts */}
+      {preGamePhase !== 'playing' && (
+        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 pointer-events-none">
+          {initStatus === 'loading' && (
+            <StatusBadge color="yellow">⏳ Loading AI model…</StatusBadge>
+          )}
+          {initStatus === 'error' && preGamePhase === 'waiting-hand' && (
+            <StatusBadge color="red">⚠️ Hand tracking unavailable — click or drag to begin</StatusBadge>
+          )}
+          {initStatus === 'ready' && !cameraReady && (
+            <StatusBadge color="blue">📷 Waiting for camera…</StatusBadge>
+          )}
+          {initStatus === 'ready' && cameraReady && !isTracking && preGamePhase === 'waiting-hand' && (
+            <StatusBadge color="blue">🔍 Detecting hand… (or click-drag to slice)</StatusBadge>
+          )}
+          {isTracking && !fingertip.isPresent && preGamePhase === 'waiting-hand' && (
+            <StatusBadge color="green">✋ Show your index finger to begin</StatusBadge>
+          )}
+        </div>
+      )}
+
+      {/* Countdown overlay: 3 → 2 → 1 → GO! — the sword is already visible on
+          the fingertip underneath, per the "sword ready before game starts" flow. */}
+      <AnimatePresence>
+        {preGamePhase === 'countdown' && countdownBeat !== null && (
+          <div className="absolute inset-0 flex items-center justify-center z-40 pointer-events-none">
+            <motion.span
+              key={countdownBeat}
+              initial={{ scale: 0.4, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 1.4, opacity: 0 }}
+              transition={{ duration: 0.35, ease: 'easeOut' }}
+              className={
+                countdownBeat === 'GO'
+                  ? 'text-8xl md:text-9xl font-orbitron font-black text-amber-300 drop-shadow-[0_0_30px_rgba(252,211,77,0.8)]'
+                  : 'text-8xl md:text-9xl font-orbitron font-black text-white drop-shadow-[0_0_25px_rgba(255,255,255,0.6)]'
+              }
+            >
+              {countdownBeat === 'GO' ? 'GO!' : countdownBeat}
+            </motion.span>
+          </div>
         )}
-        {initStatus === 'error' && (
-          <StatusBadge color="red">⚠️ Hand tracking unavailable — use mouse to slice</StatusBadge>
-        )}
-        {initStatus === 'ready' && !cameraReady && (
-          <StatusBadge color="blue">📷 Waiting for camera…</StatusBadge>
-        )}
-        {initStatus === 'ready' && cameraReady && !isTracking && (
-          <StatusBadge color="blue">🔍 Detecting hand… (or click-drag to slice)</StatusBadge>
-        )}
-        {isTracking && !fingertip.isPresent && (
-          <StatusBadge color="green">✋ Show your index finger</StatusBadge>
-        )}
-      </div>
+      </AnimatePresence>
 
       {isPaused && mode === 'moon' && handLost && (
         <div className="absolute inset-0 bg-[#0a0a1a]/70 backdrop-blur-sm flex items-center justify-center z-50 pointer-events-none">
