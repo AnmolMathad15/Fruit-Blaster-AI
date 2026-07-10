@@ -7,9 +7,30 @@
  * Clicking it starts challenge mode.
  */
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useGameStore } from '../../store/gameStore';
+
+/* ─── Fire particle config ───────────────────────────────────────────── */
+interface FlameParticle {
+  id: number;
+  left: number;   // % across button width
+  size: number;   // px
+  duration: number; // ms
+  delay: number;  // ms
+  hue: number;    // degrees for color variation
+}
+
+function generateFlames(count = 22): FlameParticle[] {
+  return Array.from({ length: count }, (_, i) => ({
+    id: i,
+    left: 4 + Math.random() * 92,
+    size: 18 + Math.random() * 28,
+    duration: 350 + Math.random() * 180, // max ~530ms — all finish before 650ms
+    delay: Math.random() * 100,          // max ~100ms — total ≤ 630ms < 700ms nav
+    hue: Math.random() * 30 - 10,        // -10..+20 degrees around orange-red
+  }));
+}
 
 /* ─── Native video dimensions ───────────────────────────────────────── */
 const VID_W = 1280;
@@ -52,7 +73,7 @@ export default function CrimsonTempleIntroScreen() {
   const [debug,   setDebug]   = useState(false);
   const [offset,  setOffset]  = useState<Offset>(ZERO);
   const [copied,  setCopied]  = useState(false);
-  const [hovered, setHovered] = useState(false);
+  const [flames,  setFlames]  = useState<FlameParticle[]>([]);
 
   /* ── Cover layout tracker ── */
   useEffect(() => {
@@ -75,9 +96,11 @@ export default function CrimsonTempleIntroScreen() {
     return () => vid.removeEventListener('ended', onEnded);
   }, []);
 
-  /* ── Enter game ── */
-  const enterTemple = () => {
+  /* ── Enter game (with fire burst) ── */
+  const enterTemple = useCallback(() => {
     if (exiting || debug) return;
+    // Spawn fire particles (all complete within ~630ms; component unmounts at 700ms)
+    setFlames(generateFlames(24));
     setExiting(true);
     setTimeout(() => {
       setMode('challenge');
@@ -85,7 +108,7 @@ export default function CrimsonTempleIntroScreen() {
       setLives(3);
       setScreen('game');
     }, 700);
-  };
+  }, [exiting, debug, setMode, resetGame, setLives, setScreen]);
 
   /* ── Drag (debug only) ── */
   const onMouseDown = (e: React.MouseEvent) => {
@@ -131,6 +154,17 @@ export default function CrimsonTempleIntroScreen() {
       ref={containerRef}
       style={{ width: '100%', height: '100%', position: 'relative', overflow: 'hidden', background: '#000' }}
     >
+      {/* ── Fire animation keyframes ── */}
+      <style>{`
+        @keyframes flameRise {
+          0%   { transform: translateY(0)   scaleX(1)    scaleY(1)    rotate(0deg);   opacity: 1; }
+          30%  { transform: translateY(-35%) scaleX(0.85) scaleY(1.2)  rotate(-4deg);  opacity: 0.95; }
+          60%  { transform: translateY(-65%) scaleX(0.7)  scaleY(1.4)  rotate(3deg);   opacity: 0.7; }
+          85%  { transform: translateY(-90%) scaleX(0.5)  scaleY(1.15) rotate(-2deg);  opacity: 0.3; }
+          100% { transform: translateY(-110%) scaleX(0.3) scaleY(0.8)  rotate(0deg);   opacity: 0; }
+        }
+      `}</style>
+
       {/* ── Video ── */}
       <video
         ref={videoRef}
@@ -157,8 +191,6 @@ export default function CrimsonTempleIntroScreen() {
           >
             <div
               onMouseDown={onMouseDown}
-              onMouseEnter={() => !debug && setHovered(true)}
-              onMouseLeave={() => setHovered(false)}
               onClick={enterTemple}
               style={{
                 position: 'absolute',
@@ -169,22 +201,32 @@ export default function CrimsonTempleIntroScreen() {
                 pointerEvents: 'auto',
                 zIndex: 50,
                 borderRadius: 8,
+                overflow: 'visible',
               }}
             >
-              {/* Hover glow (production) */}
-              {!debug && hovered && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
+              {/* Fire flame particles on click */}
+              {!debug && flames.map(p => (
+                <div
+                  key={p.id}
                   style={{
-                    position: 'absolute', inset: -10,
-                    borderRadius: 12,
-                    border: '2px solid rgba(220,80,60,0.7)',
-                    boxShadow: '0 0 28px 8px rgba(200,60,40,0.4)',
+                    position: 'absolute',
+                    bottom: '10%',
+                    left: `${p.left}%`,
+                    width: p.size,
+                    height: p.size * 1.5,
+                    borderRadius: '50% 50% 30% 30% / 60% 60% 40% 40%',
+                    background: `radial-gradient(ellipse at 50% 80%,
+                      hsl(${45 + p.hue},100%,75%) 0%,
+                      hsl(${20 + p.hue},100%,55%) 40%,
+                      hsl(${5 + p.hue},100%,40%) 70%,
+                      transparent 100%)`,
+                    filter: 'blur(1.5px)',
                     pointerEvents: 'none',
+                    transformOrigin: 'bottom center',
+                    animation: `flameRise ${p.duration}ms ease-out ${p.delay}ms forwards`,
                   }}
                 />
-              )}
+              ))}
 
               {/* Debug overlay */}
               {debug && (
