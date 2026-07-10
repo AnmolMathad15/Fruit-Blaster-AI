@@ -28,6 +28,7 @@ const VID_H = 1080;
 interface DestDef {
   id: GameMode;
   name: string;
+  mode: string;
   sub: string;
   icon: string;
   vx: number;   // centre X in native video frame
@@ -39,24 +40,29 @@ interface DestDef {
 
 const BASE_DESTINATIONS: DestDef[] = [
   {
-    id: 'classic',   name: 'Dojo Gate',      sub: '3 lives · bombs · escalating danger',
-    icon: '⚔️',  vx: 462,  vy: 175, vr: 156, hue: 18,  lives: 3,
+    id: 'classic',   name: 'Dojo Gate',              mode: 'Classic Mode',
+    sub: '3 Lives • Balanced Waves • Rare Oni Mask',
+    icon: '🥋',  vx: 462,  vy: 175, vr: 156, hue: 18,  lives: 3,
   },
   {
-    id: 'zen',       name: 'Moon Shrine',     sub: 'No bombs · unlimited lives · pure bliss',
-    icon: '🌸',  vx: 1165, vy: 177, vr: 156, hue: 155, lives: 99,
+    id: 'zen',       name: 'Moon Shrine',            mode: 'Survival Mode',
+    sub: '3 Lives • Bombs Reduce Lives • Survive As Long As Possible',
+    icon: '🌙',  vx: 1165, vy: 177, vr: 156, hue: 155, lives: 99,
   },
   {
-    id: 'arcade',    name: 'Bamboo Grove',    sub: 'Endless waves · fast & furious',
-    icon: '⚡',  vx: 806,  vy: 532, vr: 156, hue: 90,  lives: 3,
+    id: 'arcade',    name: 'Bamboo Grove',           mode: 'Zen Mode',
+    sub: '2-Minute Timer • Calm Gameplay • No Difficulty Ramp',
+    icon: '🎋',  vx: 806,  vy: 532, vr: 156, hue: 90,  lives: 3,
   },
   {
-    id: 'challenge', name: 'Crimson Temple',  sub: '60 seconds · maximise your score',
-    icon: '⏱️', vx: 348,  vy: 650, vr: 156, hue: 0,   lives: 3,
+    id: 'challenge', name: 'Crimson Temple',         mode: 'Challenge Mode',
+    sub: '1-Minute Rush • Heavy Bomb Density • Extreme Reflexes',
+    icon: '🔥', vx: 348,  vy: 650, vr: 156, hue: 0,   lives: 3,
   },
   {
-    id: 'survival',  name: 'Imperial Palace', sub: '1 life · high bombs · survive!',
-    icon: '💀',  vx: 1358, vy: 643, vr: 156, hue: 45,  lives: 1,
+    id: 'survival',  name: 'Imperial Heaven Palace', mode: 'Master Survival',
+    sub: 'Endless Survival • Dynamic Difficulty • Ultimate Challenge',
+    icon: '👑',  vx: 1358, vy: 643, vr: 156, hue: 45,  lives: 1,
   },
 ];
 
@@ -285,7 +291,13 @@ function Hotspot({
               color: `hsl(${dest.hue},85%,78%)`,
               display: 'flex', alignItems: 'center', gap: 8,
             }}>
-              <span>{dest.icon}</span> {dest.name}
+              <span>{dest.icon}</span> {dest.name.toUpperCase()}
+            </div>
+            <div style={{
+              fontSize: 11, fontWeight: 600, letterSpacing: 0.5,
+              color: `hsl(${dest.hue},60%,68%)`, marginTop: 2,
+            }}>
+              {dest.mode}
             </div>
             <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', marginTop: 4 }}>
               {dest.sub}
