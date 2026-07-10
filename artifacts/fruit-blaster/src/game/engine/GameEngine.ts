@@ -105,10 +105,10 @@ export class GameEngine {
     } else if (mode === 'moon') {
       // Moon Shrine — Survival Mode: starts calm, ramps up every 30s, maxes at 5min.
       this.bombChance = 0.14;
-      this.spawnRate = 45;
+      this.spawnRate = 32;
       this.speedMultiplier = 1;
       this.baseBombChance = 0.14;
-      this.baseSpawnRate = 45;
+      this.baseSpawnRate = 32;
       this.baseSpeedMultiplier = 1;
     } else if (mode === 'challenge') {
       // Crimson Temple — Challenge Mode: high-intensity volcanic battlefield.
@@ -412,17 +412,25 @@ export class GameEngine {
       const type = BAMBOO_FRUIT_TYPES[Math.floor(Math.random() * BAMBOO_FRUIT_TYPES.length)];
       this.fruits.push(new Fruit(startX, startY, vx, vy, type));
     } else if (this.mode === 'moon') {
-      // Moon Shrine spawns exclusively from our celestial fruits (weighted by probability).
+      // Moon Shrine — 1-3 fruits per wave. Single fruit (45%) keeps the zen pace;
+      // doubles (40%) and triples (15%) are satisfying combo moments.
+      // Slight X scatter for doubles/triples so each fruit has its own arc.
       const pool = MOON_FRUIT_TYPES.map(t => [t, FRUIT_DATA[t]] as const);
       const totalProb = pool.reduce((sum, [, v]) => sum + v.probability, 0);
-      const rand = Math.random() * totalProb;
-      let cumProb = 0;
-      let type: FruitType = MOON_FRUIT_TYPES[0];
-      for (const [k, v] of pool) {
-        cumProb += v.probability;
-        if (rand <= cumProb) { type = k; break; }
+      const waveRoll = Math.random();
+      const waveSize = waveRoll < 0.45 ? 1 : waveRoll < 0.85 ? 2 : 3;
+      for (let i = 0; i < waveSize; i++) {
+        const rand = Math.random() * totalProb;
+        let cumProb = 0;
+        let type: FruitType = MOON_FRUIT_TYPES[0];
+        for (const [k, v] of pool) {
+          cumProb += v.probability;
+          if (rand <= cumProb) { type = k; break; }
+        }
+        const jitterX  = startX + (Math.random() - 0.5) * 130 * i;
+        const jitterVx = vx + (Math.random() - 0.5) * 2;
+        this.fruits.push(new Fruit(jitterX, startY, jitterVx, vy, type));
       }
-      this.fruits.push(new Fruit(startX, startY, vx, vy, type));
     } else {
       // Pick fruit type by probability
       const pool = Object.entries(FRUIT_DATA).filter(([k]) => !BAMBOO_FRUIT_TYPES.includes(k as FruitType) && !MOON_FRUIT_TYPES.includes(k as FruitType) && !CRIMSON_FRUIT_TYPES.includes(k as FruitType) && !IMPERIAL_FRUIT_TYPES.includes(k as FruitType) && !DOJO_FRUIT_TYPES.includes(k as FruitType) && k !== 'Lunar Kiwi');
@@ -486,44 +494,90 @@ export class GameEngine {
     }
   }
 
-  /** Moon Shrine slash: crescent moon dust, silver sparkles, stars, feathers — bigger burst on Perfect Slice. */
+  /** Moon Shrine slash: crescent arc, lunar petals, glowing moon orbs, silver shimmer. */
   spawnMoonSliceEffects(x: number, y: number, perfect: boolean) {
-    const dustCount = perfect ? 26 : 14;
-    for (let i = 0; i < dustCount; i++) {
-      const a = Math.random() * Math.PI * 2;
-      const speed = 2 + Math.random() * 5;
+    // 1. Crescent arc — sparkles arranged in a half-moon formation, opening upward.
+    //    Outer arc minus inner hollow creates the classic crescent silhouette.
+    const crescentCount = perfect ? 22 : 13;
+    for (let i = 0; i < crescentCount; i++) {
+      const t = (i / crescentCount) * Math.PI; // 0 → π  (top semicircle)
+      const outerR  = 42 + Math.random() * 14;
+      const hollowX = 16; // inner offset that carves the crescent hollow
+      const ax  = Math.cos(t - Math.PI / 2) * outerR - hollowX * 0.4;
+      const ay  = Math.sin(t - Math.PI / 2) * outerR;
+      const spd = 0.7 + Math.random() * 1.5;
       this.particles.push(new Particle({
-        x, y,
-        vx: Math.cos(a) * speed, vy: Math.sin(a) * speed - 1,
-        life: 30 + Math.random() * 30, maxLife: 60,
-        color: 'rgba(220,230,255,0.9)',
-        size: 1.5 + Math.random() * 3,
+        x: x + ax, y: y + ay,
+        vx: Math.cos(t - Math.PI / 2) * spd,
+        vy: Math.sin(t - Math.PI / 2) * spd - 0.6,
+        life: 38 + Math.random() * 28, maxLife: 66,
+        color: i % 3 === 0 ? 'rgba(160,200,255,0.95)'
+             : i % 3 === 1 ? 'rgba(220,235,255,0.90)' : '#ffffff',
+        size: 1.8 + Math.random() * 2.6,
         type: 'sparkle',
       }));
     }
-    const starCount = perfect ? 14 : 6;
-    for (let i = 0; i < starCount; i++) {
-      const a = Math.random() * Math.PI * 2;
-      const speed = 1 + Math.random() * 3;
+
+    // 2. Lunar petals — blue-indigo ovals that drift and spin upward.
+    const petalCount = perfect ? 13 : 8;
+    for (let i = 0; i < petalCount; i++) {
+      const a   = Math.random() * Math.PI * 2;
+      const spd = 1.6 + Math.random() * 3.2;
       this.particles.push(new Particle({
         x, y,
-        vx: Math.cos(a) * speed, vy: Math.sin(a) * speed,
-        life: 25 + Math.random() * 25, maxLife: 50,
-        color: '#e8f0ff',
-        size: 3 + Math.random() * 3,
-        type: 'star',
+        vx: Math.cos(a) * spd * 0.7,
+        vy: Math.sin(a) * spd - 2.2,
+        life: 44 + Math.random() * 32, maxLife: 76,
+        color: `hsl(${210 + Math.random() * 48},82%,${74 + Math.random() * 14}%)`,
+        size: 5.5 + Math.random() * 5,
+        type: 'petal',
       }));
     }
-    // White feathers — drift, don't fall
-    for (let i = 0; i < (perfect ? 8 : 4); i++) {
+
+    // 3. Moon orbs — radial glowing spheres evenly spaced around the hit point.
+    const orbCount = perfect ? 7 : 4;
+    for (let i = 0; i < orbCount; i++) {
+      const a   = (i / orbCount) * Math.PI * 2;
+      const spd = 2.2 + Math.random() * 2;
       this.particles.push(new Particle({
         x, y,
-        vx: (Math.random() - 0.5) * 3, vy: -1 - Math.random() * 1.5,
-        life: 50 + Math.random() * 30, maxLife: 80,
-        color: 'rgba(255,255,255,0.85)',
-        size: 4 + Math.random() * 3,
-        type: 'confetti',
+        vx: Math.cos(a) * spd, vy: Math.sin(a) * spd,
+        life: 18 + Math.random() * 14, maxLife: 32,
+        color: 'rgba(180,220,255,0.88)',
+        size: 8 + Math.random() * 7,
+        type: 'orb',
       }));
+    }
+
+    // 4. Silver shimmer dust — fine micro-sparkles filling the burst zone.
+    const dustCount = perfect ? 24 : 11;
+    for (let i = 0; i < dustCount; i++) {
+      const a   = Math.random() * Math.PI * 2;
+      const spd = 0.8 + Math.random() * 4.5;
+      this.particles.push(new Particle({
+        x, y,
+        vx: Math.cos(a) * spd, vy: Math.sin(a) * spd - 0.6,
+        life: 18 + Math.random() * 18, maxLife: 36,
+        color: i % 4 === 0 ? '#e8f0ff' : 'rgba(200,220,255,0.82)',
+        size: 1 + Math.random() * 2.2,
+        type: 'sparkle',
+      }));
+    }
+
+    // 5. Perfect-only: four-point silver stars raining from the crescent tips.
+    if (perfect) {
+      for (let i = 0; i < 8; i++) {
+        const a   = Math.random() * Math.PI * 2;
+        const spd = 1.2 + Math.random() * 2.8;
+        this.particles.push(new Particle({
+          x, y,
+          vx: Math.cos(a) * spd, vy: Math.sin(a) * spd,
+          life: 28 + Math.random() * 22, maxLife: 50,
+          color: '#e8f0ff',
+          size: 3.5 + Math.random() * 3,
+          type: 'star',
+        }));
+      }
     }
   }
   
@@ -654,6 +708,26 @@ export class GameEngine {
         ctx.shadowBlur = 6;
         ctx.shadowColor = p.color as string;
         drawFourPointStar(ctx, p.size);
+      } else if (p.type === 'petal') {
+        // Lunar petal: soft blue-indigo oval with gentle glow, spins as it drifts
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = p.color as string;
+        ctx.fillStyle = p.color as string;
+        ctx.beginPath();
+        ctx.ellipse(0, 0, p.size * 0.42, p.size, 0, 0, Math.PI * 2);
+        ctx.fill();
+      } else if (p.type === 'orb') {
+        // Moon orb: radial white-to-blue glow sphere, fades at edge
+        ctx.shadowBlur = 18;
+        ctx.shadowColor = 'rgba(160,210,255,0.9)';
+        const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, p.size);
+        grad.addColorStop(0,   'rgba(255,255,255,0.96)');
+        grad.addColorStop(0.4, 'rgba(190,220,255,0.86)');
+        grad.addColorStop(1,   'rgba(140,190,255,0)');
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(0, 0, p.size, 0, Math.PI * 2);
+        ctx.fill();
       }
       ctx.restore();
     });

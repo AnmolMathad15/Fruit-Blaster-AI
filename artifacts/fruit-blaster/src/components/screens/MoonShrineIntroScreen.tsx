@@ -21,16 +21,38 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useGameStore } from '../../store/gameStore';
 import { useMoonStore } from '../../store/moonStore';
 
+/* ─── Blue moon-petal burst keyframes (injected once into document) ─── */
+const PETAL_STYLE = `
+@keyframes moonPetalRise {
+  0%   { transform: translate(0,0) rotate(var(--r)) scale(0.2); opacity: 1; }
+  60%  { opacity: 0.85; }
+  100% { transform: translate(calc(var(--dx) * 1px), calc(var(--dy) * 1px)) rotate(calc(var(--r) + 200deg)) scale(0.7); opacity: 0; }
+}
+`;
+
 /* ─── Native video dimensions (1280×720) ───────────────────────────── */
 const VID_W = 1280;
 const VID_H = 720;
 
 /* ─── "Enter the Shrine" button position in native 1280×720 pixels ─── */
-// ⚠️  Calibrate these with Debug Mode, then hard-code the result.
-let BTN_VX = 637;   // centre X
-let BTN_VY = 648;   // centre Y
-let BTN_VW = 380;   // width  of clickable rectangle
-let BTN_VH = 85;    // height of clickable rectangle
+const BTN_VX = 642;   // centre X
+const BTN_VY = 658;   // centre Y
+const BTN_VW = 360;   // width  of clickable rectangle
+const BTN_VH = 78;    // height of clickable rectangle
+
+/* ─── Blue moon-petal burst — 22 petals pre-computed (deterministic) ── */
+const MOON_PETALS = Array.from({ length: 22 }, (_, i) => {
+  const angle = (i / 22) * Math.PI * 2 - Math.PI / 2;
+  const dist  = 52 + (i % 4) * 20;
+  return {
+    dx:    Math.round(Math.cos(angle) * dist),
+    dy:    Math.round(Math.sin(angle) * dist * 0.82),
+    r:     (i * 19) % 360,
+    delay: +(i * 0.022).toFixed(3),
+    hue:   200 + (i % 7) * 9,   // 200–254 → blue → indigo
+    big:   i % 5 === 0,
+  };
+});
 
 /* ─── Cover-layout helpers ───────────────────────────────────────────── */
 interface CoverLayout { scale: number; offsetX: number; offsetY: number; }
@@ -58,11 +80,23 @@ export default function MoonShrineIntroScreen() {
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef     = useRef<HTMLVideoElement>(null);
 
-  const [phase,  setPhase]  = useState<'playing' | 'ready' | 'exiting'>('playing');
-  const [debug,  setDebug]  = useState(false);
-  const [layout, setLayout] = useState<CoverLayout>({ scale: 1, offsetX: 0, offsetY: 0 });
-  const [drag,   setDrag]   = useState({ dx: 0, dy: 0 });
-  const [copied, setCopied] = useState(false);
+  const [phase,      setPhase]      = useState<'playing' | 'ready' | 'exiting'>('playing');
+  const [debug,      setDebug]      = useState(false);
+  const [layout,     setLayout]     = useState<CoverLayout>({ scale: 1, offsetX: 0, offsetY: 0 });
+  const [drag,       setDrag]       = useState({ dx: 0, dy: 0 });
+  const [copied,     setCopied]     = useState(false);
+  const [petalBurst, setPetalBurst] = useState(false);
+
+  /* ── Inject petal keyframes once ── */
+  useEffect(() => {
+    const id = 'moon-petal-keyframes';
+    if (!document.getElementById(id)) {
+      const s = document.createElement('style');
+      s.id = id;
+      s.textContent = PETAL_STYLE;
+      document.head.appendChild(s);
+    }
+  }, []);
 
   /* ── Cover-layout tracker ── */
   useEffect(() => {
@@ -89,6 +123,7 @@ export default function MoonShrineIntroScreen() {
   const enterShrine = useCallback(() => {
     if (phase !== 'ready') return;
     setPhase('exiting');
+    setPetalBurst(true);
     setTimeout(() => {
       setMode('moon');
       resetGame();
@@ -177,31 +212,41 @@ export default function MoonShrineIntroScreen() {
               onClick={!debug ? enterShrine : undefined}
               style={{
                 position: 'absolute',
-                left:   btnL,
-                top:    btnT,
-                width:  btnW,
-                height: btnH,
+                left:     btnL,
+                top:      btnT,
+                width:    btnW,
+                height:   btnH,
+                overflow: 'visible',
                 cursor:        debug ? 'grab' : 'pointer',
                 pointerEvents: 'auto',
                 background:    debug ? 'rgba(255,30,30,0.28)' : 'transparent',
                 border:        debug ? '2px dashed rgba(255,80,80,0.85)' : 'none',
                 borderRadius:  8,
-                boxShadow:     !debug ? '0 0 24px 6px rgba(180,220,255,0.18)' : 'none',
               }}
             >
-              {/* Moonlit pulse ring (non-debug) */}
-              {!debug && (
-                <motion.div
-                  animate={{ opacity: [0.5, 1, 0.5] }}
-                  transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
+              {/* Blue moon-petal burst — only when clicked */}
+              {petalBurst && !debug && MOON_PETALS.map((p, i) => (
+                <div
+                  key={i}
                   style={{
-                    position: 'absolute', inset: -3,
-                    borderRadius: 10,
-                    border: '2px solid rgba(180,220,255,0.40)',
+                    position:    'absolute',
+                    left:        '50%',
+                    top:         '50%',
+                    width:       p.big ? 12 : 9,
+                    height:      p.big ? 26 : 19,
+                    marginLeft:  p.big ? -6  : -4.5,
+                    marginTop:   p.big ? -13 : -9.5,
+                    borderRadius: '50% 50% 42% 42%',
+                    background:  `radial-gradient(ellipse at 50% 30%, hsl(${p.hue},92%,88%), hsl(${p.hue + 18},78%,62%) 60%, transparent)`,
+                    boxShadow:   `0 0 6px 1px hsl(${p.hue},90%,70%)`,
+                    '--dx': p.dx,
+                    '--dy': p.dy,
+                    '--r':  `${p.r}deg`,
+                    animation:   `moonPetalRise 0.62s ease-out ${p.delay}s both`,
                     pointerEvents: 'none',
-                  }}
+                  } as React.CSSProperties}
                 />
-              )}
+              ))}
 
               {/* Debug label */}
               {debug && (

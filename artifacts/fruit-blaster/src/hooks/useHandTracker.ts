@@ -40,6 +40,7 @@ export function useHandTracker() {
   const isRunningRef     = useRef(false);
   const animFrameRef     = useRef<number>(0);
   const fingertipRef     = useRef<FingertipState>({ x: 0, y: 0, isPresent: false });
+  const lostFramesRef    = useRef(0);   // consecutive frames with no detection
   const [fingertip, setFingertip] = useState<FingertipState>({ x: 0, y: 0, isPresent: false });
 
   // ─── Model initialisation ──────────────────────────────────────────────────
@@ -137,14 +138,22 @@ export function useHandTracker() {
           const now = performance.now();
           const results = landmarkerRef.current.detectForVideo(video, now);
           if (results.landmarks?.length > 0) {
+            // Hand detected — reset the lost-frame counter immediately
+            lostFramesRef.current = 0;
             const pt = results.landmarks[0][8]; // index fingertip
             const next: FingertipState = { x: pt.x, y: pt.y, isPresent: true };
             fingertipRef.current = next;
             setFingertip(next);
           } else {
-            const next: FingertipState = { ...fingertipRef.current, isPresent: false };
-            fingertipRef.current = next;
-            setFingertip(next);
+            // Require 10 consecutive frames with no detection before marking the
+            // hand as lost. This absorbs single-frame MediaPipe misses (occlusion,
+            // lighting flicker, fast movement) without desensitising the tracker.
+            lostFramesRef.current += 1;
+            if (lostFramesRef.current >= 10 && fingertipRef.current.isPresent) {
+              const next: FingertipState = { ...fingertipRef.current, isPresent: false };
+              fingertipRef.current = next;
+              setFingertip(next);
+            }
           }
         } catch (err) {
           console.error('[HandTracker] detectForVideo error:', err);
