@@ -1,6 +1,7 @@
 <div align="center">
 
-<img src="Banner.png" alt="FruitBlaster AI Banner" width="100%"/>
+<img width="1024" height="1536" alt="Banner" src="https://github.com/user-attachments/assets/a36bcb92-5bd8-489a-aa83-644d359a0b24" />
+
 
 # 🍉 FruitBlaster AI
 
